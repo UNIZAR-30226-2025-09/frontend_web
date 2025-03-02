@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Importa useNavigate
 import "./Login.css";
 
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate(); // Hook para redirigir
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -11,20 +13,24 @@ function Login() {
     };
 
     const goToRegister = () => {
-       // Redirige a la página de registro
+        navigate("/register"); // Redirige a la página de registro
+    };
+
+    const goToSubs = () => {
+        navigate("/Subs"); // Redirige a la página de suscripciones
     };
 
     return (
         <div className="login-container">
             <div className="login-box">
                 <img
-                    src="../public/vibra.png"
+                    src="../vibrablanco.png"
                     alt="Vibra Logo"
                     className="logo"
                     onClick={() => window.location.reload()}
                 />
                 <h1 className="login-txt">Iniciar Sesión en Vibra</h1>
-
+                <hr className="line"></hr>
                 <form onSubmit={handleSubmit}>
                     <div className="input-label">
                         <label htmlFor="email">Correo Electrónico</label>
@@ -64,7 +70,9 @@ function Login() {
 
                 <p className="small-text">
                     Si quieres saber más sobre nuestras suscripciones, visita
-                    <a href="#"> Vibra Suscripciones.</a>
+                    <span className="subs-txt" onClick={goToSubs}>
+                        Vibra Suscripciones.
+                    </span>
                 </p>
             </div>
         </div>
