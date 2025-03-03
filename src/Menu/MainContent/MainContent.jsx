@@ -3,8 +3,10 @@ import styled from "styled-components";
 
 const MainContentWrapper = styled.div`
     grid-area: main;
+    
     padding: 20px;
-    background-color: #333;
+    //background-color: #333;
+    background-color: transparent;
     color: white;
     height: calc(100vh - 80px);
     overflow-y: auto;

@@ -3,45 +3,52 @@ import styled from 'styled-components';
 
 const GridContainer = styled.div`
     display: grid;
-    grid-template-columns: 300px auto; // Sidebar fijo, contenido ocupa el resto
-    grid-template-rows: 80px auto; // TopBar fijo, contenido ocupa el resto
-    width: 100vw; // Ocupa todo el ancho de la pantalla
-    height: 100vh; // Ocupa todo el alto de la pantalla
+    grid-template-columns: 300px auto;
+    grid-template-rows: 80px auto;
+    width: 100vw;
+    height: 100vh;
     grid-template-areas:
     "topbar topbar"
     "sidebar main";
-    background-color: #222; // Color de fondo general
+    background-color: #182028; /* Negro azulado oscuro */
+    gap: 10px; /* Separación entre elementos */
+    padding: 10px; /* Padding general */
 `;
 
 const Sidebar = styled.div`
     grid-area: sidebar;
-    background-color: #f0f0f0;
+    background-color: #273444; /* Azul oscuro */
     padding: 20px;
-    height: calc(100vh - 80px); // Ajustar altura menos la barra de búsqueda
+    height: calc(100vh - 100px); /* Ajustar altura menos la barra de búsqueda y padding */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    border-radius: 10px; /* Bordes redondeados */
+    color: white;
 `;
 
 const TopBar = styled.div`
     grid-area: topbar;
-    background-color: #e0e0e0;
+    background-color: #273444; /* Azul oscuro */
     padding: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     font-size: 18px;
+    border-radius: 10px; /* Bordes redondeados */
+    color: white;
 `;
 
 const MainContent = styled.div`
     grid-area: main;
     padding: 20px;
-    background-color: #333;
+    background-color: #334155; /* Azul oscuro */
     color: white;
-    height: calc(100vh - 80px); // Ajustar altura menos la barra de búsqueda
-    overflow-y: auto; // Permitir desplazamiento si es necesario
+    height: calc(100vh - 100px); /* Ajustar altura menos la barra de búsqueda y padding */
+    overflow-y: auto;
+    border-radius: 10px; /* Bordes redondeados */
 `;
 
 const Grid = ({ children }) => {

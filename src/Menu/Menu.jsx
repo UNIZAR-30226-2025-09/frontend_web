@@ -7,11 +7,11 @@ import Header from "./Header/Header.jsx";
 const Menu = () => {
     return (
         <Grid>
-            <Grid.TopBar>
+
                 <Header>
 
                 </Header>
-            </Grid.TopBar>
+
             <Grid.Sidebar>
                 <SidebarLibrary />
             </Grid.Sidebar>
