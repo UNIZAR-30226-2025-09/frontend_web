@@ -3,23 +3,27 @@ import styled from "styled-components";
 
 const MainContentWrapper = styled.div`
     grid-area: main;
-    
     padding: 20px;
-    //background-color: #333;
     background-color: transparent;
     color: white;
     height: calc(100vh - 80px);
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    display: grid;
+    grid-template-rows: repeat(2, auto);
+    gap: 10px; // Reducir el gap
 `;
 
-// Estilos para las secciones
 const Section = styled.div`
     display: flex;
     flex-direction: column;
     gap: 10px;
+`;
+
+const CardList = styled.div`
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); // 6 elementos por fila
+    gap: 15px;
+    padding-bottom: 10px;
 `;
 
 const SectionTitle = styled.h2`
@@ -27,53 +31,103 @@ const SectionTitle = styled.h2`
     font-weight: bold;
     margin-bottom: 10px;
     color: #fff;
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    margin-left: 0px;
 `;
 
-// Estilos de la lista de tarjetas
-const CardList = styled.div`
+const CircularCard = styled.div`
+    width: 150px;
+    height: calc(150px + 30px); // Ajustar el height
+    border-radius: 50%;
+    background-color: #444;
     display: flex;
-    gap: 15px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-`;
-
-// Estilo para cada tarjeta de canción o playlist
-const Card = styled.div`
-    background: #444;
-    padding: 15px;
-    border-radius: 8px;
-    min-width: 150px;
-    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 15px; // Añadir padding vertical
 
     &:hover {
-        background: #555;
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+`;
+
+const PlaylistImage = styled.img`
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+`;
+
+const PlaylistDetails = styled.span`
+    font-size: 12px;
+    margin-top: 10px;
+    color: #b0c4de;
+    text-align: center;
+`;
+
+const PlayIcon = styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    ${CircularCard}:hover & {
+        opacity: 1;
     }
 `;
 
 const MainContent = () => {
-    const recommendedPlaylists = ["Top Hits", "Relax Vibes", "Workout Mix", "Chill Beats"];
-    const recommendedSongs = ["Song 1", "Song 2", "Song 3", "Song 4"];
+    const recommendedPlaylists = [
+        { name: "Top Hits", artist: "Various Artists", image: "URL_IMAGEN_1" },
+        { name: "Relax Vibes", artist: "Chill Collective", image: "URL_IMAGEN_2" },
+        { name: "Workout Mix", artist: "Fitness Beats", image: "URL_IMAGEN_3" },
+        { name: "Chill Beats", artist: "Lo-fi Sounds", image: "URL_IMAGEN_4" },
+        { name: "Lo-fi", artist: "Lo-fi Sounds", image: "URL_IMAGEN_5" },
+        { name: "Jazz", artist: "Jazz Collective", image: "URL_IMAGEN_6" },
+    ];
+
+    //const recommendedSongs = ["Song 1", "Song 2", "Song 3", "Song 4", "Song 5"];
 
     return (
         <MainContentWrapper>
-            {/* Sección de Playlists Recomendadas */}
             <Section>
                 <SectionTitle>Playlists Recomendadas</SectionTitle>
                 <CardList>
                     {recommendedPlaylists.map((playlist, index) => (
-                        <Card key={index}>{playlist}</Card>
+                        <div key={index}>
+                            <CircularCard>
+                                <PlaylistImage src={playlist.image} alt={playlist.name} />
+                                <PlayIcon>▶</PlayIcon>
+                            </CircularCard>
+                            <PlaylistDetails>{playlist.artist}</PlaylistDetails>
+                        </div>
                     ))}
                 </CardList>
             </Section>
 
-            {/* Sección de Canciones Recomendadas */}
             <Section>
                 <SectionTitle>Canciones Recomendadas</SectionTitle>
                 <CardList>
-                    {recommendedSongs.map((song, index) => (
-                        <Card key={index}>{song}</Card>
+                    {recommendedPlaylists.map((playlist, index) => (
+                        <div key={index}>
+                            <CircularCard>
+                                <PlaylistImage src={playlist.image} alt={playlist.name} />
+                                <PlayIcon>▶</PlayIcon>
+                            </CircularCard>
+                            <PlaylistDetails>{playlist.artist}</PlaylistDetails>
+                        </div>
                     ))}
                 </CardList>
             </Section>

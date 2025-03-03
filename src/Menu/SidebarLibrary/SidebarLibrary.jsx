@@ -11,7 +11,6 @@ const SidebarWrapper = styled.div`
     padding: 20px;
     //background-color: #f8f8f8;
     background-color:transparent;
-    border-right: 1px solid #ccc;
     overflow-y: auto; // Permite desplazamiento si hay muchas playlists
 `;
 
