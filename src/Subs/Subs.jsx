@@ -21,6 +21,7 @@ const plans = [
     price: "4,99 € al mes",
     features: [
       "Experiencia libre de anuncios",
+
       "Saltar ilimitadas canciones al día",
       "Cancela cuando quieras"
     ],
