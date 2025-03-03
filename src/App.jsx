@@ -1,23 +1,24 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Login/Login";
+import Register from "./Register/Register";
 import Subs from "./Subs/Subs"; // Importa el componente Subs
 import ProfileDropdown from "./Profile/Profile"; // Importa el menú desplegable
 
 function App() {
   return (
-    <div className="app-container">
-      <ProfileDropdown /> {/* Aquí se muestra el menú desplegable */}
-
-      <Router> {/* Asegura que Router envuelve todo */}
+    <Router> {/* Mueve Router al nivel superior */}
+      <div className="app-container">
+        <ProfileDropdown /> {/* Esto ya estará dentro del Router */}
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} /> {/* Asegura que esta ruta exista */}
+          <Route path="/register" element={<Register />} />
           <Route path="/subs" element={<Subs />} />
         </Routes>
-      </Router>
-    </div>
+      </div>
+    </Router>
   );
 }
 
 export default App;
-
