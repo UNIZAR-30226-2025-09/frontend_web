@@ -4,6 +4,7 @@ import Login from "./Login/Login";
 import Subs from "./Subs/Subs";
 import Menu from "./Menu/Menu"; // Importa el componente Menu
 import ProfileDropdown from "./Profile/Profile";
+import HelloBye from "./HelloBye/HelloBye.jsx";
 
 function App() {
     return (
@@ -15,6 +16,7 @@ function App() {
                     <Route path="/" element={<Login />} />
                     <Route path="/subs" element={<Subs />} />
                     <Route path="/menu" element={<Menu />} /> {/* Nueva ruta */}
+                    <Route path="/hellobye" element={<HelloBye />} />
                 </Routes>
             </div>
         </Router>
