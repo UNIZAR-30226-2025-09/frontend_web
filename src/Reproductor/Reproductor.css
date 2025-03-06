@@ -1,0 +1,66 @@
+.reproductor {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #282828;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.reproductor__cover img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.reproductor__info {
+    flex: 1;
+    margin-left: 20px;
+    overflow: hidden;
+}
+
+.reproductor__title {
+    font-size: 16px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.reproductor__artist {
+    font-size: 14px;
+    color: #b3b3b3;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.reproductor__controls {
+    display: flex;
+    align-items: center;
+}
+
+.reproductor__btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.reproductor__progress {
+    width: 200px;
+    margin-right: 10px;
+}
+
+.reproductor__time {
+    font-size: 12px;
+    color: #b3b3b3;
+}
