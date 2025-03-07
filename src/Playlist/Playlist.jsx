@@ -1,5 +1,5 @@
 /*import {useEffect, useState} from "react";*/
-import { FaPlay, FaHeart, FaDownload, FaEllipsisH } from "react-icons/fa";
+import { FaPlay, FaHeart, FaDownload, FaEllipsisH } from 'react-icons/fa';
 import SongItem from "../SongItem/SongItem.jsx";
 import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
