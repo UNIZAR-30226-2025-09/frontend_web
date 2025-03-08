@@ -10,16 +10,40 @@ import "./Player.css";
 function Player() {
     const { currentSong } = usePlayer();
     const [isPlaying, setIsPlaying] = useState(false);
-    // Asegúrate de que currentSong tenga una propiedad url_mp3 para reproducir
-    const [play, { pause, duration, sound }] = useSound(
-        currentSong ? currentSong.url_mp3 : null,
-        { interrupt: true }
-    );
+
+    // Asegurar que la URL del MP3 sea siempre absoluta
+    const songUrl = currentSong?.url_mp3?.startsWith("http")
+        ? currentSong.url_mp3
+        : `http://localhost:5000${currentSong?.url_mp3}`;
+
+    console.log(" URL de la canción en el frontend:", songUrl);
+
+    // Cargar sonido con Howler (useSound)
+    const [play, { pause, duration, sound }] = useSound(songUrl, {
+        interrupt: true,
+        format: ["mp3"], // Asegurar que Howler detecte el formato
+        volume: 1.0 // Asegurar que el volumen esté en 100%
+    });
+
     const [currTime, setCurrTime] = useState({ min: 0, sec: 0 });
     const [totalTime, setTotalTime] = useState({ min: 0, sec: 0 });
     const [seconds, setSeconds] = useState(0);
 
     console.log("Player renderizado. currentSong:", currentSong);
+
+    useEffect(() => {
+        console.log(" Verificando URL en el frontend:", songUrl);
+    }, [songUrl]);
+
+    // Comprobar si Howler ha cargado correctamente el sonido
+    useEffect(() => {
+        if (sound) {
+            console.log(" Sonido cargado correctamente:", sound);
+            sound.volume(1.0); // Asegurar volumen al 100%
+        } else {
+            console.log(" No se ha cargado el sonido en Howler.");
+        }
+    }, [sound]);
 
     // Actualiza la duración cuando se carga la metadata
     useEffect(() => {
@@ -29,7 +53,7 @@ function Player() {
                 min: Math.floor(sec / 60),
                 sec: Math.floor(sec % 60),
             });
-            console.log("Duración obtenida:", duration);
+            console.log(" Duración obtenida:", duration);
         }
     }, [duration]);
 
@@ -43,19 +67,20 @@ function Player() {
                     min: Math.floor(sec / 60),
                     sec: Math.floor(sec % 60),
                 });
-                console.log("Tiempo actual:", sec);
+                console.log(" Tiempo actual:", sec);
             }
         }, 1000);
         return () => clearInterval(interval);
     }, [sound]);
 
+    // Reproducir o pausar la canción
     const playingButton = () => {
         if (isPlaying) {
-            console.log("Pausando canción");
+            console.log("️ Pausando canción");
             pause();
             setIsPlaying(false);
         } else {
-            console.log("Reproduciendo canción");
+            console.log(" Reproduciendo canción");
             play();
             setIsPlaying(true);
         }
@@ -67,12 +92,12 @@ function Player() {
                 <>
                     <img
                         className="musicCover"
-                         src={currentSong.cover}
+                        src={currentSong.cover}
                         alt="Portada de la canción"
                     />
                     <div className="info">
-                        <h3 className="title">{currentSong.title}</h3>
-                        <p className="artist">{currentSong.artist}</p>
+                        <h3 className="title">{currentSong?.name || "Sin título"}</h3>
+                        <p className="artist">{currentSong?.artists?.map(a => a.name).join(', ') || "Desconocido"}</p>
                     </div>
                     <div className="controls">
                         <button className="controlButton">
@@ -109,11 +134,14 @@ function Player() {
                             onChange={(e) => {
                                 if (sound) {
                                     sound.seek([e.target.value]);
-                                    console.log("Slider cambiado a:", e.target.value);
+                                    console.log(" Slider cambiado a:", e.target.value);
                                 }
                             }}
                         />
                     </div>
+
+                    {/* Elemento <audio> para probar si el problema es de Howler */}
+                    <audio controls src={songUrl} autoPlay />
                 </>
             ) : (
                 <p>No se ha seleccionado ninguna canción</p>
