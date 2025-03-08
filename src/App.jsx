@@ -1,32 +1,31 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./Login/Login";
-import Subs from "./Subs/Subs";
-import Menu from "./Menu/Menu"; // Importa el componente Menu
-import ProfileDropdown from "./Profile/Profile";
-import HelloBye from "./HelloBye/HelloBye.jsx";
-import Playlist from "./Playlist/Playlist.jsx";
-import Reproductor from "./Reproductor/Reproductor.jsx"; // Importa el reproductor
+// App.jsx
+import React from "react";
+import { PlayerProvider } from "./Reproductor/PlayerContext";
+import SongList from "./Reproductor/SongList";
+import Player from "./Reproductor/Player";
+import "./App.css";
 
 function App() {
     return (
-        <Router>
+        <PlayerProvider>
             <div className="app-container">
-                <ProfileDropdown /> {/* Menú desplegable */}
-                <Routes>
-                    <Route path="/" element={<Login />} />
-                    <Route path="/subs" element={<Subs />} />
-                    <Route path="/menu" element={<Menu />} />
-                    <Route path="/hellobye" element={<HelloBye />} />
-                    <Route path="/playlist" element={<Playlist />} />
-                </Routes>
-                <Reproductor
-                    songId={1}
-                    songTitle="Canción de Prueba"
-                    songArtist="Artista de Prueba"
-                    songCover="https://via.placeholder.com/150"
-                />
+                <header className="app-header">
+                    <h1>React Music Player</h1>
+                </header>
+
+                <main className="app-main">
+                    <aside className="sidebar">
+                        <SongList />
+                    </aside>
+                    <section className="main-content">
+                        <h2>Seleccione una canción de la lista...</h2>
+                    </section>
+                </main>
+
+                {/* Reproductor al final, ancho completo */}
+                <Player />
             </div>
-        </Router>
+        </PlayerProvider>
     );
 }
 

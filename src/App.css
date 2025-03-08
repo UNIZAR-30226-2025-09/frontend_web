@@ -1,17 +1,60 @@
-#root {
+/* App.css */
+
+/* Reset y box-sizing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Ocupar toda la pantalla */
-  width: 100vw;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #222; /* Fondo general */
+  color: #fff;
+}
+
+.app-header {
+  background-color: #333;
+  padding: 1rem;
   text-align: center;
 }
 
-.App{
+.app-main {
+  flex: 1; /* Ocupa todo el espacio disponible */
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+}
+
+/* Barra lateral para la lista de canciones */
+.sidebar {
+  width: 250px;
+  background-color: #1f1f1f;
+  padding: 1rem;
+  overflow-y: auto; /* Scroll si hay muchas canciones */
+}
+
+/* Sección principal */
+.main-content {
+  flex: 1;
+  padding: 1rem;
+}
+
+/* Ajustes de texto */
+h1 {
+  font-size: 1.5rem;
+  color: #fff;
+}
+h2 {
+  font-size: 1.2rem;
+  color: #ccc;
+}
+
+/* Player al fondo */
+.player-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
+  z-index: 1000;
 }
