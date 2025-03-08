@@ -15,54 +15,50 @@ function Player() {
     const [seconds, setSeconds] = useState(0);
     const [duration, setDuration] = useState(0);
 
-    // Refs to store the current sound and interval
     const soundRef = useRef(null);
     const intervalRef = useRef(null);
 
-    // Format the song URL
     const songUrl = currentSong?.url_mp3
         ? currentSong.url_mp3.startsWith("http")
-            ? currentSong.url_mp3 : `http://localhost:5000/${currentSong.url_mp3.replace(/^\/?/, "")}`
+            ? currentSong.url_mp3
+            : `http://localhost:5000/${currentSong.url_mp3.replace(/^\/?/, "")}`
         : null;
 
     console.log("URL de la canción en el frontend:", songUrl);
 
-    // Initialize or update Howler when the song changes
     useEffect(() => {
         if (!songUrl) return;
 
-        // Clean up previous sound instance if it exists
         if (soundRef.current) {
             soundRef.current.stop();
             soundRef.current.unload();
         }
 
-        // Clear any existing interval
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
         }
 
-        // Create new Howl instance
         const sound = new Howl({
             src: [songUrl],
-            html5: true, // Use HTML5 Audio to avoid issues with certain formats
+            html5: true,
             volume: 1.0,
             format: ['mp3'],
             onload: () => {
-                console.log("✅ Sound loaded successfully:", songUrl);
-                // Set the duration once loaded
+                console.log("Sonido cargado correctamente:", songUrl);
                 const sec = sound.duration();
-                setDuration(sec * 1000); // Convert to milliseconds to match previous implementation
+                setDuration(sec * 1000);
                 setTotalTime({
                     min: Math.floor(sec / 60),
                     sec: Math.floor(sec % 60),
                 });
+
+                sound.play();
+                setIsPlaying(true);
             },
             onplay: () => {
-                console.log("▶️ Sound playing");
+                console.log("Sonido en reproducción");
                 setIsPlaying(true);
 
-                // Start the time update interval
                 intervalRef.current = setInterval(() => {
                     const sec = sound.seek();
                     setSeconds(sec);
@@ -73,45 +69,35 @@ function Player() {
                 }, 1000);
             },
             onpause: () => {
-                console.log("⏸️ Sound paused");
+                console.log("Sonido en pausa");
                 setIsPlaying(false);
-                if (intervalRef.current) {
-                    clearInterval(intervalRef.current);
-                }
+                clearInterval(intervalRef.current);
             },
             onstop: () => {
-                console.log("⏹️ Sound stopped");
+                console.log("Sonido detenido");
                 setIsPlaying(false);
-                if (intervalRef.current) {
-                    clearInterval(intervalRef.current);
-                }
+                clearInterval(intervalRef.current);
             },
             onend: () => {
-                console.log("🔚 Sound ended");
+                console.log("Sonido finalizado");
                 setIsPlaying(false);
-                if (intervalRef.current) {
-                    clearInterval(intervalRef.current);
-                }
+                clearInterval(intervalRef.current);
             },
             onloaderror: (id, error) => {
-                console.error("❌ Error loading sound:", error);
+                console.error("Error cargando el sonido:", error);
             },
             onplayerror: (id, error) => {
-                console.error("❌ Error playing sound:", error);
-
-                // Try to recover from error
+                console.error("Error reproduciendo el sonido:", error);
                 sound.once('unlock', () => {
                     sound.play();
                 });
             }
         });
 
-        // Store the sound instance in the ref
         soundRef.current = sound;
 
     }, [songUrl]);
 
-    // Cleanup on unmount
     useEffect(() => {
         return () => {
             if (soundRef.current) {
@@ -124,20 +110,19 @@ function Player() {
         };
     }, []);
 
-    // Play or pause function
     const playingButton = () => {
         if (!soundRef.current) return;
 
         if (isPlaying) {
-            console.log("⏸️ Pausando canción");
+            console.log("Pausando canción");
             soundRef.current.pause();
         } else {
-            console.log("▶️ Reproduciendo canción");
+            console.log("Reproduciendo canción");
             soundRef.current.play();
         }
+        setIsPlaying(!isPlaying);
     };
 
-    // Function to handle timeline change
     const handleTimelineChange = (e) => {
         if (!soundRef.current) return;
 
