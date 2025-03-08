@@ -1,6 +1,6 @@
 // src/Reproductor/Player.jsx
-import React, { useEffect, useState } from "react";
-import useSound from "use-sound";
+import React, { useEffect, useState, useRef } from "react";
+import { Howl } from 'howler';
 import { usePlayer } from "./PlayerContext";
 import { AiFillPlayCircle, AiFillPauseCircle } from "react-icons/ai";
 import { BiSkipNext, BiSkipPrevious } from "react-icons/bi";
@@ -10,80 +10,140 @@ import "./Player.css";
 function Player() {
     const { currentSong } = usePlayer();
     const [isPlaying, setIsPlaying] = useState(false);
-
-    // Asegurar que la URL del MP3 sea siempre absoluta
-    const songUrl = currentSong?.url_mp3?.startsWith("http")
-        ? currentSong.url_mp3
-        : `http://localhost:5000${currentSong?.url_mp3}`;
-
-    console.log(" URL de la canción en el frontend:", songUrl);
-
-    // Cargar sonido con Howler (useSound)
-    const [play, { pause, duration, sound }] = useSound(songUrl, {
-        interrupt: true,
-        format: ["mp3"], // Asegurar que Howler detecte el formato
-        volume: 1.0 // Asegurar que el volumen esté en 100%
-    });
-
     const [currTime, setCurrTime] = useState({ min: 0, sec: 0 });
     const [totalTime, setTotalTime] = useState({ min: 0, sec: 0 });
     const [seconds, setSeconds] = useState(0);
+    const [duration, setDuration] = useState(0);
 
-    console.log("Player renderizado. currentSong:", currentSong);
+    // Refs to store the current sound and interval
+    const soundRef = useRef(null);
+    const intervalRef = useRef(null);
 
+    // Format the song URL
+    const songUrl = currentSong?.url_mp3
+        ? currentSong.url_mp3.startsWith("http")
+            ? currentSong.url_mp3 : `http://localhost:5000/${currentSong.url_mp3.replace(/^\/?/, "")}`
+        : null;
+
+    console.log("URL de la canción en el frontend:", songUrl);
+
+    // Initialize or update Howler when the song changes
     useEffect(() => {
-        console.log(" Verificando URL en el frontend:", songUrl);
-    }, [songUrl]);
+        if (!songUrl) return;
 
-    // Comprobar si Howler ha cargado correctamente el sonido
-    useEffect(() => {
-        if (sound) {
-            console.log(" Sonido cargado correctamente:", sound);
-            sound.volume(1.0); // Asegurar volumen al 100%
-        } else {
-            console.log(" No se ha cargado el sonido en Howler.");
+        // Clean up previous sound instance if it exists
+        if (soundRef.current) {
+            soundRef.current.stop();
+            soundRef.current.unload();
         }
-    }, [sound]);
 
-    // Actualiza la duración cuando se carga la metadata
-    useEffect(() => {
-        if (duration) {
-            const sec = duration / 1000;
-            setTotalTime({
-                min: Math.floor(sec / 60),
-                sec: Math.floor(sec % 60),
-            });
-            console.log(" Duración obtenida:", duration);
+        // Clear any existing interval
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
         }
-    }, [duration]);
 
-    // Actualiza el tiempo actual cada segundo
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (sound) {
-                const sec = sound.seek([]);
-                setSeconds(sec);
-                setCurrTime({
+        // Create new Howl instance
+        const sound = new Howl({
+            src: [songUrl],
+            html5: true, // Use HTML5 Audio to avoid issues with certain formats
+            volume: 1.0,
+            format: ['mp3'],
+            onload: () => {
+                console.log("✅ Sound loaded successfully:", songUrl);
+                // Set the duration once loaded
+                const sec = sound.duration();
+                setDuration(sec * 1000); // Convert to milliseconds to match previous implementation
+                setTotalTime({
                     min: Math.floor(sec / 60),
                     sec: Math.floor(sec % 60),
                 });
-                console.log(" Tiempo actual:", sec);
-            }
-        }, 1000);
-        return () => clearInterval(interval);
-    }, [sound]);
+            },
+            onplay: () => {
+                console.log("▶️ Sound playing");
+                setIsPlaying(true);
 
-    // Reproducir o pausar la canción
+                // Start the time update interval
+                intervalRef.current = setInterval(() => {
+                    const sec = sound.seek();
+                    setSeconds(sec);
+                    setCurrTime({
+                        min: Math.floor(sec / 60),
+                        sec: Math.floor(sec % 60),
+                    });
+                }, 1000);
+            },
+            onpause: () => {
+                console.log("⏸️ Sound paused");
+                setIsPlaying(false);
+                if (intervalRef.current) {
+                    clearInterval(intervalRef.current);
+                }
+            },
+            onstop: () => {
+                console.log("⏹️ Sound stopped");
+                setIsPlaying(false);
+                if (intervalRef.current) {
+                    clearInterval(intervalRef.current);
+                }
+            },
+            onend: () => {
+                console.log("🔚 Sound ended");
+                setIsPlaying(false);
+                if (intervalRef.current) {
+                    clearInterval(intervalRef.current);
+                }
+            },
+            onloaderror: (id, error) => {
+                console.error("❌ Error loading sound:", error);
+            },
+            onplayerror: (id, error) => {
+                console.error("❌ Error playing sound:", error);
+
+                // Try to recover from error
+                sound.once('unlock', () => {
+                    sound.play();
+                });
+            }
+        });
+
+        // Store the sound instance in the ref
+        soundRef.current = sound;
+
+    }, [songUrl]);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            if (soundRef.current) {
+                soundRef.current.stop();
+                soundRef.current.unload();
+            }
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, []);
+
+    // Play or pause function
     const playingButton = () => {
+        if (!soundRef.current) return;
+
         if (isPlaying) {
-            console.log("️ Pausando canción");
-            pause();
-            setIsPlaying(false);
+            console.log("⏸️ Pausando canción");
+            soundRef.current.pause();
         } else {
-            console.log(" Reproduciendo canción");
-            play();
-            setIsPlaying(true);
+            console.log("▶️ Reproduciendo canción");
+            soundRef.current.play();
         }
+    };
+
+    // Function to handle timeline change
+    const handleTimelineChange = (e) => {
+        if (!soundRef.current) return;
+
+        const newPosition = parseFloat(e.target.value);
+        soundRef.current.seek(newPosition);
+        setSeconds(newPosition);
     };
 
     return (
@@ -131,17 +191,9 @@ function Player() {
                             max={duration ? duration / 1000 : 0}
                             value={seconds}
                             className="timeline"
-                            onChange={(e) => {
-                                if (sound) {
-                                    sound.seek([e.target.value]);
-                                    console.log(" Slider cambiado a:", e.target.value);
-                                }
-                            }}
+                            onChange={handleTimelineChange}
                         />
                     </div>
-
-                    {/* Elemento <audio> para probar si el problema es de Howler */}
-                    <audio controls src={songUrl} autoPlay />
                 </>
             ) : (
                 <p>No se ha seleccionado ninguna canción</p>
