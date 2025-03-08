@@ -12,8 +12,6 @@ const Reproductor = ({ songId }) => {
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [loading, setLoading] = useState(true);
-
-    // 🛠️ Ahora almacenamos el título, artista y portada en `useState`
     const [songTitle, setSongTitle] = useState('');
     const [songArtist, setSongArtist] = useState('');
     const [songCover, setSongCover] = useState('');
@@ -23,7 +21,7 @@ const Reproductor = ({ songId }) => {
             try {
                 const response = await fetch(`${BACKEND_URL}/api/player/details/${songId}`);
                 const data = await response.json();
-                console.log("🎵 Datos recibidos del backend:", data);
+                console.log(" Datos recibidos del backend:", data);
 
                 if (data.name) {
                     setSongTitle(data.name);
@@ -32,7 +30,7 @@ const Reproductor = ({ songId }) => {
                     setSongCover(data.photo_video || "https://via.placeholder.com/150");
                 }
             } catch (error) {
-                console.error("⚠️ Error al obtener los datos de la canción:", error);
+                console.error(" Error al obtener los datos de la canción:", error);
             } finally {
                 setLoading(false);
             }
@@ -99,36 +97,31 @@ const Reproductor = ({ songId }) => {
         <div className="reproductor">
             {loading ? <p>Cargando...</p> : (
                 <>
-                    <div className="reproductor__cover">
-                        <img src={songCover} alt="Portada de la canción"/>
+                    <div className="reproductor__left">
+                        <img src={songCover} alt="Portada de la canción" className="reproductor__cover"/>
+                        <div className="reproductor__info">
+                            <h4 className="reproductor__title">{songTitle || "Sin título"}</h4>
+                            <p className="reproductor__artist">{songArtist || "Desconocido"}</p>
+                        </div>
                     </div>
-                    <div className="reproductor__info">
-                        <h4 className="reproductor__title">{songTitle || "Sin título"}</h4>
-                        <p className="reproductor__artist">{songArtist || "Desconocido"}</p>
+                    <div className="reproductor__center">
+                        <div className="reproductor__controls">
+                            <button onClick={playPrevious} className="reproductor__btn"><i
+                                className="fas fa-step-backward"></i></button>
+                            <button onClick={togglePlayPause} className="reproductor__btn reproductor__btn--play">
+                                {isPlaying ? <i className="fas fa-pause"></i> : <i className="fas fa-play"></i>}
+                            </button>
+                            <button onClick={playNext} className="reproductor__btn"><i
+                                className="fas fa-step-forward"></i></button>
+                        </div>
+                        <div className="reproductor__progress-container">
+                            <span className="reproductor__time">{Math.floor(currentTime)}</span>
+                            <input type="range" min="0" max={duration} value={currentTime}
+                                   onChange={handleProgressChange} className="reproductor__progress"/>
+                            <span className="reproductor__time">{Math.floor(duration)}</span>
+                        </div>
                     </div>
-                    <div className="reproductor__controls">
-                        <button onClick={playPrevious} className="reproductor__btn">
-                            <i className="fas fa-step-backward"></i>
-                        </button>
-                        <button onClick={togglePlayPause} className="reproductor__btn">
-                            {isPlaying ? <i className="fas fa-pause"></i> : <i className="fas fa-play"></i>}
-                        </button>
-                        <button onClick={playNext} className="reproductor__btn">
-                            <i className="fas fa-step-forward"></i>
-                        </button>
-                        <input
-                            type="range"
-                            min="0"
-                            max={duration}
-                            value={currentTime}
-                            onChange={handleProgressChange}
-                            className="reproductor__progress"
-                        />
-                        <span className="reproductor__time">
-                            {Math.floor(currentTime)}/{Math.floor(duration)} seg
-                        </span>
-                    </div>
-                    {songUrl && <audio ref={audioRef} src={songUrl}/> }
+                    {songUrl && <audio ref={audioRef} src={songUrl}/>}
                 </>
             )}
         </div>
