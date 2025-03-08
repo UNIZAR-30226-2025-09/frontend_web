@@ -1,4 +1,3 @@
-// src/Reproductor/Player.jsx
 import React, { useEffect, useState } from "react";
 import useSound from "use-sound";
 import { usePlayer } from "./PlayerContext";
@@ -10,19 +9,40 @@ import "./Player.css";
 function Player() {
     const { currentSong } = usePlayer();
     const [isPlaying, setIsPlaying] = useState(false);
+    const [soundInstance, setSoundInstance] = useState(null);
 
-    // Asegurar que la URL del MP3 sea siempre absoluta
-    const songUrl = currentSong?.url_mp3?.startsWith("http")
-        ? currentSong.url_mp3
-        : `http://localhost:5000${currentSong?.url_mp3}`;
+    // Validar y construir la URL del MP3 correctamente
+    const songUrl = currentSong?.url_mp3
+        ? currentSong.url_mp3.startsWith("http")
+            ? currentSong.url_mp3
+            : `http://localhost:5000/${currentSong.url_mp3.replace(/^\/?/, "")}`
+        : null;
 
-    console.log(" URL de la canción en el frontend:", songUrl);
+    console.log("URL de la canción en el frontend:", songUrl);
 
-    // Cargar sonido con Howler (useSound)
-    const [play, { pause, duration, sound }] = useSound(songUrl, {
+    // Si hay una instancia de sonido previa, detener y eliminar antes de cambiar de canción
+    useEffect(() => {
+        if (soundInstance) {
+            console.log("Deteniendo y eliminando instancia de sonido anterior.");
+            soundInstance.stop();
+            soundInstance.unload();
+            setSoundInstance(null);
+        }
+    }, [songUrl]);
+
+    // Inicializar useSound con la nueva canción
+    const [play, { pause, stop, duration, sound }] = useSound(songUrl ?? "", {
         interrupt: true,
-        format: ["mp3"], // Asegurar que Howler detecte el formato
-        volume: 1.0 // Asegurar que el volumen esté en 100%
+        format: ["mp3"],
+        volume: 1.0,
+        html5: true,
+        onload: () => {
+            console.log("Sonido cargado en Howler.");
+            setSoundInstance(sound);
+        },
+        onloaderror: (id, err) => {
+            console.error("Error al cargar el sonido en Howler:", err);
+        }
     });
 
     const [currTime, setCurrTime] = useState({ min: 0, sec: 0 });
@@ -31,17 +51,13 @@ function Player() {
 
     console.log("Player renderizado. currentSong:", currentSong);
 
-    useEffect(() => {
-        console.log(" Verificando URL en el frontend:", songUrl);
-    }, [songUrl]);
-
     // Comprobar si Howler ha cargado correctamente el sonido
     useEffect(() => {
         if (sound) {
-            console.log(" Sonido cargado correctamente:", sound);
-            sound.volume(1.0); // Asegurar volumen al 100%
+            console.log("Sonido cargado correctamente en Howler.");
+            sound.volume(1.0);
         } else {
-            console.log(" No se ha cargado el sonido en Howler.");
+            console.log("No se ha cargado el sonido en Howler.");
         }
     }, [sound]);
 
@@ -53,7 +69,7 @@ function Player() {
                 min: Math.floor(sec / 60),
                 sec: Math.floor(sec % 60),
             });
-            console.log(" Duración obtenida:", duration);
+            console.log("Duración obtenida:", duration);
         }
     }, [duration]);
 
@@ -67,7 +83,7 @@ function Player() {
                     min: Math.floor(sec / 60),
                     sec: Math.floor(sec % 60),
                 });
-                console.log(" Tiempo actual:", sec);
+                console.log("Tiempo actual:", sec);
             }
         }, 1000);
         return () => clearInterval(interval);
@@ -76,14 +92,14 @@ function Player() {
     // Reproducir o pausar la canción
     const playingButton = () => {
         if (isPlaying) {
-            console.log("️ Pausando canción");
+            console.log("Pausando canción");
             pause();
-            setIsPlaying(false);
+            stop();
         } else {
-            console.log(" Reproduciendo canción");
+            console.log("Reproduciendo canción");
             play();
-            setIsPlaying(true);
         }
+        setIsPlaying(!isPlaying);
     };
 
     return (
@@ -134,14 +150,14 @@ function Player() {
                             onChange={(e) => {
                                 if (sound) {
                                     sound.seek([e.target.value]);
-                                    console.log(" Slider cambiado a:", e.target.value);
+                                    console.log("Slider cambiado a:", e.target.value);
                                 }
                             }}
                         />
                     </div>
 
                     {/* Elemento <audio> para probar si el problema es de Howler */}
-                    <audio controls src={songUrl} autoPlay />
+                    <audio key={songUrl} controls src={songUrl} autoPlay />
                 </>
             ) : (
                 <p>No se ha seleccionado ninguna canción</p>
