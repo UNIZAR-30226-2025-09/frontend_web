@@ -1,38 +1,30 @@
-/*import {useEffect, useState} from "react";*/
-import { FaPlay, FaHeart, FaDownload, FaEllipsisH } from "react-icons/fa";
-import SongItem from "../SongItem/SongItem.jsx";
-import {useEffect, useState} from "react";
-import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-const Playlist = ({ playlistId }) => {
+const Playlist = () => {
+    const { playlistId } = useParams(); // 🔥 Obtiene el ID de la URL
     const [playlist, setPlaylist] = useState(null);
 
     useEffect(() => {
-        /*if (!playlistId) return;*/
-        if (!playlistId) {
-            // Si no hay playlistId, usamos datos de prueba
-            setPlaylist({
-                title: "Mix Diario de Prueba",
-                description: "Playlist generada para pruebas",
-                isPrivate: false,
-                imageUrl: "https://via.placeholder.com/150",
-                songs: [
-                    { id: 1, title: "Cosquilleo", artist: "Lucho RK, Juacko", duration: "2:30" },
-                    { id: 2, title: "Jordan I", artist: "SAIKO, Quevedo", duration: "3:12" },
-                    { id: 3, title: "AMANECIÓ", artist: "Quevedo, De La Rose", duration: "4:15" },
-                    { id: 4, title: "Escribiendo TKM", artist: "céro, D3llano", duration: "2:25" },
-                ],
-            });
-            return;
-        }
+        if (!playlistId) return; // Evita llamadas innecesarias si no hay ID
 
         const fetchPlaylist = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/playlists/${playlistId}`);
+                console.log(`Obteniendo playlist con ID: ${playlistId}`); // 🔥 Verifica en consola
+                const response = await fetch(`http://localhost:5001/api/playlists/${playlistId}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error en la solicitud: ${response.status}`);
+                }
+
                 const data = await response.json();
+                console.log("Playlist cargada:", data);
                 setPlaylist(data);
             } catch (error) {
-                console.error("Error fetching playlist:", error);
+                console.error("Error al obtener la playlist:", error);
             }
         };
 
@@ -44,36 +36,43 @@ const Playlist = ({ playlistId }) => {
     }
 
     return (
-        <div className="playlist-container">
-            {/* CABECERA DINÁMICA */}
+        <div className="max-w-4xl mx-auto p-6">
             <div className="playlist-header">
-                <img src={playlist.imageUrl || "https://via.placeholder.com/150"} alt="Playlist Cover" />
+                <img src={playlist.front_page} alt="Playlist Cover"/>
                 <div className="playlist-info">
-                    <h3>{playlist.title}</h3>
+                    <h3>{playlist.name}</h3>
                     <p>{playlist.description}</p>
-                    <p>{playlist.isPrivate ? "Privada 🔒" : "Pública 🌍"} - {playlist.songs.length} canciones</p>
-                    <div className="playlist-actions">
-                        <button className="play-btn"><FaPlay /> Reproducir</button>
-                        <FaHeart className="icon" />
-                        <FaDownload className="icon" />
-                        <FaEllipsisH className="icon" />
-                    </div>
+                    <p>{playlist.type}</p>
                 </div>
             </div>
 
-            {/* LISTADO DE CANCIONES */}
-            <div className="song-list">
-                {playlist.songs.map((song) => (
-                    <SongItem key={song.id} song={song} />
-                ))}
+
+            {/* Lista de canciones */}
+            <div className="mt-6">
+                <h2 className="text-white text-2xl font-semibold mb-4">Canciones</h2>
+                <table className="w-full text-left text-gray-400">
+                    <thead>
+                    <tr className="border-b border-gray-600">
+                        <th className="py-2">#</th>
+                        <th className="py-2">Título</th>
+                        <th className="py-2">Artista</th>
+                        <th className="py-2">Duración</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {playlist.songs.map((song, index) => (
+                        <tr key={song.id} className="border-b border-gray-800 hover:bg-gray-800 transition">
+                            <td className="py-3 px-4">{index + 1}</td>
+                            <td className="py-3 px-4">{song.name}</td>
+                            <td className="py-3 px-4">{song.artist}</td>
+                            <td className="py-3 px-4">{song.duration}</td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
             </div>
         </div>
-
     );
-};
-
-Playlist.propTypes = {
-    playlistId: PropTypes.number.isRequired,
 };
 
 export default Playlist;
