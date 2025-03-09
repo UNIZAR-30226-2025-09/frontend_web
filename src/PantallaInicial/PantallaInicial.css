@@ -1,0 +1,57 @@
+.pantalla-inicial {
+    display: grid;
+    grid-template-columns: 300px auto;
+    grid-template-rows: 80px auto;
+    width: 100vw;
+    height: 100vh;
+    grid-template-areas:
+      "sidebar header"
+      "sidebar main";
+    background-color: #121212;
+  }
+  
+  .sidebar {
+    grid-area: sidebar;
+    background-color: #181818;
+    padding: 20px;
+    color: white;
+    height: 100vh;
+  }
+  
+  .main-content {
+    grid-area: main;
+    padding: 20px;
+    background-color: #181818;
+    color: white;
+    overflow-y: auto;
+  }
+  
+  .section {
+    margin-bottom: 30px;
+  }
+  
+  .section-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 15px;
+  }
+  
+  .artist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+  }
+  
+  .artist-card {
+    width: 140px;
+    height: 140px;
+    background-color: #282828;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b3b3b3;
+    font-size: 14px;
+  }
+  

@@ -1,6 +1,6 @@
-
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import PantallaInicial from "./PantallaInicial/PantallaInicial"; // Importa la pantalla inicial
 import Login from "./Login/Login";
 import Subs from "./Subs/Subs";
 import Menu from "./Menu/Menu"; // Importa el componente Menu
@@ -15,15 +15,14 @@ function App() {
         <Router> {/* Router debe envolver todo */}
             <div className="app-container">
                 <Routes>
-                    <Route path="/" element={<Login />} />
+                    <Route path="/" element={<PantallaInicial />} /> {/* Ahora va a la pantalla inicial */}
+                    <Route path="/login" element={<Login />} />
                     <Route path="/subs" element={<Subs />} />
-										<Route path="/login" element={<Login />} /> {/* Asegura que esta ruta exista */}
-          					<Route path="/register" element={<Register />} />
-                    <Route path="/menu" element={<Menu />} /> {/* Nueva ruta */}
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/menu" element={<Menu />} />
                     <Route path="/hellobye" element={<HelloBye />} />
-                    <Route path="/playlist/:playlistId" element={<Playlist/>} />
-									  <Route path="/account" element={<AccountInfo />} /> {/* Nueva ruta */}
-
+                    <Route path="/playlist/:playlistId" element={<Playlist />} />
+                    <Route path="/account" element={<AccountInfo />} />
                 </Routes>
             </div>
         </Router>
