@@ -3,22 +3,21 @@ import SongItem from "../SongItem/SongItem.jsx";
 import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
+import "./Playlist.css";
+import { FaPlay, FaHeart, FaEllipsisH } from "react-icons/fa";
 
 
 const Playlist = () => {
-    const { playlistId } = useParams(); // 🔥 Obtiene el ID de la URL
+    const { playlistId } = useParams();
     const [playlist, setPlaylist] = useState(null);
 
     useEffect(() => {
-        if (!playlistId) return; // Evita llamadas innecesarias si no hay ID
+        if (!playlistId) return;
 
         const fetchPlaylist = async () => {
             try {
-                console.log(`Obteniendo playlist con ID: ${playlistId}`); // 🔥 Verifica en consola
-                const response = await fetch(`http://localhost:5001/api/playlists/${playlistId}`, {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json" }
-                });
+                console.log(`Obteniendo playlist con ID: ${playlistId}`);
+                const response = await fetch(`http://localhost:5001/api/playlists/${playlistId}`);
 
                 if (!response.ok) {
                     throw new Error(`Error en la solicitud: ${response.status}`);
@@ -38,42 +37,69 @@ const Playlist = () => {
     if (!playlist) {
         return <p>Cargando playlist...</p>;
     }
-
+    const handlePlaySong = (song) => {
+        console.log(`Reproduciendo: ${song.name}`);
+    };
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            <div className="playlist-header">
-                <img src={playlist.front_page} alt="Playlist Cover"/>
-                <div className="playlist-info">
-                    <h3>{playlist.name}</h3>
-                    <p>{playlist.description}</p>
-                    <p>{playlist.type}</p>
-                </div>
+        <div className="layout">
+            <div className="box-sidebar">
+                <h2>Menú</h2>
+                <p>Opción 1</p>
+                <p>Opción 2</p>
+                <p>Opción 3</p>
             </div>
+            <div className="box">
+                <div className="play-cont">
+                    <div className="image">
+                        <img src={playlist.front_page} width="275" alt="Playlist Cover"/>
+                    </div>
 
+                    <div className="playlist-info">
+                        <p className="text-gray-300 text-sm uppercase">Lista</p>
+                        <h1>{playlist.name}</h1>
+                        <p>Diego337 • Guardada {playlist.user} veces • {playlist.songs.length} canciones</p>
+                    </div>
+                </div>
+                <div className="playlist-actions">
+                    <button className="play-btn">
+                        <FaPlay/>
+                    </button>
 
-            {/* Lista de canciones */}
-            <div className="mt-6">
-                <h2 className="text-white text-2xl font-semibold mb-4">Canciones</h2>
-                <table className="w-full text-left text-gray-400">
-                    <thead>
-                    <tr className="border-b border-gray-600">
-                        <th className="py-2">#</th>
-                        <th className="py-2">Título</th>
-                        <th className="py-2">Artista</th>
-                        <th className="py-2">Duración</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {playlist.songs.map((song, index) => (
-                        <tr key={song.id} className="border-b border-gray-800 hover:bg-gray-800 transition">
-                            <td className="py-3 px-4">{index + 1}</td>
-                            <td className="py-3 px-4">{song.name}</td>
-                            <td className="py-3 px-4">{song.artist}</td>
-                            <td className="py-3 px-4">{song.duration}</td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+                    <div className="actions-right">
+                        <FaHeart className="icon"/>
+                        <FaEllipsisH className="icon"/>
+                    </div>
+                </div>
+                <div className="song-cont">
+                    <div className="song-header">
+                        <span>#</span>
+                        <span></span>
+                        <span>Título</span>
+                        <span>Álbum</span>
+                        <span>Fecha Añadida</span>
+                        <span>Duración</span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div className="song-list">
+                        {playlist.songs.map((song, index) => (
+                            <div className="song-item">
+                                <span className="song-index">{index + 1}</span>
+                                <button className="play-icon" onClick={() => handlePlaySong(song)}>
+                                    <FaPlay/>
+                                </button>
+
+                                <img src={song.cover} alt={song.name} className="song-cover"/>
+
+                                <span className="song-title">{song.name}</span>
+                                <span>{song.album?.name || "Sin álbum"}</span>
+                                <span className="song-date">{song.song_playlist?.date || "Fecha desconocida"}</span>
+                                <span className="song-duration">{song.duration}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                </div>
             </div>
         </div>
     );

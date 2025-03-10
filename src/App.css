@@ -10,20 +10,17 @@
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  background-color: #222; /* Fondo general */
-  color: #fff;
+  height: 100vh;
+  width: 100vw;
 }
 
-.app-header {
-  background-color: #333;
-  padding: 1rem;
-  text-align: center;
-}
-
-.app-main {
-  flex: 1; /* Ocupa todo el espacio disponible */
+.App {
   display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  align-items: flex-start;
+
 }
 
 /* Barra lateral para la lista de canciones */
