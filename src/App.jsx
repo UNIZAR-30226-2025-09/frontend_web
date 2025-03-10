@@ -8,7 +8,7 @@ import Playlist from "./Playlist/Playlist.jsx";
 
 function App() {
     return (
-        <Router> {/* Router debe envolver todo */}
+        <Router>
             <div className="app-container">
                 <Routes>
                     <Route path="/" element={<Login />} />
