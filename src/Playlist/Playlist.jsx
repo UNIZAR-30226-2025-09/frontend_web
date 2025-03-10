@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react";
+import { FaPlay, FaHeart, FaDownload, FaEllipsisH } from 'react-icons/fa';
+import SongItem from "../SongItem/SongItem.jsx";
+import {useEffect, useState} from "react";
+import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import "./Playlist.css";
 import { FaPlay, FaHeart, FaEllipsisH } from "react-icons/fa";
+
 
 const Playlist = () => {
     const { playlistId } = useParams();

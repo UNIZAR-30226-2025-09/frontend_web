@@ -1,4 +1,13 @@
-#root {
+/* App.css */
+
+/* Reset y box-sizing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -11,4 +20,38 @@
   width: 100%;
   height: auto;
   align-items: flex-start;
+
+}
+
+/* Barra lateral para la lista de canciones */
+.sidebar {
+  width: 250px;
+  background-color: #1f1f1f;
+  padding: 1rem;
+  overflow-y: auto; /* Scroll si hay muchas canciones */
+}
+
+/* Sección principal */
+.main-content {
+  flex: 1;
+  padding: 1rem;
+}
+
+/* Ajustes de texto */
+h1 {
+  font-size: 1.5rem;
+  color: #fff;
+}
+h2 {
+  font-size: 1.2rem;
+  color: #ccc;
+}
+
+/* Player al fondo */
+.player-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }

@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
+
+/* Estilos para el contenedor */
+    .login-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Texto "Log in to Vibra" */
+    .login-txt {
+        margin-top: 0px;
+        margin-bottom: 35px;
+        font-size: 45px;
+        font-weight: bold;
+        font-family: 'Inter Tight', sans-serif;
+    }
+
+    .line {
+        border: none;
+        height: 1px;
+        margin-top: 10px;
+        color: rgba(255, 255, 255, 0.1);
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Caja de login */
+    .login-box {
+        background-color: #1e1e1e;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+        width: 550px;
+        color: white;
+        box-shadow: 0 4px 8px rgba(255, 255, 255, 0.692);
+    }
+    
+    /* Logo */
+    .logo {
+        width: 120px;
+        margin-top: 5px;
+        margin-bottom: 0px;
+        cursor: pointer;
+    }
+    
+    .input-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .input-label label {
+        align-self: auto; /* Alinea solo el label a la izquierda */
+    }
+    
+
+    /* Estilos del formulario */
+    label {
+        position: relative;
+        font-size: 13px;
+        font-weight: bold;
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 7px;
+        font-family: 'Inter Tight', sans-serif;
+    }
+    
+    input {
+        width: 60%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: 1px solid #616060dc;
+    }
+    
+    input:focus {
+        border: 2px solid #79e2ff;
+        outline: none;
+    }
+
+    input:hover {
+        border: 1px solid #79e2ff;
+    }
+
+    .btn-blue {
+        width: 65%;
+        background-color: #79e2ff;
+        color: #000000;
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    .btn-blue:hover {
+        background-color: #79e2ffc2;
+    }
+    
+    .divider {
+        margin: 15px 0;
+        color: gray;
+        font-size: 14px;
+    }
+    
+    .footer-text {
+        margin-top: 15px;
+        font-size: 14px;
+    }
+    
+    .footer-text a {
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    .register-txt{
+        margin-left: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #ffffff;
+        text-decoration: underline;
+    }
+    
+    .register-txt:hover {
+        color: #79e2ff;
+        cursor: pointer;
+    }
+    .small-text {
+        margin-top: 10px;
+        font-size: 12px;
+        color: gray;
+    }
+
+    .subs-txt {
+        margin-top: 10px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #ffffff;
+        margin-left: 5px;
+    }
+
+    .subs-txt:hover {
+        color: #79e2ff;
+        cursor: pointer;
+    }
+
+    .login-link {
+        margin-left: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #ffffff;
+        text-decoration: underline;
+    }
+    
+    .login-link:hover {
+        color: #79e2ff;
+        cursor: pointer;
+    }
