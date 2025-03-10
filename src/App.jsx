@@ -8,8 +8,8 @@ import "./App.css";
 
 function App() {
     return (
-        <PlayerProvider>
-          <Router>
+        <Router>
+
             <div className="app-container">
                 <Routes>
                     <Route path="/" element={<Login />} />
