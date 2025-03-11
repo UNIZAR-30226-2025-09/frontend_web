@@ -156,15 +156,14 @@ function Player() {
     return (
         <div className={styles.playerContainer}>
             {/* Siempre mostramos la portada, aunque no haya canción. */}
-            <img
-                className={styles.musicCover}
-                src={
-                    noSongSelected
-                        ? "https://via.placeholder.com/300x300.png?text=Sin+Canci%C3%B3n"
-                        : currentSong.cover
-                }
-                alt={noSongSelected ? "Sin canción seleccionada" : "Portada de la canción"}
-            />
+            {!noSongSelected && currentSong.cover && (
+                <img
+                    className={styles.musicCover}
+                    src={currentSong.cover}
+                    alt="Portada de la canción"
+                />
+            )}
+
 
             {/* Siempre mostramos info, aunque esté vacía o con un placeholder */}
             <div className={styles.info}>
