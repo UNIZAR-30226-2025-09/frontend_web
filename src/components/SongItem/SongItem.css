@@ -1,0 +1,117 @@
+
+.song-cont {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 2rem;
+    padding-top: 40px;
+    padding-bottom: 20px;
+    overflow-y: auto;
+    height: auto;
+}
+
+/* Cabecera con 6 columnas:
+   1) #/Play, 2) Portada, 3) Título, 4) Álbum, 5) Fecha, 6) Duración */
+.song-header {
+    display: grid;
+    grid-template-columns: 80px 60px 3fr 2fr 2fr 80px;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 2px solid #282828;
+    font-weight: bold;
+    color: white;
+    font-size: 14px;
+}
+
+.song-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Cada fila (canción) con 6 columnas */
+.song-item {
+    display: grid;
+    grid-template-columns: 80px 60px 3fr 2fr 2fr 80px;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    transition: background 0.3s;
+    position: relative;
+}
+
+.song-item:hover {
+    background: #282828;
+}
+
+/* Columna 1: (# / Play) */
+.song-action {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.song-index {
+    font-size: 14px;
+    color: #aaa;
+    text-align: center;
+}
+
+/* Botón de play, oculto por defecto, aparece al hover */
+.play-icon {
+    background: #1db954;
+    border: none;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+    width: 30px;
+    height: 30px;
+    display: none; /* oculto de inicio */
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.song-item:hover .song-index {
+    display: none;
+}
+.song-item:hover .play-icon {
+    display: flex;
+}
+
+/* Columna 2: Portada */
+.song-cover {
+    width: 45px;
+    height: 45px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+/* Columna 3: Título */
+.song-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+}
+
+/* Columna 4: Álbum */
+.song-artist {
+    font-size: 14px;
+    color: gray;
+}
+
+/* Columna 5: Fecha */
+.song-date {
+    font-size: 14px;
+    color: #b3b3b3;
+}
+
+/* Columna 6: Duración */
+.song-duration {
+    font-size: 14px;
+    color: gray;
+    text-align: right;
+}

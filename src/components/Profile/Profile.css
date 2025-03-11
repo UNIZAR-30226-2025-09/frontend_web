@@ -1,0 +1,72 @@
+.profile-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* Nueva clase para el borde externo */
+.profile-border {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px; /* Tamaño del borde */
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid white; /* Borde blanco */
+    padding: 3px; /* Espaciado para evitar que el borde toque la imagen */
+    box-sizing: border-box;
+}
+
+/* La imagen de perfil */
+.profile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover; /* Asegura que la imagen se recorte bien */
+}
+
+
+/* Estilos del menú desplegable */
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: #383838;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(34, 34, 34, 0.76);
+    padding: 10px;
+    width: 200px;
+    z-index: 1000;
+    color: white;
+}
+
+.dropdown-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-menu li {
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    border-bottom: 1px solid #333;
+}
+
+.dropdown-menu li:last-child {
+    border-bottom: none;
+}
+
+.dropdown-menu li:hover {
+    background: #333;
+    border-radius: 5px;
+}
+
+/* Estilos para la opción de cerrar sesión */
+.logout {
+    color: red;
+    font-weight: bold;
+}

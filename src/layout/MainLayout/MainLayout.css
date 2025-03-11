@@ -1,0 +1,97 @@
+/* 🎨 Fondo general */
+.main-layout {
+    display: flex;
+    justify-content: space-between;
+    height: 100vh;
+    background-color: #1a1a1a; /* 🔳 Gris oscuro */
+    padding: 20px;
+    gap: 20px;
+}
+
+/* 📌 Sidebar */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 300px;
+    background: #2c2c2c; /* 🔲 Gris más claro */
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* 🔵 Contenedor del perfil */
+.profile-container {
+    background: #3a3a3a;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    color: white;
+}
+
+/* 🎵 Contenedor del reproductor */
+.player-container {
+    background: #3a3a3a;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    color: white;
+}
+
+/* 📌 Contenedor Principal */
+.main-content {
+    flex-grow: 1;
+    background: #2c2c2c;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* 🎶 Playlists con flechas */
+.playlist-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.playlists {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 10px;
+    background: #3a3a3a;
+    border-radius: 15px;
+}
+
+.playlist-card {
+    width: 150px;
+    height: 150px;
+    background: #4a4a4a;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.playlist-card:hover {
+    transform: scale(1.05);
+}
+
+/* 🔄 Flechas de navegación */
+.arrow {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.arrow:hover {
+    background: #2980b9;
+}

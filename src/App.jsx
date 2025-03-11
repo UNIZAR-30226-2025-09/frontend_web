@@ -1,43 +1,36 @@
-
-// App.jsx
 import React from "react";
-import { PlayerProvider } from "./Reproductor/PlayerContext";
-import SongList from "./Reproductor/SongList";
-import Player from "./Reproductor/Player";
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { PlayerProvider } from "./components/Player/PlayerContext.jsx";
+
+// Páginas principales
+import Home from "./pages/Home/Home"; // ✅ Importación correcta
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Playlist from "./pages/Playlist/Playlist";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
+import AccountInfo from "./pages/AccountInfo/AccountInfo";
 
 function App() {
     return (
-        <Router>
-
-            <div className="app-container">
+        <PlayerProvider>
+            <Router>
                 <Routes>
-                    <Route path="/" element={<Login />} />
-                    <Route path="/subs" element={<Subs />} />
-										<Route path="/login" element={<Login />} /> {/* Asegura que esta ruta exista */}
-          					<Route path="/register" element={<Register />} />
-                    <Route path="/menu" element={<Menu />} /> {/* Nueva ruta */}
-                    <Route path="/hellobye" element={<HelloBye />} />
-                    <Route path="/playlist/:playlistId" element={<Playlist/>} />
-									  <Route path="/account" element={<AccountInfo />} /> {/* Nueva ruta */}
+                    {/* Página de inicio antes de iniciar sesión */}
+                    <Route path="/" element={<Home />} />
+
+                    {/* Páginas de autenticación sin reproductor ni sidebar */}
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/playlist/:playlistId" element={<Playlist />} />
+
+                    {/* Página del dashboard (con sidebar y reproductor ya dentro de Dashboard.jsx) */}
+                    <Route path="/dashboard" element={<Dashboard />} />
+
+                    {/* Otras páginas dentro del dashboard */}
+                    <Route path="/playlist/:playlistId" element={<Playlist />} />
+                    <Route path="/account" element={<AccountInfo />} />
                 </Routes>
-                <header className="app-header">
-                    <h1>React Music Player</h1>
-                </header>
-
-                <main className="app-main">
-                    <aside className="sidebar">
-                        <SongList />
-                    </aside>
-                    <section className="main-content">
-                        <h2>Seleccione una canción de la lista...</h2>
-                    </section>
-                </main>
-
-                {/* Reproductor al final, ancho completo */}
-                <Player />
-            </div>
-           </Router>
+            </Router>
         </PlayerProvider>
     );
 }
