@@ -1,9 +1,18 @@
-import { FaPlay, FaHeart, FaEllipsisH } from 'react-icons/fa';
+import { FaHeart, FaEllipsisH, FaPlay } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import "./Playlist.css";
+import "./Playlist.css"; // Layout y estilos generales
+import "../SongItem/songItem.css"; // Estilos de la lista de canciones
 import Player from "../Reproductor/Player";
 import { PlayerProvider, usePlayer } from "../Reproductor/PlayerContext.jsx";
+
+// Convierte segundos a m:ss
+function formatDuration(seconds) {
+    if (!seconds) return "0:00";
+    const min = Math.floor(seconds / 60);
+    const sec = Math.floor(seconds % 60);
+    return `${min}:${sec < 10 ? "0" + sec : sec}`;
+}
 
 const PlaylistContent = () => {
     const { playlistId } = useParams();
@@ -23,8 +32,7 @@ const PlaylistContent = () => {
                 const data = await response.json();
                 console.log("Playlist cargada:", data);
                 setPlaylist(data);
-                // Actualiza la lista de canciones en el contexto
-                setSongs(data.songs);
+                setSongs(data.songs); // Actualiza la lista de canciones en el contexto
             } catch (error) {
                 console.error("Error al obtener la playlist:", error);
             }
@@ -59,10 +67,15 @@ const PlaylistContent = () => {
                     <div className="playlist-info">
                         <p className="text-gray-300 text-sm uppercase">Lista</p>
                         <h1>{playlist.name}</h1>
-                        <p>Diego337 • Guardada {playlist.user} veces • {playlist.songs.length} canciones</p>
+                        <p>
+                            Diego337 • Guardada {playlist.user} veces •{" "}
+                            {playlist.songs.length} canciones
+                        </p>
                     </div>
                 </div>
+
                 <div className="playlist-actions">
+                    {/* Botón principal grande con solo el ícono */}
                     <button className="play-btn">
                         <FaPlay />
                     </button>
@@ -71,29 +84,52 @@ const PlaylistContent = () => {
                         <FaEllipsisH className="icon" />
                     </div>
                 </div>
+
                 <div className="song-cont">
+                    {/* Cabecera: 6 columnas (#/Play, Portada, Título, Álbum, Fecha, Duración) */}
                     <div className="song-header">
-                        <span>#</span>
-                        <span></span>
+                        <span># / Play</span>
+                        <span>Portada</span>
                         <span>Título</span>
                         <span>Álbum</span>
                         <span>Fecha Añadida</span>
                         <span>Duración</span>
-                        <span></span>
-                        <span></span>
                     </div>
+
                     <div className="song-list">
                         {playlist.songs.map((song, index) => (
                             <div key={song.id || index} className="song-item">
-                                <span className="song-index">{index + 1}</span>
-                                <button className="play-icon" onClick={() => handlePlaySong(song, index)}>
-                                    <FaPlay />
-                                </button>
+                                {/* Columna 1: (# / botón al hover) */}
+                                <div className="song-action">
+                                    <span className="song-index">{index + 1}</span>
+                                    <button
+                                        className="play-icon"
+                                        onClick={() => handlePlaySong(song, index)}
+                                    >
+                                        <FaPlay />
+                                    </button>
+                                </div>
+
+                                {/* Columna 2: Portada */}
                                 <img src={song.cover} alt={song.name} className="song-cover" />
+
+                                {/* Columna 3: Título */}
                                 <span className="song-title">{song.name}</span>
-                                <span>{song.album?.name || "Sin álbum"}</span>
-                                <span className="song-date">{song.song_playlist?.date || "Fecha desconocida"}</span>
-                                <span className="song-duration">{song.duration}</span>
+
+                                {/* Columna 4: Álbum */}
+                                <span className="song-artist">
+                  {song.album?.name || "Sin álbum"}
+                </span>
+
+                                {/* Columna 5: Fecha */}
+                                <span className="song-date">
+                  {song.song_playlist?.date || "Fecha desconocida"}
+                </span>
+
+                                {/* Columna 6: Duración (min:seg) */}
+                                <span className="song-duration">
+                  {formatDuration(song.duration)}
+                </span>
                             </div>
                         ))}
                     </div>

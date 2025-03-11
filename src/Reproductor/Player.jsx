@@ -4,7 +4,9 @@ import { usePlayer } from "./PlayerContext.jsx";
 import { AiFillPlayCircle, AiFillPauseCircle } from "react-icons/ai";
 import { BiSkipNext, BiSkipPrevious } from "react-icons/bi";
 import { IconContext } from "react-icons";
-import "./PlayerStyles.css";
+
+/* Importa las clases desde tu archivo CSS Module */
+import styles from "./PlayerStyles.module.css";
 
 function Player() {
     const {
@@ -152,10 +154,10 @@ function Player() {
     };
 
     return (
-        <div className="player-container">
+        <div className={styles.playerContainer}>
             {/* Siempre mostramos la portada, aunque no haya canción. */}
             <img
-                className="musicCover"
+                className={styles.musicCover}
                 src={
                     noSongSelected
                         ? "https://via.placeholder.com/300x300.png?text=Sin+Canci%C3%B3n"
@@ -165,20 +167,20 @@ function Player() {
             />
 
             {/* Siempre mostramos info, aunque esté vacía o con un placeholder */}
-            <div className="info">
-                <h3 className="title">
+            <div className={styles.info}>
+                <h3 className={styles.title}>
                     {noSongSelected ? "Ninguna canción seleccionada" : currentSong.name}
                 </h3>
-                <p className="artist">
+                <p className={styles.artist}>
                     {noSongSelected
                         ? "Selecciona una canción de la lista"
                         : (currentSong?.artists?.map((a) => a.name).join(", ") || "Desconocido")}
                 </p>
             </div>
 
-            <div className="controls">
+            <div className={styles.controls}>
                 <button
-                    className="controlButton"
+                    className={styles.controlButton}
                     onClick={handlePrevious}
                     disabled={noSongSelected}
                 >
@@ -189,7 +191,7 @@ function Player() {
 
                 {/* Botón de Play/Pause con estilo circular */}
                 <button
-                    className="player__control__play"
+                    className={styles.playerControlPlay}
                     onClick={playingButton}
                     disabled={noSongSelected}
                 >
@@ -199,7 +201,7 @@ function Player() {
                 </button>
 
                 <button
-                    className="controlButton"
+                    className={styles.controlButton}
                     onClick={handleNext}
                     disabled={noSongSelected}
                 >
@@ -210,19 +212,17 @@ function Player() {
             </div>
 
             {/* Barra de progreso siempre presente, pero deshabilitada si no hay canción */}
-            <div className="timelineContainer">
-                <div className="time">
-                    <div className="time-section">
-                        <p className="time-label">Transcurrido</p>
-                        <p className="time-value">
+            <div className={styles.timelineContainer}>
+                <div className={styles.time}>
+                    <div className={styles.timeSection}>
+                        <p className={styles.timeValue}>
                             {noSongSelected
                                 ? "0:00"
                                 : `${currTime.min}:${currTime.sec < 10 ? `0${currTime.sec}` : currTime.sec}`}
                         </p>
                     </div>
-                    <div className="time-section">
-                        <p className="time-label">Total</p>
-                        <p className="time-value">
+                    <div className={styles.timeSection}>
+                        <p className={styles.timeValue}>
                             {noSongSelected
                                 ? "0:00"
                                 : `${totalTime.min}:${totalTime.sec < 10 ? `0${totalTime.sec}` : totalTime.sec}`}
@@ -235,12 +235,11 @@ function Player() {
                     min="0"
                     max={duration ? duration / 1000 : 0}
                     value={noSongSelected ? 0 : seconds}
-                    className="player__progress"
+                    className={styles.playerProgress}
                     onChange={handleTimelineChange}
                     disabled={noSongSelected}
                 />
             </div>
-
         </div>
     );
 }
