@@ -17,7 +17,7 @@ function SongList() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/songs");
+                const response = await fetch("http://localhost:5001/api/songs");
                 if (!response.ok) {
                     throw new Error(`Error HTTP! Status: ${response.status}`);
                 }

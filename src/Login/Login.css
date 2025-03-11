@@ -68,21 +68,22 @@
         margin-bottom: 7px;
         font-family: 'Inter Tight', sans-serif;
     }
-    
-    input {
+
+    /* Reemplaza el selector global de inputs por la clase .globalInput */
+    .globalInput {
         width: 60%;
         padding: 10px;
         margin-bottom: 20px;
         border-radius: 5px;
         border: 1px solid #616060dc;
     }
-    
-    input:focus {
+
+    .globalInput:focus {
         border: 2px solid #79e2ff;
         outline: none;
     }
 
-    input:hover {
+    .globalInput:hover {
         border: 1px solid #79e2ff;
     }
 

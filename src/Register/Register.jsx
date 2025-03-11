@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Importa useNavigate
-import "./Register.css";
+import { useNavigate } from "react-router-dom";
+import "./Register.css"; // Asegúrate de que el path sea correcto
 
 function Register() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const navigate = useNavigate(); // Hook para redirigir
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -16,6 +16,7 @@ function Register() {
             return;
         }
         alert(`Registrando usuario: ${username}, Email: ${email}`);
+        // Aquí podrías enviar los datos al backend...
     };
 
     const goToLogin = () => {
@@ -32,13 +33,14 @@ function Register() {
                     onClick={() => window.location.reload()}
                 />
                 <h1 className="login-txt">Regístrate en Vibra</h1>
-                <hr className="line"></hr>
+                <hr className="line" />
                 <form onSubmit={handleSubmit}>
                     <div className="input-label">
                         <label htmlFor="username">Nombre de Usuario</label>
                         <input
                             type="text"
                             id="username"
+                            className="globalInput"
                             placeholder="Nombre de usuario"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -51,6 +53,7 @@ function Register() {
                         <input
                             type="email"
                             id="email"
+                            className="globalInput"
                             placeholder="Correo electrónico"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -63,6 +66,7 @@ function Register() {
                         <input
                             type="password"
                             id="password"
+                            className="globalInput"
                             placeholder="********"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -75,6 +79,7 @@ function Register() {
                         <input
                             type="password"
                             id="confirmPassword"
+                            className="globalInput"
                             placeholder="********"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -82,7 +87,9 @@ function Register() {
                         />
                     </div>
 
-                    <button type="submit" className="btn-blue">Registrarse</button>
+                    <button type="submit" className="btn-blue">
+                        Registrarse
+                    </button>
                 </form>
 
                 <div className="divider">o</div>
@@ -90,8 +97,8 @@ function Register() {
                 <p className="footer-text">
                     ¿Ya tienes una cuenta?
                     <span className="login-link" onClick={goToLogin}>
-                        Inicia sesión en Vibra.
-                    </span>
+            Inicia sesión en Vibra.
+          </span>
                 </p>
             </div>
         </div>

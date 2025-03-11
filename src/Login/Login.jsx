@@ -30,7 +30,7 @@ function Login() {
                     onClick={() => window.location.reload()}
                 />
                 <h1 className="login-txt">Iniciar Sesión en Vibra</h1>
-                <hr className="line"></hr>
+                <hr className="line" />
                 <form onSubmit={handleSubmit}>
                     <div className="input-label">
                         <label htmlFor="email">Correo Electrónico</label>
@@ -40,6 +40,7 @@ function Login() {
                             placeholder="Correo electrónico"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            className="globalInput"
                             required
                         />
                     </div>
@@ -52,27 +53,30 @@ function Login() {
                             placeholder="********"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            className="globalInput"
                             required
                         />
                     </div>
 
-                    <button type="submit" className="btn-blue">Continuar</button>
+                    <button type="submit" className="btn-blue">
+                        Continuar
+                    </button>
                 </form>
 
                 <div className="divider">o</div>
 
                 <p className="footer-text">
-                    ¿No tienes una cuenta? 
+                    ¿No tienes una cuenta?{" "}
                     <span className="register-txt" onClick={goToRegister}>
-                        Regístrate en Vibra.
-                    </span>
+            Regístrate en Vibra.
+          </span>
                 </p>
 
                 <p className="small-text">
-                    Si quieres saber más sobre nuestras suscripciones, visita
+                    Si quieres saber más sobre nuestras suscripciones, visita{" "}
                     <span className="subs-txt" onClick={goToSubs}>
-                        Vibra Suscripciones.
-                    </span>
+            Vibra Suscripciones.
+          </span>
                 </p>
             </div>
         </div>
