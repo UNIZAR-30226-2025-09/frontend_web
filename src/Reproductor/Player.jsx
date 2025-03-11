@@ -1,11 +1,10 @@
-// src/Reproductor/Player.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { Howl } from "howler";
-import { usePlayer } from "./PlayerContext";
+import { usePlayer } from "./PlayerContext.jsx";
 import { AiFillPlayCircle, AiFillPauseCircle } from "react-icons/ai";
 import { BiSkipNext, BiSkipPrevious } from "react-icons/bi";
 import { IconContext } from "react-icons";
-import "./Player.css";
+import "./PlayerStyles.css";
 
 function Player() {
     const {
@@ -25,11 +24,14 @@ function Player() {
     const soundRef = useRef(null);
     const intervalRef = useRef(null);
 
+    // Para saber si hay o no canción seleccionada:
+    const noSongSelected = !currentSong;
+
     // Obtenemos la URL de la canción
     const songUrl = currentSong?.url_mp3
         ? currentSong.url_mp3.startsWith("http")
             ? currentSong.url_mp3
-            : `http://localhost:5000/${currentSong.url_mp3.replace(/^\/?/, "")}`
+            : `http://localhost:5001/${currentSong.url_mp3.replace(/^\/?/, "")}`
         : null;
 
     // Crea o recarga el Howl cuando la songUrl cambia
@@ -57,7 +59,7 @@ function Player() {
                     min: Math.floor(sec / 60),
                     sec: Math.floor(sec % 60),
                 });
-                //Opcional: reproducir automáticamente al cargar
+                // Opcional: reproducir automáticamente al cargar
                 sound.play();
                 setIsPlaying(true);
             },
@@ -151,60 +153,94 @@ function Player() {
 
     return (
         <div className="player-container">
-            {currentSong ? (
-                <>
-                    <img
-                        className="musicCover"
-                        src={currentSong.cover}
-                        alt="Portada de la canción"
-                    />
-                    <div className="info">
-                        <h3 className="title">{currentSong?.name || "Sin título"}</h3>
-                        <p className="artist">
-                            {currentSong?.artists?.map((a) => a.name).join(", ") || "Desconocido"}
+            {/* Siempre mostramos la portada, aunque no haya canción. */}
+            <img
+                className="musicCover"
+                src={
+                    noSongSelected
+                        ? "https://via.placeholder.com/300x300.png?text=Sin+Canci%C3%B3n"
+                        : currentSong.cover
+                }
+                alt={noSongSelected ? "Sin canción seleccionada" : "Portada de la canción"}
+            />
+
+            {/* Siempre mostramos info, aunque esté vacía o con un placeholder */}
+            <div className="info">
+                <h3 className="title">
+                    {noSongSelected ? "Ninguna canción seleccionada" : currentSong.name}
+                </h3>
+                <p className="artist">
+                    {noSongSelected
+                        ? "Selecciona una canción de la lista"
+                        : (currentSong?.artists?.map((a) => a.name).join(", ") || "Desconocido")}
+                </p>
+            </div>
+
+            <div className="controls">
+                <button
+                    className="controlButton"
+                    onClick={handlePrevious}
+                    disabled={noSongSelected}
+                >
+                    <IconContext.Provider value={{ size: "3em", color: "#27AE60" }}>
+                        <BiSkipPrevious />
+                    </IconContext.Provider>
+                </button>
+
+                {/* Botón de Play/Pause con estilo circular */}
+                <button
+                    className="player__control__play"
+                    onClick={playingButton}
+                    disabled={noSongSelected}
+                >
+                    <IconContext.Provider value={{ size: "3em", color: "#ffffff" }}>
+                        {isPlaying ? <AiFillPauseCircle /> : <AiFillPlayCircle />}
+                    </IconContext.Provider>
+                </button>
+
+                <button
+                    className="controlButton"
+                    onClick={handleNext}
+                    disabled={noSongSelected}
+                >
+                    <IconContext.Provider value={{ size: "3em", color: "#27AE60" }}>
+                        <BiSkipNext />
+                    </IconContext.Provider>
+                </button>
+            </div>
+
+            {/* Barra de progreso siempre presente, pero deshabilitada si no hay canción */}
+            <div className="timelineContainer">
+                <div className="time">
+                    <div className="time-section">
+                        <p className="time-label">Transcurrido</p>
+                        <p className="time-value">
+                            {noSongSelected
+                                ? "0:00"
+                                : `${currTime.min}:${currTime.sec < 10 ? `0${currTime.sec}` : currTime.sec}`}
                         </p>
                     </div>
-                    <div className="controls">
-                        <button className="controlButton" onClick={handlePrevious}>
-                            <IconContext.Provider value={{ size: "3em", color: "#27AE60" }}>
-                                <BiSkipPrevious />
-                            </IconContext.Provider>
-                        </button>
-                        <button className="controlButton" onClick={playingButton}>
-                            <IconContext.Provider value={{ size: "3em", color: "#27AE60" }}>
-                                {isPlaying ? <AiFillPauseCircle /> : <AiFillPlayCircle />}
-                            </IconContext.Provider>
-                        </button>
-                        <button className="controlButton" onClick={handleNext}>
-                            <IconContext.Provider value={{ size: "3em", color: "#27AE60" }}>
-                                <BiSkipNext />
-                            </IconContext.Provider>
-                        </button>
+                    <div className="time-section">
+                        <p className="time-label">Total</p>
+                        <p className="time-value">
+                            {noSongSelected
+                                ? "0:00"
+                                : `${totalTime.min}:${totalTime.sec < 10 ? `0${totalTime.sec}` : totalTime.sec}`}
+                        </p>
                     </div>
-                    <div className="timelineContainer">
-                        <div className="time">
-                            <p>
-                                {currTime.min}:
-                                {currTime.sec < 10 ? `0${currTime.sec}` : currTime.sec}
-                            </p>
-                            <p>
-                                {totalTime.min}:
-                                {totalTime.sec < 10 ? `0${totalTime.sec}` : totalTime.sec}
-                            </p>
-                        </div>
-                        <input
-                            type="range"
-                            min="0"
-                            max={duration ? duration / 1000 : 0}
-                            value={seconds}
-                            className="timeline"
-                            onChange={handleTimelineChange}
-                        />
-                    </div>
-                </>
-            ) : (
-                <p>No se ha seleccionado ninguna canción</p>
-            )}
+                </div>
+
+                <input
+                    type="range"
+                    min="0"
+                    max={duration ? duration / 1000 : 0}
+                    value={noSongSelected ? 0 : seconds}
+                    className="player__progress"
+                    onChange={handleTimelineChange}
+                    disabled={noSongSelected}
+                />
+            </div>
+
         </div>
     );
 }
