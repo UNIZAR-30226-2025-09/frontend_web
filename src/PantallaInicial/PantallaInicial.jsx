@@ -34,5 +34,5 @@ const PantallaInicial = () => {
     </div>
   );
 };
-
+//Comprobacion commits
 export default PantallaInicial;
