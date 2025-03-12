@@ -1,0 +1,19 @@
+.menu {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    background: #3a3a3a;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #3498db; /* 🔵 Azul claro */
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+.menu a:hover {
+    color: white;
+}

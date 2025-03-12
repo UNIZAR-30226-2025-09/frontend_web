@@ -1,31 +1,34 @@
-// App.jsx
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./Login/Login";
-import Register from "./Register/Register";
-import Subs from "./Subs/Subs";
-import Menu from "./Menu/Menu";
-import HelloBye from "./HelloBye/HelloBye";
-import Playlist from "./Playlist/Playlist";
-import AccountInfo from "./AccountInfo/AccountInfo";
-import "./App.css";
+import { PlayerProvider } from "./components/Player/PlayerContext.jsx";
+
+// Páginas principales
+import MainLayout from "./layout/MainLayout/MainLayout";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
+import Playlist from "./pages/Playlist/Playlist";
+import AccountInfo from "./pages/AccountInfo/AccountInfo";
 
 function App() {
+    const [user, setUser] = useState(null);
     return (
-        <Router>
-            <div className="app-container">
+        <PlayerProvider>
+            <Router>
                 <Routes>
-                    <Route path="/" element={<Login />} />
-                    <Route path="/subs" element={<Subs />} />
+
+                    {/* Páginas de autenticación sin reproductor ni sidebar */}
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/menu" element={<Menu />} />
-                    <Route path="/hellobye" element={<HelloBye />} />
+
+                    {/* Página del dashboard (con sidebar y reproductor ya dentro de Dashboard.jsx) */}
+                    <Route path="/" element={<MainLayout user={user} />} />
+
+                    {/* Otras páginas dentro del dashboard */}
                     <Route path="/playlist/:playlistId" element={<Playlist />} />
                     <Route path="/account" element={<AccountInfo />} />
                 </Routes>
-            </div>
-        </Router>
+            </Router>
+        </PlayerProvider>
     );
 }
 

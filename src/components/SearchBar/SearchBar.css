@@ -1,0 +1,85 @@
+/* Contenedor principal */
+.search-bar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    position: relative;
+    top: -10px;
+}
+
+/* Caja de búsqueda */
+.search-box {
+    display: flex;
+    align-items: center;
+    background-color: #3a3a3a !important; /* 🔥 Fondo gris asegurado 🔥 */
+    border-radius: 20px; /* 🔥 Ajustado para verse más compacto 🔥 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 320px;
+    height: 32px; /* 🔥 MÁS ESTRECHO 🔥 */
+    padding: 3px;
+    border: 3px solid #1eaddc; /* 🔥 Borde azul más grueso 🔥 */
+}
+
+/* Formulario */
+.search-form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Input */
+.search-input {
+    flex-grow: 1;
+    font-size: 15px; /* 🔥 Texto más grande 🔥 */
+    font-weight: bold; /* 🔥 Hace que se vea mejor 🔥 */
+    border: none;
+    outline: none;
+    width: 100%;
+    background-color: transparent !important; /* 🔥 Evita que el input sea blanco 🔥 */
+    color: #f0f0f0;
+    text-align: center;
+    height: 100%;
+    line-height: 32px; /* 🔥 Centra el texto verticalmente 🔥 */
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 🔥 🔥 🔥 ELIMINA EL BORDE AZUL CUANDO SE HACE CLIC 🔥 🔥 🔥 */
+.search-input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* 🔥 🔥 🔥 ELIMINA EL BORDE AZUL EN NAVEGADORES WEBKIT 🔥 🔥 🔥 */
+.search-input::-webkit-focus-ring-color {
+    outline: none !important;
+}
+
+/* Botón de búsqueda */
+.search-button {
+    width: 32px; /* 🔥 Botón más pequeño 🔥 */
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1eaddc;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    margin-left: 5px;
+}
+
+.search-button:hover {
+    background-color: #007bb5;
+}
+
+/* Ícono */
+.search-button svg {
+    font-size: 14px; /* 🔥 Ícono más pequeño para que encaje 🔥 */
+}
