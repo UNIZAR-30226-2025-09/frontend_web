@@ -20,6 +20,7 @@ const PantallaInicial = () => {
             <div className="artist-card">Artista 4</div>
           </div>
         </div>
+        
 
         <div className="section">
           <h2 className="section-title">Escuchado Recientemente</h2>
