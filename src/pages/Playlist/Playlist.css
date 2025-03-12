@@ -11,7 +11,7 @@
 /* Columna izquierda (sidebar) */
 .box-sidebar {
     width: 25%; /* o el valor que quieras */
-    background: linear-gradient(to bottom, #084d5c, #ffffff);
+    background: linear-gradient(to bottom, #0399b6, #ffffff);
     color: white;
     border-radius: 12px;
 
@@ -42,7 +42,7 @@
 /* Columna derecha (contenido principal) */
 .box {
     flex: 1;               /* Toma el resto del espacio horizontal */
-    background: linear-gradient(to bottom, #5472c9, #121212);
+    background: linear-gradient(to bottom, #0399b6, #121212);
     color: white;
     padding: 40px;
     border-radius: 12px;
@@ -66,18 +66,32 @@
 }
 
 /* Imagen de la playlist */
-.image {
-    width: 300px;
-    height: 400px;
-    border-radius: 12px;
-    overflow: hidden;
+.image:hover {
+    opacity: 0.7;
+    transform: scale(1.05);
 }
 
-.image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+
+.image::after {
+    content: "Editar";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
+
+.image:hover::after {
+    opacity: 1;
+}
+
 
 /* Información de la playlist (título, etc.) */
 .playlist-info {
@@ -115,7 +129,7 @@
 
 /* Botón principal de play */
 .play-btn {
-    background-color: #1db954;
+    background-color: #0399b6;
     color: white;
     padding: 15px;
     border: none;
@@ -131,7 +145,7 @@
 }
 
 .play-btn:hover {
-    background-color: #1ed760;
+    background-color: #0399b6;
 }
 
 /* Iconos de la derecha */
@@ -149,5 +163,65 @@
 }
 
 .icon:hover {
-    color: #1db954;
+    color: #0399b6;
+}
+{/* Estilos edicion de playlist */}
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Fondo oscurecido */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.popup-content {
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 12px;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.edit-input {
+    width: 100%;
+    font-size: 24px;
+    background: #222;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.edit-input:focus {
+    outline: none;
+    border: 1px solid #0399b6;
+}
+
+.save-btn {
+    background-color: #0399b6;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.save-btn:hover {
+    background-color: #0399b6;
 }

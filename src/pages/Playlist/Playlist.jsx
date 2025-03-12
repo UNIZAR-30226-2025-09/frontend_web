@@ -14,10 +14,14 @@ function formatDuration(seconds) {
     return `${min}:${sec < 10 ? "0" + sec : sec}`;
 }
 
+
 const PlaylistContent = () => {
     const { playlistId } = useParams();
     const [playlist, setPlaylist] = useState(null);
     const { setCurrentSong, setCurrentIndex, setSongs } = usePlayer();
+    const [isEditing, setIsEditing] = useState(false);
+    const [newTitle, setNewTitle] = useState("");
+    const [newDescription, setNewDescription] = useState("");
 
     useEffect(() => {
         if (!playlistId) return;
@@ -50,6 +54,43 @@ const PlaylistContent = () => {
         setCurrentSong(song);
         setCurrentIndex(index);
     };
+    const handleEditToggle = () => {
+        setIsEditing(!isEditing);
+    };
+
+    const handleSaveChanges = async () => {
+        try {
+            const updatedPlaylist = {
+                ...playlist,
+                name: newTitle || playlist.name,
+                description: newDescription || playlist.description
+            };
+
+            const response = await fetch(`http://localhost:5001/api/playlists/${playlistId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updatedPlaylist)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error al actualizar: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setPlaylist(data);
+            setIsEditing(false);
+            console.log("Playlist actualizada en el backend:", data);
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+
+        } catch (error) {
+            console.error("Error al actualizar la playlist:", error);
+        }
+    };
 
     return (
         <div className="layout">
@@ -61,15 +102,43 @@ const PlaylistContent = () => {
             {/* Columna derecha: contenido de la playlist */}
             <div className="box">
                 <div className="play-cont">
-                    <div className="image">
-                        <img src={playlist.front_page} width="275" alt="Playlist Cover" />
+                    <div className="image" onClick={handleEditToggle} style={{cursor: "pointer"}}>
+                        <img src={playlist.front_page} width="275" alt="Playlist Cover"/>
                     </div>
                     <div className="playlist-info">
-                        <p className="text-gray-300 text-sm uppercase">Lista</p>
-                        <h1>{playlist.name}</h1>
-                        <p>
-                            {playlist.user?.nickname || "Usuario desconocido"} • {playlist.songs?.length || 0} canciones
-                        </p>
+                        {isEditing ? (
+                            <div className="popup-overlay">
+                                <div className="popup-content">
+                                    <label htmlFor="title">Título de la Playlist</label>
+                                    <input
+                                        id="title"
+                                        type="text"
+                                        value={newTitle}
+                                        onChange={(e) => setNewTitle(e.target.value)}
+                                        className="edit-input"
+                                    />
+
+                                    <label htmlFor="description">Descripción</label>
+                                    <textarea
+                                        id="description"
+                                        value={newDescription}
+                                        onChange={(e) => setNewDescription(e.target.value)}
+                                        className="edit-input"
+                                    />
+
+                                    <button className="save-btn" onClick={handleSaveChanges}>Guardar</button>
+                                    <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancelar</button>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <p className="text-gray-300 text-sm uppercase">Lista</p>
+                                <h1>{playlist.name}</h1>
+                                <p>{playlist.description}</p>
+                                <p>{playlist.user?.nickname || "Desconocido"} • Guardada veces • {playlist.songs.length} canciones</p>
+                            </>
+                        )}
+
                     </div>
                 </div>
 
