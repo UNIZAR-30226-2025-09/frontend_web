@@ -1,18 +1,33 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; // 🔹 Importamos useNavigate
 import SearchBar from "../../components/SearchBar/SearchBar";
 import "./MainLayout.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Player from "../../components/Player/Player";
 
+// eslint-disable-next-line react/prop-types
+const MainLayout = ({ user }) => {
+    const navigate = useNavigate(); // 🔵 Inicializamos navigate
 
-const MainLayout = ({ children }) => {
     return (
         <div className="main-layout">
             {/* 📌 Sidebar Izquierda */}
             <div className="sidebar">
                 {/* 🔵 Contenedor del perfil / iniciar sesión */}
                 <div className="profile-container">
-                    <p>Perfil / Iniciar Sesión</p>
+                    {user ? (
+                        // 🟢 Usuario logueado → Muestra perfil
+                        <div>
+                            <img src={user.profilePicture} alt="Avatar" className="profile-pic"/>
+                            <p>{user.name}</p>
+                            <p>{user.email}</p>
+                        </div>
+                    ) : (
+                        // 🔴 No logueado → Muestra botón de login
+                        <button className="login-button" onClick={() => navigate("/login")}>
+                            Iniciar Sesión
+                        </button>
+                    )}
                 </div>
 
                 {/* 🟦 Menú horizontal */}

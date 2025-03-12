@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Register.css"; // Asegúrate de que el path sea correcto
@@ -10,18 +9,39 @@ function Register() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (password !== confirmPassword) {
             alert("Las contraseñas no coinciden");
             return;
         }
-        alert(`Registrando usuario: ${username}, Email: ${email}`);
-        // Aquí podrías enviar los datos al backend...
-    };
 
-    const goToLogin = () => {
-        navigate("/login"); // Redirige a la página de inicio de sesión
+        try {
+            const response = await fetch("http://localhost:5001/api/user/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    nickname: username, // 🔹 Asegúrate de enviar "nickname"
+                    mail: email, // 🔹 Aquí usas "mail" en lugar de "email"
+                    password,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert("Usuario registrado con éxito");
+                navigate("/login"); // Redirige a login tras registrarse
+            } else {
+                alert(data.message || "Error al registrar usuario");
+            }
+        } catch (error) {
+            console.error("Error en el registro:", error);
+            alert("Hubo un problema en el servidor");
+        }
     };
 
     return (
@@ -97,9 +117,9 @@ function Register() {
 
                 <p className="footer-text">
                     ¿Ya tienes una cuenta?
-                    <span className="login-link" onClick={goToLogin}>
-            Inicia sesión en Vibra.
-          </span>
+                    <span className="login-link" onClick={() => navigate("/login")}>
+                        Inicia sesión en Vibra.
+                    </span>
                 </p>
             </div>
         </div>
