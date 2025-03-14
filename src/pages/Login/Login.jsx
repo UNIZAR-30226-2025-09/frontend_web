@@ -1,15 +1,36 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
 import "./Login.css";
 
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [errorVisible, setErrorVisible] = useState(false);
     const navigate = useNavigate(); // Hook para redirigir
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        let error = "";
+
+        if (!email.includes("@")) {
+            error = "El correo electrónico debe contener '@'";
+        } else if (password.length < 6) {
+            error = "La contraseña debe tener al menos 6 caracteres";
+        }
+
+        if (error) {
+            setErrorMessage(error);
+            setErrorVisible(true);
+            setTimeout(() => {
+                setErrorVisible(false);
+            }, 2000); // Se mantiene visible por 2s
+            setTimeout(() => {
+                setErrorMessage("");
+            }, 3000); // Se desvanece después de 1s
+            return;
+        }
+
         alert(`Iniciando sesión con: ${email}`);
     };
 
@@ -59,6 +80,19 @@ function Login() {
                         />
                     </div>
 
+                    {errorMessage && (
+                        <p
+                            style={{
+                                color: "red",
+                                fontSize: "14px",
+                                opacity: errorVisible ? 1 : 0,
+                                transition: "opacity 1s ease-in-out"
+                            }}
+                        >
+                            {errorMessage}
+                        </p>
+                    )}
+
                     <button type="submit" className="btn-blue">
                         Continuar
                     </button>
@@ -69,15 +103,15 @@ function Login() {
                 <p className="footer-text">
                     ¿No tienes una cuenta?{" "}
                     <span className="register-txt" onClick={goToRegister}>
-            Regístrate en Vibra.
-          </span>
+                        Regístrate en Vibra.
+                    </span>
                 </p>
 
                 <p className="small-text">
                     Si quieres saber más sobre nuestras suscripciones, visita{" "}
                     <span className="subs-txt" onClick={goToSubs}>
-            Vibra Suscripciones.
-          </span>
+                        Vibra Suscripciones.
+                    </span>
                 </p>
             </div>
         </div>

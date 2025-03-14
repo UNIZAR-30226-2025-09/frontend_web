@@ -5,11 +5,25 @@ import "./Register.css"; // Asegúrate de que el path sea correcto
 function Register1() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [errorMessages, setErrorMessages] = useState([]);
     const navigate = useNavigate();
+
+    const validatePassword = () => {
+        const errors = [];
+        if (!/[a-zA-Z]/.test(password)) errors.push("La contraseña debe contener al menos una letra.");
+        if (!/[!"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~]/.test(password)) errors.push("La contraseña debe contener al menos un carácter especial (!, #, $, %, &, ... )");
+        if (password.length < 10) errors.push("La contraseña debe tener al menos 10 caracteres.");
+        return errors;
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        navigate("/next-step"); // Redirigir al siguiente paso del registro
+        const errors = validatePassword();
+        if (errors.length > 0) {
+            setErrorMessages(errors);
+            return;
+        }
+        navigate("/register2"); // Redirigir al siguiente paso del registro
     };
 
     return (
@@ -31,9 +45,9 @@ function Register1() {
                 <h1 className="login-txt" style={{ fontSize: "22px" }}>Crea una contraseña</h1>
                 <hr className="line" />
                 <form onSubmit={handleSubmit}>
-                    <div className="input-label" style={{ position: "relative" }}>
+                    <div className="input-label" style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
                         <label htmlFor="password">Contraseña</label>
-                        <div style={{ position: "relative", width: "80%", margin: "auto" }}>
+                        <div style={{ position: "relative", width: "80%", display: "flex", alignItems: "center" }}>
                             <input
                                 type={showPassword ? "text" : "password"}
                                 id="password"
@@ -42,22 +56,28 @@ function Register1() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                style={{ width: "100%", paddingRight: "40px", height: "40px", borderRadius: "5px", boxSizing: "border-box" }}
+                                style={{ width: "100%", paddingRight: "40px", height: "40px", borderRadius: "5px", boxSizing: "border-box", textAlign: "left" }}
                             />
                             <span
                                 className="password-toggle"
-                                style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", cursor: "pointer", fontSize: "20px", lineHeight: "1", display: "flex", alignItems: "center" }}
+                                style={{ position: "absolute", right: "10px", top: "30%", transform: "translateY(-50%)", cursor: "pointer", fontSize: "20px", display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}
                                 onClick={() => setShowPassword(!showPassword)}
                             >
                                 {showPassword ? "🙈" : "👁️"}
                             </span>
                         </div>
                     </div>
-
+                    {errorMessages.length > 0 && (
+                        <div style={{ color: "red", fontSize: "14px", marginTop: "5px" }}>
+                            {errorMessages.map((msg, index) => (
+                                <p key={index}>{msg}</p>
+                            ))}
+                        </div>
+                    )}
                     <p style={{ fontSize: "14px", color: "#fff", textAlign: "left", marginLeft: "20%" }}>La contraseña debe contener al menos:</p>
                     <ul className="password-validation" style={{ textAlign: "left", fontSize: "14px", color: "#fff", marginLeft: "20%" }}>
                         <li>✔ 1 letra</li>
-                        <li>✔ 1 número o carácter especial (por ejemplo, "#", "?", "!" o "&")</li>
+                        <li>✔ 1 número o carácter especial permitido</li>
                         <li>✔ 10 caracteres</li>
                     </ul>
 
@@ -71,4 +91,3 @@ function Register1() {
 }
 
 export default Register1;
-
