@@ -4,34 +4,19 @@ import "./Register.css"; // Asegúrate de que el path sea correcto
 
 function Register() {
     const [email, setEmail] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        try {
-            const response = await fetch("http://localhost:5001/api/user/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    mail: email, // Se usa "mail" en lugar de "email"
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                alert("Usuario registrado con éxito");
-                navigate("/login"); // Redirige a login tras registrarse
-            } else {
-                alert(data.message || "Error al registrar usuario");
-            }
-        } catch (error) {
-            console.error("Error en el registro:", error);
-            alert("Hubo un problema en el servidor");
+        if (!email.includes("@")) {
+            setErrorMessage("El correo electrónico debe contener '@'");
+            setTimeout(() => setErrorMessage(""), 2000); // El error desaparece después de 2 segundos
+            return;
         }
+
+        navigate("/register1"); // Redirige a Register1 después de validar el correo
     };
 
     return (
@@ -58,12 +43,11 @@ function Register() {
                             required
                         />
                     </div>
-
-                    <button type="submit" className="btn-blue" onClick={() => navigate("/register1")} >
+                    {errorMessage && <p style={{ color: "red", fontSize: "14px" }}>{errorMessage}</p>}
+                    <button type="submit" className="btn-blue" >
                         Siguiente
                     </button>
                 </form>
-
                 <p className="footer-text">
                     ¿Ya tienes una cuenta?
                     <span className="login-link" onClick={() => navigate("/login")}>
