@@ -1,0 +1,29 @@
+.home-content {
+    text-align: center;
+    color: white;
+    padding: 20px;
+}
+
+/* 🔹 Playlists destacadas */
+.featured-playlists {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.playlist-card {
+    width: 150px;
+    height: 150px;
+    background: #4a4a4a;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.playlist-card:hover {
+    transform: scale(1.05);
+}
