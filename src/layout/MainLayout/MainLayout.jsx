@@ -1,14 +1,13 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Importamos useNavigate
+import { Outlet, useNavigate } from "react-router-dom"; // Importamos Outlet para renderizar páginas dinámicamente
 import SearchBar from "../../components/SearchBar/SearchBar";
 import "./MainLayout.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Player from "../../components/Player/Player";
 import logo from "/public/vibra.png";
 
-// eslint-disable-next-line react/prop-types
 const MainLayout = ({ user }) => {
-    const navigate = useNavigate(); // Inicializamos navigate
+    const navigate = useNavigate();
 
     return (
         <div className="main-layout">
@@ -17,24 +16,22 @@ const MainLayout = ({ user }) => {
                 {/* Contenedor del perfil / iniciar sesión */}
                 <div className="profile-container">
                     {user ? (
-                        // Usuario logueado → Muestra perfil
                         <div>
                             <img src={user.profilePicture} alt="Avatar" className="profile-pic"/>
                             <p>{user.name}</p>
                             <p>{user.email}</p>
                         </div>
                     ) : (
-                        // No logueado → Muestra botón de login
                         <button className="login-button" onClick={() => navigate("/login")}>
                             Iniciar Sesión
                         </button>
                     )}
                 </div>
 
-                {/* 🟦 Menú horizontal */}
+                {/* Menú horizontal */}
                 <Navbar />
 
-                {/* 🎵 Contenedor del reproductor */}
+                {/* Contenedor del reproductor */}
                 <div className="player-container">
                     <Player />
                 </div>
@@ -53,15 +50,8 @@ const MainLayout = ({ user }) => {
                     <img src={logo} alt="Logo" className="app-logo"/>
                 </div>
 
-                {/* Playlists */}
-                <div className="playlist-container">
-                    <div className="playlists">
-                        <div className="playlist-card">Playlist 1</div>
-                        <div className="playlist-card">Playlist 2</div>
-                        <div className="playlist-card">Playlist 3</div>
-                        <div className="playlist-card">Playlist 4</div>
-                    </div>
-                </div>
+                {/* 🔹 Aquí cambiamos el contenido según la página visitada */}
+                <Outlet />
             </div>
         </div>
     );
