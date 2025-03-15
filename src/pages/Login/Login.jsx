@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Importa useNavigate
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
 function Login() {
@@ -7,9 +7,9 @@ function Login() {
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [errorVisible, setErrorVisible] = useState(false);
-    const navigate = useNavigate(); // Hook para redirigir
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         let error = "";
 
@@ -22,25 +22,52 @@ function Login() {
         if (error) {
             setErrorMessage(error);
             setErrorVisible(true);
-            setTimeout(() => {
-                setErrorVisible(false);
-            }, 2000); // Se mantiene visible por 2s
-            setTimeout(() => {
-                setErrorMessage("");
-            }, 3000); // Se desvanece después de 1s
+            setTimeout(() => setErrorVisible(false), 2000);
+            setTimeout(() => setErrorMessage(""), 3000);
             return;
         }
 
-        alert(`Iniciando sesión con: ${email}`);
+        try {
+            const response = await fetch("http://localhost:5001/api/user/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    mail: email, // 🔹 Usamos "mail" en lugar de "email" (según el backend)
+                    password,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Guardar el token en localStorage
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("user", JSON.stringify(data.user));
+
+                // Notificar a MainLayout que el usuario ha iniciado sesión
+                window.dispatchEvent(new Event("storage"));
+
+                alert("Inicio de sesión exitoso");
+                navigate("/home"); // Redirige a la pantalla principal
+            } else {
+                setErrorMessage(data.message || "Credenciales incorrectas");
+                setErrorVisible(true);
+                setTimeout(() => setErrorVisible(false), 2000);
+                setTimeout(() => setErrorMessage(""), 3000);
+            }
+        } catch (error) {
+            console.error("Error en el inicio de sesión:", error);
+            setErrorMessage("Hubo un problema en el servidor");
+            setErrorVisible(true);
+            setTimeout(() => setErrorVisible(false), 2000);
+            setTimeout(() => setErrorMessage(""), 3000);
+        }
     };
 
-    const goToRegister = () => {
-        navigate("/register"); // Redirige a la página de registro
-    };
-
-    const goToSubs = () => {
-        navigate("/Subs"); // Redirige a la página de suscripciones
-    };
+    const goToRegister = () => navigate("/register");
+    const goToSubs = () => navigate("/Subs");
 
     return (
         <div className="login-container">
@@ -86,7 +113,7 @@ function Login() {
                                 color: "red",
                                 fontSize: "14px",
                                 opacity: errorVisible ? 1 : 0,
-                                transition: "opacity 1s ease-in-out"
+                                transition: "opacity 1s ease-in-out",
                             }}
                         >
                             {errorMessage}

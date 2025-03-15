@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import Navbar from "../../components/Navbar/Navbar";
@@ -6,8 +6,27 @@ import Player from "../../components/Player/Player";
 import logo from "/public/vibra.png";
 import "./MainLayout.css";
 
-const MainLayout = ({ user }) => {
+const MainLayout = () => {
     const navigate = useNavigate();
+
+    const [user, setUser] = useState(null);
+
+    // obtener usuario de localStorage al cargar el componente
+    useEffect(() => {
+        const updateUser = () => {
+            const storedUser = localStorage.getItem("user");
+            setUser(storedUser ? JSON.parse(storedUser) : null);
+        };
+
+        updateUser(); // Cargar usuario al inicio
+
+        // ✅ Escuchar cambios en localStorage (Ej: después de iniciar sesión)
+        window.addEventListener("storage", updateUser);
+
+        return () => {
+            window.removeEventListener("storage", updateUser);
+        };
+    }, []);
 
     // 🔹 Referencias para cada sección scrollable
     const playlistsRef = useRef(null);
@@ -67,9 +86,18 @@ const MainLayout = ({ user }) => {
                 <div className="profile-container">
                     {user ? (
                         <div>
-                            <img src={user.profilePicture} alt="Avatar" className="profile-pic"/>
-                            <p>{user.name}</p>
-                            <p>{user.email}</p>
+                            <img src={user.profilePicture || "/default-avatar.png"} alt="Avatar" className="profile-pic"/>
+                            <p>{user.nickname}</p>
+                            <p>{user.mail}</p>
+                            {/* ✅ Botón para cerrar sesión */}
+                            <button className="logout-button" onClick={() => {
+                                localStorage.removeItem("user"); // Eliminar usuario
+                                localStorage.removeItem("token"); // Eliminar token
+                                window.dispatchEvent(new Event("storage")); // 🔹 Notificar cambio de sesión
+                                navigate("/login");
+                            }}>
+                                Cerrar Sesión
+                            </button>
                         </div>
                     ) : (
                         <button className="login-button" onClick={() => navigate("/login")}>
