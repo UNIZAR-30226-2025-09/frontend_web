@@ -1,19 +1,69 @@
-import React from "react";
-import { Outlet, useNavigate } from "react-router-dom"; // Importamos Outlet para renderizar páginas dinámicamente
+import React, { useRef, useState } from "react";
+import { useNavigate, Outlet } from "react-router-dom";
 import SearchBar from "../../components/SearchBar/SearchBar";
-import "./MainLayout.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Player from "../../components/Player/Player";
 import logo from "/public/vibra.png";
+import "./MainLayout.css";
 
 const MainLayout = ({ user }) => {
     const navigate = useNavigate();
 
+    // 🔹 Referencias para cada sección scrollable
+    const playlistsRef = useRef(null);
+    const recommendationsRef = useRef(null);
+    const albumsRef = useRef(null);
+    const artistsRef = useRef(null);
+
+    // 🔹 Estado para saber qué sección está activa
+    const [activeSection, setActiveSection] = useState("playlists");
+
+    // 🔹 Cambia la sección activa cuando el mouse entra
+    const setActive = (section) => setActiveSection(section);
+
+    // 🔹 Desplazamiento con botones
+    const scrollActiveSection = (direction) => {
+        let ref;
+        if (activeSection === "playlists") ref = playlistsRef;
+        else if (activeSection === "recommendations") ref = recommendationsRef;
+        else if (activeSection === "albums") ref = albumsRef;
+        else ref = artistsRef;
+
+        if (ref?.current) {
+            const scrollAmount = 300;
+            ref.current.scrollBy({
+                left: direction === "left" ? -scrollAmount : scrollAmount,
+                behavior: "smooth",
+            });
+        }
+    };
+
+    // 🔹 Eventos de arrastre horizontal
+    const handleMouseDown = (e, ref) => {
+        if (!ref.current) return;
+        ref.current.isDragging = true;
+        ref.current.startX = e.pageX - ref.current.offsetLeft;
+        ref.current.scrollLeft = ref.current.scrollLeft;
+        ref.current.style.cursor = "grabbing";
+    };
+
+    const handleMouseMove = (e, ref) => {
+        if (!ref.current?.isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - ref.current.offsetLeft;
+        const walk = (x - ref.current.startX) * 2;
+        ref.current.scrollLeft = ref.current.scrollLeft - walk;
+    };
+
+    const handleMouseUp = (ref) => {
+        if (!ref.current) return;
+        ref.current.isDragging = false;
+        ref.current.style.cursor = "grab";
+    };
+
     return (
         <div className="main-layout">
-            {/* Sidebar Izquierda */}
             <div className="sidebar">
-                {/* Contenedor del perfil / iniciar sesión */}
                 <div className="profile-container">
                     {user ? (
                         <div>
@@ -27,31 +77,33 @@ const MainLayout = ({ user }) => {
                         </button>
                     )}
                 </div>
-
-                {/* Menú horizontal */}
-                <Navbar />
-
-                {/* Contenedor del reproductor */}
+                <Navbar/>
                 <div className="player-container">
-                    <Player />
+                    <Player/>
                 </div>
             </div>
 
-            {/* Contenedor Principal */}
             <div className="main-content">
+                {/* Ahora la barra superior queda fija dentro de .main-content */}
                 <div className="top-bar">
                     <div className="nav-arrows">
-                        <button className="arrow left">{"<"}</button>
-                        <button className="arrow right">{">"}</button>
+                        <button className="arrow left" onClick={() => scrollActiveSection("left")}>{"<"}</button>
+                        <button className="arrow right" onClick={() => scrollActiveSection("right")}>{">"}</button>
                     </div>
-
                     <SearchBar/>
-
                     <img src={logo} alt="Logo" className="app-logo"/>
                 </div>
 
-                {/* 🔹 Aquí cambiamos el contenido según la página visitada */}
-                <Outlet />
+                <Outlet context={{
+                    playlistsRef,
+                    recommendationsRef,
+                    albumsRef,
+                    artistsRef,
+                    setActive,
+                    handleMouseDown,
+                    handleMouseMove,
+                    handleMouseUp
+                }}/>
             </div>
         </div>
     );
