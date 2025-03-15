@@ -6,6 +6,8 @@ import { PlayerProvider } from "./components/Player/PlayerContext.jsx";
 import MainLayout from "./layout/MainLayout/MainLayout";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import Register1 from "./pages/Register/Register1";
+import Register2 from "./pages/Register/Register2";
 import Playlist from "./pages/Playlist/Playlist";
 import AccountInfo from "./pages/AccountInfo/AccountInfo";
 
@@ -19,6 +21,8 @@ function App() {
                     {/* Páginas de autenticación sin reproductor ni sidebar */}
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/register1" element={<Register1 />} />
+                    <Route path="/register2" element={<Register2 />} />
 
                     {/* Página del dashboard (con sidebar y reproductor ya dentro de Dashboard.jsx) */}
                     <Route path="/" element={<MainLayout user={user} />} />
