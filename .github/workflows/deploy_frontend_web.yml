@@ -23,5 +23,5 @@ jobs:
             cd /home/unizar/frontend_web/docker
             git pull origin main
             cd /home/unizar/backend/docker
-            docker compose build --no-cache frontend_web
-            docker compose up --build -d frontend_web
+            docker compose build --no-cache frontend
+            docker compose up --build -d frontend
