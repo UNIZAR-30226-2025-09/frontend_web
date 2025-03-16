@@ -1,9 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import "./Home.css";
 
 const Home = () => {
     const { playlistsRef, recommendationsRef, albumsRef, artistsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp } = useOutletContext();
+
+    const [vibraPlaylists, setVibraPlaylists] = useState([]);
+
+    // Obtener playlists con typeP = "Vibra" desde el backend
+    useEffect(() => {
+        const fetchVibraPlaylists = async () => {
+            try {
+                const response = await fetch("http://localhost:5001/api/playlists/vibra");
+                const data = await response.json();
+                setVibraPlaylists(data);
+            } catch (error) {
+                console.error("Error al obtener las playlists de Vibra:", error);
+            }
+        };
+
+        fetchVibraPlaylists();
+    }, []);
 
     return (
         <div className="home-content">
@@ -18,12 +35,29 @@ const Home = () => {
                 onMouseLeave={() => handleMouseUp(playlistsRef)}
             >
                 <div className="home-playlists">
-                    <div className="home-playlist-card">Playlist 1</div>
-                    <div className="home-playlist-card">Playlist 2</div>
-                    <div className="home-playlist-card">Playlist 3</div>
-                    <div className="home-playlist-card">Playlist 4</div>
-                    <div className="home-playlist-card">Playlist 5</div>
-                    <div className="home-playlist-card">Playlist 6</div>
+                    {vibraPlaylists.length > 0 ? (
+                        vibraPlaylists.map((playlist) => {
+                            const playlistImage = playlist.front_page
+                                ? playlist.front_page.startsWith("http")
+                                    ? playlist.front_page
+                                    : `http://localhost:5001/${playlist.front_page.replace(/^\/?/, "")}`
+                                : "/default-playlist.jpg";
+
+                            return (
+                                <div key={playlist.id} className="home-playlist-card">
+                                    <img
+                                        src={playlistImage}
+                                        alt={playlist.name}
+                                        className="playlist-image"
+                                        onError={(e) => e.target.src = "/default-playlist.jpg"} // Si la imagen falla, usa una por defecto
+                                    />
+                                    <p className="playlist-title">{playlist.name}</p>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <p>Cargando playlists...</p>
+                    )}
                 </div>
             </div>
 
