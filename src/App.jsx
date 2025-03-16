@@ -31,7 +31,7 @@ function App() {
                     <Route path="/" element={<MainLayout />}>
                         <Route index element={<Home />} /> {/* Página principal en "/" */}
                         <Route path="home" element={<Home />} /> {/* 🔹 Agregamos /home */}
-                        <Route path="playlist" element={<Playlist />} />
+                        <Route path="playlist/:playlistId" element={<Playlist />} />
                         <Route path="library" element={<Library />} />
                         <Route path="account" element={<AccountInfo />} />
                     </Route>

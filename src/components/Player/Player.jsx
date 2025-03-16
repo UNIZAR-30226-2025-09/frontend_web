@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState, useRef } from "react";
+import  { useEffect, useState, useRef } from "react";
 import { Howl } from "howler";
 import { usePlayer } from "./PlayerContext.jsx";
 import { AiFillPlayCircle, AiFillPauseCircle } from "react-icons/ai";
@@ -62,7 +61,6 @@ function Player() {
                     min: Math.floor(sec / 60),
                     sec: Math.floor(sec % 60),
                 });
-                // Opcional: reproducir automáticamente al cargar
                 sound.play();
                 setIsPlaying(true);
             },
@@ -162,12 +160,12 @@ function Player() {
                 src={
                     noSongSelected
                         ? "https://via.placeholder.com/300x300.png?text=Sin+Canci%C3%B3n"
-                        : currentSong.cover
+                        : currentSong.photo_video
                 }
                 alt={noSongSelected ? "Sin canción seleccionada" : "Portada de la canción"}
             />
 
-            {/* Siempre mostramos info, aunque esté vacía o con un placeholder */}
+            {/* Siempre mostramos info, aunque esté vacía */}
             <div className={styles.info}>
                 <h3 className={styles.title}>
                     {noSongSelected ? "Ninguna canción seleccionada" : currentSong.name}
@@ -175,7 +173,9 @@ function Player() {
                 <p className={styles.artist}>
                     {noSongSelected
                         ? "Selecciona una canción de la lista"
-                        : (currentSong?.artists?.map((a) => a.name).join(", ") || "Desconocido")}
+                        : currentSong?.artists && Array.isArray(currentSong.artists) && currentSong.artists.length > 0
+                            ? currentSong.artists.map(a => a.name).join(", ")
+                            : "Artista desconocido"}
                 </p>
             </div>
 
@@ -185,7 +185,7 @@ function Player() {
                     onClick={handlePrevious}
                     disabled={noSongSelected}
                 >
-                    <IconContext.Provider value={{ size: "3em", color: "#27AE60" }}>
+                    <IconContext.Provider value={{size: "3em", color: "#27AE60" }}>
                         <BiSkipPrevious />
                     </IconContext.Provider>
                 </button>
