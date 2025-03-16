@@ -1,60 +1,137 @@
-import React from "react";
-import { useNavigate } from "react-router-dom"; // 🔹 Importamos useNavigate
+import React, { useRef, useState, useEffect } from "react";
+import { useNavigate, Outlet } from "react-router-dom";
 import SearchBar from "../../components/SearchBar/SearchBar";
-import "./MainLayout.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Player from "../../components/Player/Player";
+import logo from "/public/vibra.png";
+import "./MainLayout.css";
 
-// eslint-disable-next-line react/prop-types
-const MainLayout = ({ user }) => {
-    const navigate = useNavigate(); // 🔵 Inicializamos navigate
+const MainLayout = () => {
+    const navigate = useNavigate();
+
+    const [user, setUser] = useState(null);
+
+    // obtener usuario de localStorage al cargar el componente
+    useEffect(() => {
+        const updateUser = () => {
+            const storedUser = localStorage.getItem("user");
+            setUser(storedUser ? JSON.parse(storedUser) : null);
+        };
+
+        updateUser(); // Cargar usuario al inicio
+
+        // ✅ Escuchar cambios en localStorage (Ej: después de iniciar sesión)
+        window.addEventListener("storage", updateUser);
+
+        return () => {
+            window.removeEventListener("storage", updateUser);
+        };
+    }, []);
+
+    // 🔹 Referencias para cada sección scrollable
+    const playlistsRef = useRef(null);
+    const recommendationsRef = useRef(null);
+    const albumsRef = useRef(null);
+    const artistsRef = useRef(null);
+
+    // 🔹 Estado para saber qué sección está activa
+    const [activeSection, setActiveSection] = useState("playlists");
+
+    // 🔹 Cambia la sección activa cuando el mouse entra
+    const setActive = (section) => setActiveSection(section);
+
+    // 🔹 Desplazamiento con botones
+    const scrollActiveSection = (direction) => {
+        let ref;
+        if (activeSection === "playlists") ref = playlistsRef;
+        else if (activeSection === "recommendations") ref = recommendationsRef;
+        else if (activeSection === "albums") ref = albumsRef;
+        else ref = artistsRef;
+
+        if (ref?.current) {
+            const scrollAmount = 300;
+            ref.current.scrollBy({
+                left: direction === "left" ? -scrollAmount : scrollAmount,
+                behavior: "smooth",
+            });
+        }
+    };
+
+    // 🔹 Eventos de arrastre horizontal
+    const handleMouseDown = (e, ref) => {
+        if (!ref.current) return;
+        ref.current.isDragging = true;
+        ref.current.startX = e.pageX - ref.current.offsetLeft;
+        ref.current.scrollLeft = ref.current.scrollLeft;
+        ref.current.style.cursor = "grabbing";
+    };
+
+    const handleMouseMove = (e, ref) => {
+        if (!ref.current?.isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - ref.current.offsetLeft;
+        const walk = (x - ref.current.startX) * 2;
+        ref.current.scrollLeft = ref.current.scrollLeft - walk;
+    };
+
+    const handleMouseUp = (ref) => {
+        if (!ref.current) return;
+        ref.current.isDragging = false;
+        ref.current.style.cursor = "grab";
+    };
 
     return (
         <div className="main-layout">
-            {/* 📌 Sidebar Izquierda */}
             <div className="sidebar">
-                {/* 🔵 Contenedor del perfil / iniciar sesión */}
                 <div className="profile-container">
                     {user ? (
-                        // 🟢 Usuario logueado → Muestra perfil
                         <div>
-                            <img src={user.profilePicture} alt="Avatar" className="profile-pic"/>
-                            <p>{user.name}</p>
-                            <p>{user.email}</p>
+                            <img src={user.profilePicture || "/default-avatar.png"} alt="Avatar" className="profile-pic"/>
+                            <p>{user.nickname}</p>
+                            <p>{user.mail}</p>
+                            {/* ✅ Botón para cerrar sesión */}
+                            <button className="logout-button" onClick={() => {
+                                localStorage.removeItem("user"); // Eliminar usuario
+                                localStorage.removeItem("token"); // Eliminar token
+                                window.dispatchEvent(new Event("storage")); // 🔹 Notificar cambio de sesión
+                                navigate("/login");
+                            }}>
+                                Cerrar Sesión
+                            </button>
                         </div>
                     ) : (
-                        // 🔴 No logueado → Muestra botón de login
                         <button className="login-button" onClick={() => navigate("/login")}>
                             Iniciar Sesión
                         </button>
                     )}
                 </div>
-
-                {/* 🟦 Menú horizontal */}
-                <Navbar />
-
-                {/* 🎵 Contenedor del reproductor */}
+                <Navbar/>
                 <div className="player-container">
-                    <Player />
+                    <Player/>
                 </div>
             </div>
 
-            {/* 📌 Contenedor Principal */}
             <div className="main-content">
-                {/* 🔎 Barra de búsqueda */}
-                <SearchBar />
-
-                {/* 🎶 Playlists con flechas */}
-                <div className="playlist-container">
-                    <button className="arrow left">{"<"}</button>
-                    <div className="playlists">
-                        <div className="playlist-card">Playlist 1</div>
-                        <div className="playlist-card">Playlist 2</div>
-                        <div className="playlist-card">Playlist 3</div>
-                        <div className="playlist-card">Playlist 4</div>
+                {/* Ahora la barra superior queda fija dentro de .main-content */}
+                <div className="top-bar">
+                    <div className="nav-arrows">
+                        <button className="arrow left" onClick={() => scrollActiveSection("left")}>{"<"}</button>
+                        <button className="arrow right" onClick={() => scrollActiveSection("right")}>{">"}</button>
                     </div>
-                    <button className="arrow right">{">"}</button>
+                    <SearchBar/>
+                    <img src={logo} alt="Logo" className="app-logo"/>
                 </div>
+
+                <Outlet context={{
+                    playlistsRef,
+                    recommendationsRef,
+                    albumsRef,
+                    artistsRef,
+                    setActive,
+                    handleMouseDown,
+                    handleMouseMove,
+                    handleMouseUp
+                }}/>
             </div>
         </div>
     );

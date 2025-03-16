@@ -1,26 +1,42 @@
-/* 🎨 Fondo general */
+/* Ajuste general de la pantalla */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Layout principal */
 .main-layout {
     display: flex;
     justify-content: space-between;
-    height: 100vh;
-    background-color: #1a1a1a; /* 🔳 Gris oscuro */
+    min-height: 100vh;
+    width: 100vw;
+    background-color: #1a1a1a;
     padding: 20px;
     gap: 20px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
-/* 📌 Sidebar */
+/* Sidebar */
 .sidebar {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     width: 300px;
-    background: #2c2c2c; /* 🔲 Gris más claro */
+    background: #2c2c2c;
     padding: 20px;
     border-radius: 20px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+    height: 100vh; /* 🔹 La sidebar ocupará toda la altura de la pantalla */
+    position: sticky;
+    top: 0;
 }
 
-/* 🔵 Contenedor del perfil */
+/* Contenedor del perfil */
 .profile-container {
     background: #3a3a3a;
     padding: 20px;
@@ -29,7 +45,14 @@
     color: white;
 }
 
-/* 🎵 Contenedor del reproductor */
+/* Navbar fijo dentro de la sidebar */
+.sidebar .navbar {
+    position: sticky;
+    top: 150px; /* 🔹 Ajusta esto según la altura del perfil */
+    z-index: 10;
+}
+
+/* Contenedor del reproductor */
 .player-container {
     background: #3a3a3a;
     padding: 20px;
@@ -38,60 +61,80 @@
     color: white;
 }
 
-/* 📌 Contenedor Principal */
+/* Mantiene la barra superior fija dentro del contenedor */
+.top-bar {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background: #2c2c2c;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Asegura que el contenedor principal tenga espacio suficiente para la top-bar */
 .main-content {
     flex-grow: 1;
     background: #2c2c2c;
     padding: 30px;
     border-radius: 20px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    max-width: calc(100vw - 360px);
+    box-sizing: border-box;
+    overflow-x: hidden;
+    margin-right: 20px;
 }
 
-/* 🎶 Playlists con flechas */
-.playlist-container {
+/* Flechas de navegación */
+.nav-arrows {
     display: flex;
-    align-items: center;
     gap: 10px;
-    margin-top: 20px;
 }
 
-.playlists {
-    display: flex;
-    gap: 15px;
-    overflow-x: auto;
-    padding: 10px;
-    background: #3a3a3a;
-    border-radius: 15px;
-}
-
-.playlist-card {
-    width: 150px;
-    height: 150px;
-    background: #4a4a4a;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    transition: transform 0.3s ease;
-}
-
-.playlist-card:hover {
-    transform: scale(1.05);
-}
-
-/* 🔄 Flechas de navegación */
 .arrow {
-    background: #3498db;
+    background: #21a1f1; /* Mismo color que la barra de búsqueda */
     color: white;
     border: none;
-    padding: 10px;
+    width: 40px; /* Más pequeñas */
+    height: 40px;
     border-radius: 50%;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     cursor: pointer;
-    transition: 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, background 0.3s ease;
+    box-shadow: 0px 3px 8px rgba(33, 161, 241, 0.5);
 }
 
 .arrow:hover {
-    background: #2980b9;
+    background: #1b82c3;
+    transform: scale(1.1);
+}
+
+/* Ajuste de la barra de búsqueda */
+.search-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    margin-top: -20px; /* Bajamos un poco */
+    max-width: 100%;
+}
+
+/* Logo */
+.app-logo {
+    height: 75px; /* Un poco más pequeño */
+    transition: transform 0.2s ease;
+    margin-top: -20px; /* Bajamos un poco */
+}
+
+.app-logo:hover {
+    transform: scale(1.1);
 }
