@@ -39,22 +39,30 @@
     font-size: 1.2rem;
     color: var(--colorPrimaryLight2);
 }
-
-/* Controles (prev, play, next) */
+/* Contenedor de controles (prev, play, next) en fila */
 .controls {
     display: flex;
-    justify-content: center;
+    flex-direction: row;        /* Cambia a 'row' para una distribución horizontal */
     align-items: center;
-    gap: 1.5rem;
+    justify-content: center;
+    gap: 1rem;                  /* Espacio entre botones */
     margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Botón genérico (prev y next) */
+.controlButton {
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
 /* Botón circular grande (Play/Pause) */
 .playerControlPlay {
-    background-color: black;
+    background-color: #000;     /* Círculo negro */
     position: relative;
-    width: 10rem;
-    height: 10rem;
+    width: 6rem;                /* Ajusta el tamaño según prefieras */
+    height: 6rem;
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -68,13 +76,16 @@
 }
 
 .playerControlPlay::before {
-    content: '';
+    content: "";
     position: absolute;
-    background-color: #0399b6;
-    width: 60%;
-    height: 60%;
+    background: #21a1f1;  /* Color del aro */
+    width: 110%;                /* Un poco más grande que el círculo negro */
+    height: 110%;
     border-radius: 50%;
-    z-index: -2;
+    z-index: -1;                /* Lo coloca detrás del botón */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* Tiempos */
@@ -108,7 +119,7 @@
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 50%;
-    background: #0399b6;
+    background: #21a1f1;
     cursor: pointer;
 }
 
@@ -116,7 +127,7 @@
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 50%;
-    background: #0399b6;
+    background: #21a1f1;
     cursor: pointer;
 }
 
