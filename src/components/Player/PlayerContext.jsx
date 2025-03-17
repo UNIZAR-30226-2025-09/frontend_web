@@ -1,5 +1,5 @@
 // src/Reproductor/PlayerContext.jsx
-import React, { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext } from "react";
 import PropTypes from "prop-types";
 
 const PlayerContext = createContext();
@@ -18,7 +18,7 @@ export const PlayerProvider = ({ children }) => {
                 currentIndex,
                 setCurrentIndex,
                 currentSong,
-                setCurrentSong
+                setCurrentSong,
             }}
         >
             {children}

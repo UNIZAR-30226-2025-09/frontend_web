@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState, useRef } from "react";
+import  { useEffect, useState, useRef } from "react";
 import { Howl } from "howler";
 import { usePlayer } from "./PlayerContext.jsx";
 import { AiFillPlayCircle, AiFillPauseCircle } from "react-icons/ai";
@@ -9,10 +8,9 @@ import { IconContext } from "react-icons";
 /* Importa las clases desde tu archivo CSS Module */
 import styles from "./PlayerStyles.module.css";
 
-function Player() {
+function Player({ currentSong }) {
     const {
         songs,
-        currentSong,
         setCurrentSong,
         currentIndex,
         setCurrentIndex
@@ -37,11 +35,17 @@ function Player() {
             : `http://localhost:5001/${currentSong.url_mp3.replace(/^\/?/, "")}`
         : null;
 
+    useEffect(() => {
+        console.log("🎵 Player detecta cambio de canción:", currentSong);
+    }, [currentSong]);
+
     // Crea o recarga el Howl cuando la songUrl cambia
     useEffect(() => {
-        if (!songUrl) return;
+        if (!currentSong || !songUrl) return;
 
-        // Limpia cualquier instancia previa de Howl y su intervalo
+        console.log("🎶 Cargando nueva canción en el reproductor:", currentSong.name);
+
+        // Limpia la canción anterior si existe
         if (soundRef.current) {
             soundRef.current.stop();
             soundRef.current.unload();
@@ -50,19 +54,20 @@ function Player() {
             clearInterval(intervalRef.current);
         }
 
+        // Crea una nueva instancia de Howl
         const sound = new Howl({
             src: [songUrl],
             html5: true,
             volume: 1.0,
             format: ["mp3"],
             onload: () => {
+                console.log("✅ Canción cargada:", currentSong.name);
                 const sec = sound.duration();
                 setDuration(sec * 1000);
                 setTotalTime({
                     min: Math.floor(sec / 60),
                     sec: Math.floor(sec % 60),
                 });
-                // Opcional: reproducir automáticamente al cargar
                 sound.play();
                 setIsPlaying(true);
             },
@@ -77,31 +82,21 @@ function Player() {
                     });
                 }, 1000);
             },
-            onpause: () => {
-                setIsPlaying(false);
-                clearInterval(intervalRef.current);
-            },
-            onstop: () => {
-                setIsPlaying(false);
-                clearInterval(intervalRef.current);
-            },
-            onend: () => {
-                setIsPlaying(false);
-                clearInterval(intervalRef.current);
-            },
-            onloaderror: (id, error) => {
-                console.error("Error cargando el sonido:", error);
-            },
-            onplayerror: (id, error) => {
-                console.error("Error reproduciendo el sonido:", error);
-                sound.once("unlock", () => {
-                    sound.play();
-                });
-            },
         });
 
         soundRef.current = sound;
-    }, [songUrl]);
+
+        return () => {
+            if (soundRef.current) {
+                soundRef.current.stop();
+                soundRef.current.unload();
+            }
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, [currentSong, songUrl]);
+
 
     // Cleanup al desmontar
     useEffect(() => {
@@ -162,12 +157,12 @@ function Player() {
                 src={
                     noSongSelected
                         ? "https://via.placeholder.com/300x300.png?text=Sin+Canci%C3%B3n"
-                        : currentSong.cover
+                        : currentSong.photo_video
                 }
                 alt={noSongSelected ? "Sin canción seleccionada" : "Portada de la canción"}
             />
 
-            {/* Siempre mostramos info, aunque esté vacía o con un placeholder */}
+            {/* Siempre mostramos info, aunque esté vacía */}
             <div className={styles.info}>
                 <h3 className={styles.title}>
                     {noSongSelected ? "Ninguna canción seleccionada" : currentSong.name}
@@ -175,7 +170,9 @@ function Player() {
                 <p className={styles.artist}>
                     {noSongSelected
                         ? "Selecciona una canción de la lista"
-                        : (currentSong?.artists?.map((a) => a.name).join(", ") || "Desconocido")}
+                        : currentSong?.artists && Array.isArray(currentSong.artists) && currentSong.artists.length > 0
+                            ? currentSong.artists.map(a => a.name).join(", ")
+                            : "Artista desconocido"}
                 </p>
             </div>
 
@@ -185,7 +182,7 @@ function Player() {
                     onClick={handlePrevious}
                     disabled={noSongSelected}
                 >
-                    <IconContext.Provider value={{ size: "3em", color: "#27AE60" }}>
+                    <IconContext.Provider value={{size: "3em", color: "#27AE60" }}>
                         <BiSkipPrevious />
                     </IconContext.Provider>
                 </button>
