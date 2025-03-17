@@ -1,4 +1,4 @@
-/* 📌 Ajuste general de la pantalla */
+/* Ajuste general de la pantalla */
 html, body {
     margin: 0;
     padding: 0;
@@ -7,7 +7,7 @@ html, body {
     overflow-x: hidden;
 }
 
-/* 📌 Layout principal */
+/* Layout principal */
 .main-layout {
     display: flex;
     justify-content: space-between;
@@ -20,7 +20,7 @@ html, body {
     overflow: hidden;
 }
 
-/* 📌 Sidebar */
+/* Sidebar */
 .sidebar {
     display: flex;
     flex-direction: column;
@@ -31,9 +31,12 @@ html, body {
     border-radius: 20px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
     flex-shrink: 0;
+    height: 100vh; /* 🔹 La sidebar ocupará toda la altura de la pantalla */
+    position: sticky;
+    top: 0;
 }
 
-/* 📌 Contenedor del perfil */
+/* Contenedor del perfil */
 .profile-container {
     background: #3a3a3a;
     padding: 20px;
@@ -42,7 +45,14 @@ html, body {
     color: white;
 }
 
-/* 📌 Contenedor del reproductor */
+/* Navbar fijo dentro de la sidebar */
+.sidebar .navbar {
+    position: sticky;
+    top: 150px; /* 🔹 Ajusta esto según la altura del perfil */
+    z-index: 10;
+}
+
+/* Contenedor del reproductor */
 .player-container {
     background: #3a3a3a;
     padding: 20px;
@@ -51,7 +61,20 @@ html, body {
     color: white;
 }
 
-/* 📌 Contenedor Principal */
+/* Mantiene la barra superior fija dentro del contenedor */
+.top-bar {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background: #2c2c2c;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Asegura que el contenedor principal tenga espacio suficiente para la top-bar */
 .main-content {
     flex-grow: 1;
     background: #2c2c2c;
@@ -65,36 +88,21 @@ html, body {
     width: 100%;
     max-width: calc(100vw - 360px);
     box-sizing: border-box;
-    overflow-y: auto; /* Mantiene el scroll si es necesario en el contenido */
     overflow-x: hidden;
     margin-right: 20px;
 }
 
-/* 📌 Contenedor superior (flechas, barra de búsqueda y logo) */
-.top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 0px 20px;
-    margin-bottom: 0px;
-    position: relative;
-    top: -10px; /* 🔽 Bajamos un poco */
-    max-width: 100%;
-    overflow: hidden; /* ✅ Quitamos cualquier posibilidad de scroll vertical */
-}
-
-/* 📌 Flechas de navegación */
+/* Flechas de navegación */
 .nav-arrows {
     display: flex;
     gap: 10px;
 }
 
 .arrow {
-    background: #21a1f1; /* 🔵 Mismo color que la barra de búsqueda */
+    background: #21a1f1; /* Mismo color que la barra de búsqueda */
     color: white;
     border: none;
-    width: 40px; /* 🔽 Más pequeñas */
+    width: 40px; /* Más pequeñas */
     height: 40px;
     border-radius: 50%;
     font-size: 1.2rem;
@@ -111,60 +119,22 @@ html, body {
     transform: scale(1.1);
 }
 
-/* 📌 Ajuste de la barra de búsqueda */
+/* Ajuste de la barra de búsqueda */
 .search-container {
     flex-grow: 1;
     display: flex;
     justify-content: center;
-    margin-top: -20px; /* 🔽 Bajamos un poco */
+    margin-top: -20px; /* Bajamos un poco */
     max-width: 100%;
 }
 
-/* 📌 Logo */
+/* Logo */
 .app-logo {
-    height: 75px; /* 🔽 Un poco más pequeño */
+    height: 75px; /* Un poco más pequeño */
     transition: transform 0.2s ease;
-    margin-top: -20px; /* 🔽 Bajamos un poco */
+    margin-top: -20px; /* Bajamos un poco */
 }
 
 .app-logo:hover {
     transform: scale(1.1);
-}
-
-/* 📂 Playlists */
-.playlist-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 20px;
-    max-width: 100%;
-    overflow: hidden;
-}
-
-.playlists {
-    display: flex;
-    gap: 15px;
-    overflow-x: auto;
-    padding: 10px;
-    background: #3a3a3a;
-    border-radius: 15px;
-    white-space: nowrap;
-    max-width: 100%;
-}
-
-.playlist-card {
-    width: 150px;
-    height: 150px;
-    background: #4a4a4a;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    transition: transform 0.3s ease;
-    flex-shrink: 0;
-}
-
-.playlist-card:hover {
-    transform: scale(1.05);
 }

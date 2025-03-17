@@ -28,8 +28,9 @@ function App() {
                     <Route path="/register2" element={<Register2 />} />
 
                     {/* Páginas dentro del MainLayout */}
-                    <Route path="/" element={<MainLayout user={user} />}>
-                        <Route index element={<Home />} /> {/* <-- Página principal */}
+                    <Route path="/" element={<MainLayout />}>
+                        <Route index element={<Home />} /> {/* Página principal en "/" */}
+                        <Route path="home" element={<Home />} /> {/* 🔹 Agregamos /home */}
                         <Route path="playlist" element={<Playlist />} />
                         <Route path="library" element={<Library />} />
                         <Route path="account" element={<AccountInfo />} />
