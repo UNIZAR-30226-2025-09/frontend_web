@@ -18,7 +18,7 @@ export const PlayerProvider = ({ children }) => {
                 currentIndex,
                 setCurrentIndex,
                 currentSong,
-                setCurrentSong
+                setCurrentSong,
             }}
         >
             {children}

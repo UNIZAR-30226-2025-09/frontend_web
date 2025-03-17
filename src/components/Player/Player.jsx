@@ -8,10 +8,9 @@ import { IconContext } from "react-icons";
 /* Importa las clases desde tu archivo CSS Module */
 import styles from "./PlayerStyles.module.css";
 
-function Player() {
+function Player({ currentSong }) {
     const {
         songs,
-        currentSong,
         setCurrentSong,
         currentIndex,
         setCurrentIndex
@@ -36,11 +35,17 @@ function Player() {
             : `http://localhost:5001/${currentSong.url_mp3.replace(/^\/?/, "")}`
         : null;
 
+    useEffect(() => {
+        console.log("🎵 Player detecta cambio de canción:", currentSong);
+    }, [currentSong]);
+
     // Crea o recarga el Howl cuando la songUrl cambia
     useEffect(() => {
-        if (!songUrl) return;
+        if (!currentSong || !songUrl) return;
 
-        // Limpia cualquier instancia previa de Howl y su intervalo
+        console.log("🎶 Cargando nueva canción en el reproductor:", currentSong.name);
+
+        // Limpia la canción anterior si existe
         if (soundRef.current) {
             soundRef.current.stop();
             soundRef.current.unload();
@@ -49,12 +54,14 @@ function Player() {
             clearInterval(intervalRef.current);
         }
 
+        // Crea una nueva instancia de Howl
         const sound = new Howl({
             src: [songUrl],
             html5: true,
             volume: 1.0,
             format: ["mp3"],
             onload: () => {
+                console.log("✅ Canción cargada:", currentSong.name);
                 const sec = sound.duration();
                 setDuration(sec * 1000);
                 setTotalTime({
@@ -75,31 +82,21 @@ function Player() {
                     });
                 }, 1000);
             },
-            onpause: () => {
-                setIsPlaying(false);
-                clearInterval(intervalRef.current);
-            },
-            onstop: () => {
-                setIsPlaying(false);
-                clearInterval(intervalRef.current);
-            },
-            onend: () => {
-                setIsPlaying(false);
-                clearInterval(intervalRef.current);
-            },
-            onloaderror: (id, error) => {
-                console.error("Error cargando el sonido:", error);
-            },
-            onplayerror: (id, error) => {
-                console.error("Error reproduciendo el sonido:", error);
-                sound.once("unlock", () => {
-                    sound.play();
-                });
-            },
         });
 
         soundRef.current = sound;
-    }, [songUrl]);
+
+        return () => {
+            if (soundRef.current) {
+                soundRef.current.stop();
+                soundRef.current.unload();
+            }
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, [currentSong, songUrl]);
+
 
     // Cleanup al desmontar
     useEffect(() => {

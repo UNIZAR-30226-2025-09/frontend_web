@@ -1,9 +1,8 @@
 import { FaHeart, FaEllipsisH, FaPlay } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import {useOutletContext, useParams} from "react-router-dom";
 import "./Playlist.css"; // Layout y estilos generales
 import "../../components/SongItem/songItem.css"; // Estilos de la lista de canciones
-import Player from "../../components/Player/Player.jsx";
 import { PlayerProvider, usePlayer } from "../../components/Player/PlayerContext.jsx";
 import {SlPlaylist} from "react-icons/sl";
 
@@ -19,14 +18,24 @@ function formatDuration(seconds) {
 const PlaylistContent = () => {
     const { playlistId } = useParams();
     const [playlist, setPlaylist] = useState(null);
-    const { setCurrentSong, setCurrentIndex, setSongs } = usePlayer();
+    const { setSongs } = usePlayer();
     const [isEditing, setIsEditing] = useState(false);
     const [newTitle, setNewTitle] = useState("");
     const [newDescription, setNewDescription] = useState("");
     const [isShuffling, setIsShuffling] = useState(false);
-    const [currentPlaylist, setCurrentPlaylist] = useState(playlist);
+    const [setCurrentPlaylist] = useState(playlist);
     const [isLiked, setIsLiked] = useState(false);
     const user_Id = 2;
+    const { setCurrentSong, setActiveSection, activeSection } = useOutletContext();
+
+
+    useEffect(() => {
+        console.log("📌 Entrando a Playlist, activando sección...");
+
+        if (activeSection !== "playlists") {
+            setActiveSection("playlists");
+        }
+    }, [setActiveSection, activeSection]);
 
     // Alternar el estado del modo aleatorio
     const toggleShuffle = () => {
@@ -114,11 +123,10 @@ const PlaylistContent = () => {
         return <p>Cargando playlist...</p>;
     }
 
-    const handlePlaySong = (song, index) => {
+    const handlePlaySong = (song) => {
         console.log(`Reproduciendo: ${song.name}`);
         console.log("Guardando canción en el estado:", song);
-        setCurrentSong(song);
-        setCurrentIndex(index);
+        setCurrentSong( song );
     };
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
@@ -160,8 +168,6 @@ const PlaylistContent = () => {
 
     return (
         <div className="layout">
-            {/* Columna izquierda: reproductor */}
-            <Player />
             {/* Columna derecha: contenido de la playlist */}
             <div className="box">
                 <div className="play-cont">
@@ -245,7 +251,7 @@ const PlaylistContent = () => {
                                     <span className="song-index">{index + 1}</span>
                                     <button
                                         className="play-icon"
-                                        onClick={() => handlePlaySong(song, index)}
+                                        onClick={() => handlePlaySong(song)}
                                     >
                                         <FaPlay />
                                     </button>
