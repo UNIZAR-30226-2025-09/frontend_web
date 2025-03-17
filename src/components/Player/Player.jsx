@@ -182,7 +182,7 @@ function Player({ currentSong }) {
                     onClick={handlePrevious}
                     disabled={noSongSelected}
                 >
-                    <IconContext.Provider value={{size: "3em", color: "#27AE60" }}>
+                    <IconContext.Provider value={{size: "3em", color: "#21a1f1" }}>
                         <BiSkipPrevious />
                     </IconContext.Provider>
                 </button>
@@ -203,7 +203,7 @@ function Player({ currentSong }) {
                     onClick={handleNext}
                     disabled={noSongSelected}
                 >
-                    <IconContext.Provider value={{ size: "3em", color: "#27AE60" }}>
+                    <IconContext.Provider value={{ size: "3em", color: "#21a1f1" }}>
                         <BiSkipNext />
                     </IconContext.Provider>
                 </button>
