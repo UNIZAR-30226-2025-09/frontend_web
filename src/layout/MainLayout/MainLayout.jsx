@@ -92,33 +92,46 @@ const MainLayout = () => {
 
     return (
         <div className="main-layout">
-            <div className="sidebar">
+            <aside className="sidebar">
                 <div className="profile-container">
                     {user ? (
                         <div>
-                            <img src={user.profilePicture || "/default-avatar.png"} alt="Avatar" className="profile-pic"/>
+                            <img
+                                src={user.profilePicture || "/default-avatar.png"}
+                                alt="Avatar"
+                                className="profile-pic"
+                            />
                             <p>{user.nickname}</p>
                             <p>{user.mail}</p>
-                            <button className="logout-button" onClick={() => {
-                                localStorage.removeItem("user"); // Eliminar usuario
-                                localStorage.removeItem("token"); // Eliminar token
-                                window.dispatchEvent(new Event("storage")); //  Notificar cambio de sesión
-                                navigate("/login");
-                            }}>
+
+                            {/* Botón para cerrar sesión */}
+                            <button
+                                className="logout-button"
+                                onClick={() => {
+                                    localStorage.removeItem("user"); // Eliminar usuario
+                                    localStorage.removeItem("token"); // Eliminar token
+                                    window.dispatchEvent(new Event("storage")); // Notificar cambio de sesión
+                                    navigate("/login");
+                                }}
+                            >
                                 Cerrar Sesión
                             </button>
                         </div>
                     ) : (
-                        <button className="login-button" onClick={() => navigate("/login")}>
+                        <button
+                            className="login-button"
+                            onClick={() => navigate("/login")}
+                        >
                             Iniciar Sesión
                         </button>
                     )}
                 </div>
-                <Navbar/>
+                <Navbar />
                 <div className="player-container">
                     <Player key={currentSong ? currentSong.id : "no-song"} currentSong={currentSong} />
+
                 </div>
-            </div>
+            </aside>
 
             <div className="main-content">
                 {/* Ahora la barra superior queda fija dentro de .main-content */}

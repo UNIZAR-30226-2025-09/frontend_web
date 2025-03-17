@@ -17,23 +17,18 @@ html, body {
     padding: 20px;
     gap: 20px;
     box-sizing: border-box;
-    overflow: hidden;
 }
 
 /* Sidebar */
 .sidebar {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    width: 370px;
-    background: #2c2c2c;
+
+    width: 300px;
     padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-    flex-shrink: 0;
-    height: 110vh;
-    position: sticky;
-    top: 0;
+
+
+
 }
 
 /* Contenedor del perfil */
@@ -43,49 +38,29 @@ html, body {
     border-radius: 15px;
     text-align: center;
     color: white;
+
+
 }
 
-/* Navbar fijo dentro de la sidebar */
-.sidebar .navbar {
-    position: sticky;
-    top: 150px; /* 🔹 Ajusta esto según la altura del perfil */
-    z-index: 10;
-}
 
 /* Contenedor del reproductor */
 .player-container {
-    width: 100%; /* o el valor que quieras */
-    background: linear-gradient(to bottom, #0399b6, #ffffff);
-    color: white;
-    border-radius: 12px;
 
-    /* Ocupa toda la altura de la pantalla */
-    height: 100vh;
-    box-sizing: border-box;
-
-    /* Si quieres que la barra lateral siga fija al hacer scroll en la página: */
-    position: sticky;
-    top: 0;
-
-    /* Flexbox para centrar en vertical y horizontal */
+    margin-top: 2em;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centra verticalmente */
-    align-items: center;     /* Centra horizontalmente */
-
-    /* Si la sidebar tiene contenido extra (menús, enlaces, etc.)
-       y deseas que el reproductor se mantenga centrado,
-       pon ese contenido por arriba o abajo y ajusta su estilo en consecuencia.
-       Si el contenido es demasiado largo, la sidebar podría scrollear. */
-    overflow-y: auto;
-    /* Con 'overflow-y: auto;', si la sidebar sobrepasa la pantalla,
-       se activará un scroll interno en la columna. */
+    background-color: #3a3a3a;
+    text-align: center;
+    position: sticky;      /* 🔹 Se fija al hacer scroll */
+    top: 25px;             /* 🔹 Se quedará a 1rem de la parte superior */
+    border-radius: 1rem;
+    padding: 2rem;
+    color: #fff;
 }
 
 /* Mantiene la barra superior fija dentro del contenedor */
 .top-bar {
     position: sticky;
-    top: 0;
     width: 100%;
     background: #2c2c2c;
     padding: 10px 20px;
