@@ -17,23 +17,18 @@ html, body {
     padding: 20px;
     gap: 20px;
     box-sizing: border-box;
-    overflow: hidden;
 }
 
 /* Sidebar */
 .sidebar {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     width: 300px;
-    background: #2c2c2c;
     padding: 20px;
     border-radius: 20px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
     flex-shrink: 0;
-    height: 100vh; /* 🔹 La sidebar ocupará toda la altura de la pantalla */
-    position: sticky;
-    top: 0;
+
 }
 
 /* Contenedor del perfil */
@@ -43,28 +38,28 @@ html, body {
     border-radius: 15px;
     text-align: center;
     color: white;
+
+
 }
 
-/* Navbar fijo dentro de la sidebar */
-.sidebar .navbar {
-    position: sticky;
-    top: 150px; /* 🔹 Ajusta esto según la altura del perfil */
-    z-index: 10;
-}
 
 /* Contenedor del reproductor */
 .player-container {
-    background: #3a3a3a;
-    padding: 20px;
-    border-radius: 15px;
+    margin-top: 2em;
+    display: flex;
+    flex-direction: column;
+    background-color: #3a3a3a;
     text-align: center;
-    color: white;
+    position: sticky;      /* 🔹 Se fija al hacer scroll */
+    top: 25px;             /* 🔹 Se quedará a 1rem de la parte superior */
+    border-radius: 1rem;
+    padding: 2rem;
+    color: #fff;
 }
 
 /* Mantiene la barra superior fija dentro del contenedor */
 .top-bar {
     position: sticky;
-    top: 0;
     width: 100%;
     background: #2c2c2c;
     padding: 10px 20px;
