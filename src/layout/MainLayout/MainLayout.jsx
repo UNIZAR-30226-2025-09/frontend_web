@@ -11,6 +11,17 @@ const MainLayout = () => {
 
     const [user, setUser] = useState(null);
 
+    const [currentSong, setCurrentSong] = useState(null);
+
+    const setCurrentSongWrapper = (song) => {
+        console.log("🎶 Recibiendo nueva canción en MainLayout:", song);
+        setCurrentSong(song);
+    };
+
+    useEffect(() => {
+        console.log("🎶 Nueva canción en Player:", currentSong);
+    }, [currentSong]);
+
     // obtener usuario de localStorage al cargar el componente
     useEffect(() => {
         const updateUser = () => {
@@ -20,7 +31,6 @@ const MainLayout = () => {
 
         updateUser(); // Cargar usuario al inicio
 
-        // ✅ Escuchar cambios en localStorage (Ej: después de iniciar sesión)
         window.addEventListener("storage", updateUser);
 
         return () => {
@@ -28,19 +38,19 @@ const MainLayout = () => {
         };
     }, []);
 
-    // 🔹 Referencias para cada sección scrollable
+    //  Referencias para cada sección scrollable
     const playlistsRef = useRef(null);
     const recommendationsRef = useRef(null);
     const albumsRef = useRef(null);
     const artistsRef = useRef(null);
 
-    // 🔹 Estado para saber qué sección está activa
+    //  Estado para saber qué sección está activa
     const [activeSection, setActiveSection] = useState("playlists");
 
-    // 🔹 Cambia la sección activa cuando el mouse entra
+    //  Cambia la sección activa cuando el mouse entra
     const setActive = (section) => setActiveSection(section);
 
-    // 🔹 Desplazamiento con botones
+    //  Desplazamiento con botones
     const scrollActiveSection = (direction) => {
         let ref;
         if (activeSection === "playlists") ref = playlistsRef;
@@ -57,7 +67,7 @@ const MainLayout = () => {
         }
     };
 
-    // 🔹 Eventos de arrastre horizontal
+    //  Eventos de arrastre horizontal
     const handleMouseDown = (e, ref) => {
         if (!ref.current) return;
         ref.current.isDragging = true;
@@ -93,6 +103,7 @@ const MainLayout = () => {
                             />
                             <p>{user.nickname}</p>
                             <p>{user.mail}</p>
+
                             {/* Botón para cerrar sesión */}
                             <button
                                 className="logout-button"
@@ -117,7 +128,8 @@ const MainLayout = () => {
                 </div>
                 <Navbar />
                 <div className="player-container">
-                    <Player />
+                    <Player key={currentSong ? currentSong.id : "no-song"} currentSong={currentSong} />
+
                 </div>
             </aside>
 
@@ -137,10 +149,14 @@ const MainLayout = () => {
                     recommendationsRef,
                     albumsRef,
                     artistsRef,
+                    activeSection,
+                    setActiveSection,
                     setActive,
                     handleMouseDown,
                     handleMouseMove,
-                    handleMouseUp
+                    handleMouseUp,
+                    setCurrentSong: setCurrentSongWrapper,
+
                 }}/>
             </div>
         </div>
