@@ -1,17 +1,18 @@
-import React from "react";
+import "react";
 import { FaPlay } from "react-icons/fa";
 import "./SongItem.css";
 
+// eslint-disable-next-line react/prop-types
 const SongItem = ({ song }) => {
     return (
         <div className="song-item">
             <span className="play-icon"><FaPlay /></span>
             <div className="song-details">
-                {/* Usamos 'song.name' en lugar de 'song.title' */}
                 <p className="song-title">{song.name}</p>
 
-                {/* No hay 'song.artist' en tu JSON, puedes usar un texto fijo o agregar un campo 'artist' si lo deseas */}
-                <p className="song-artist">Artista desconocido</p>
+                <p className="song-artist">{song.artists && song.artists.length > 0
+                    ? song.artists.map((artist) => artist.name).join(", ")
+                    : "Artista desconocido"}</p>
             </div>
             <p className="song-duration">{song.duration}</p>
         </div>

@@ -6,7 +6,7 @@ import { PlayerProvider } from "./components/Player/PlayerContext.jsx";
 import MainLayout from "./layout/MainLayout/MainLayout";
 
 // Páginas principales
-import Home from "./pages/Home/Home";  // <-- 🏠 Nueva página principal
+import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Register1 from "./pages/Register/Register1";
@@ -30,8 +30,8 @@ function App() {
                     {/* Páginas dentro del MainLayout */}
                     <Route path="/" element={<MainLayout />}>
                         <Route index element={<Home />} /> {/* Página principal en "/" */}
-                        <Route path="home" element={<Home />} /> {/* 🔹 Agregamos /home */}
-                        <Route path="playlist" element={<Playlist />} />
+                        <Route path="home" element={<Home />} />
+                        <Route path="playlist/:playlistId" element={<Playlist />} />
                         <Route path="library" element={<Library />} />
                         <Route path="account" element={<AccountInfo />} />
                     </Route>

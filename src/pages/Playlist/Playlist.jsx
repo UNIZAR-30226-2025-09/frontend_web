@@ -1,10 +1,10 @@
 import { FaHeart, FaEllipsisH, FaPlay } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import {useOutletContext, useParams} from "react-router-dom";
 import "./Playlist.css"; // Layout y estilos generales
-import "../../components/SongItem/SongItem.css"; // Estilos de la lista de canciones
-import Player from "../../components/Player/Player";
+import "../../components/SongItem/songItem.css"; // Estilos de la lista de canciones
 import { PlayerProvider, usePlayer } from "../../components/Player/PlayerContext.jsx";
+import {SlPlaylist} from "react-icons/sl";
 
 // Convierte segundos a m:ss
 function formatDuration(seconds) {
@@ -18,10 +18,47 @@ function formatDuration(seconds) {
 const PlaylistContent = () => {
     const { playlistId } = useParams();
     const [playlist, setPlaylist] = useState(null);
-    const { setCurrentSong, setCurrentIndex, setSongs } = usePlayer();
+    const { setSongs } = usePlayer();
     const [isEditing, setIsEditing] = useState(false);
     const [newTitle, setNewTitle] = useState("");
     const [newDescription, setNewDescription] = useState("");
+    const [isShuffling, setIsShuffling] = useState(false);
+    const [setCurrentPlaylist] = useState(playlist);
+    const [isLiked, setIsLiked] = useState(false);
+    const user_Id = 2;
+    const { setCurrentSong, setActiveSection, activeSection } = useOutletContext();
+
+
+    useEffect(() => {
+        console.log("📌 Entrando a Playlist, activando sección...");
+
+        if (activeSection !== "playlists") {
+            setActiveSection("playlists");
+        }
+    }, [setActiveSection, activeSection]);
+
+    // Alternar el estado del modo aleatorio
+    const toggleShuffle = () => {
+        setIsShuffling(prev => !prev);
+
+        if (!isShuffling) {
+            // Si se activa el aleatorio, mezclar la lista
+            setCurrentPlaylist(shuffleArray([...playlist]));
+        } else {
+            // Si se desactiva, volver al orden original
+            setCurrentPlaylist(playlist);
+        }
+    };
+
+    // Función para mezclar la lista (algoritmo de Fisher-Yates)
+    const shuffleArray = (array) => {
+        let shuffled = array.slice();
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    };
 
     useEffect(() => {
         if (!playlistId) return;
@@ -37,6 +74,15 @@ const PlaylistContent = () => {
                 console.log("Playlist cargada:", data);
                 setPlaylist(data);
                 setSongs(data.songs); // Actualiza la lista de canciones en el contexto
+
+                // Verificar si el usuario ya ha dado like
+                const likeResponse = await fetch(`http://localhost:5001/api/playlists/${playlistId}/like`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                const likeData = await likeResponse.json();
+                setIsLiked(likeData.isLiked);
             } catch (error) {
                 console.error("Error al obtener la playlist:", error);
             }
@@ -45,14 +91,42 @@ const PlaylistContent = () => {
         fetchPlaylist();
     }, [playlistId, setSongs]);
 
+    const toggleLike = async () => {
+        try {
+            const method = "POST"; // Siempre hacemos una petición POST (Sequelize maneja el toggle)
+
+            console.log(" Enviando petición de like/unlike:");
+            console.log(" user_id:", user_Id);
+            console.log(" playlist_id:", playlistId);
+
+            const response = await fetch(`http://localhost:5001/api/playlists/${playlistId}/like`, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user_id: user_Id })
+            });
+
+            const responseData = await response.json();
+            console.log(" Respuesta del servidor:", responseData);
+
+            if (!response.ok) throw new Error(responseData.error || "Error al cambiar el estado del like");
+
+            setIsLiked(responseData.liked);
+        } catch (error) {
+            console.error("Error al dar/quitar like:", error);
+        }
+    };
+
+
+
+
     if (!playlist) {
         return <p>Cargando playlist...</p>;
     }
 
-    const handlePlaySong = (song, index) => {
+    const handlePlaySong = (song) => {
         console.log(`Reproduciendo: ${song.name}`);
-        setCurrentSong(song);
-        setCurrentIndex(index);
+        console.log("Guardando canción en el estado:", song);
+        setCurrentSong( song );
     };
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
@@ -94,11 +168,6 @@ const PlaylistContent = () => {
 
     return (
         <div className="layout">
-            {/* Columna izquierda: reproductor */}
-            <div className="box-sidebar">
-                <Player />
-            </div>
-
             {/* Columna derecha: contenido de la playlist */}
             <div className="box">
                 <div className="play-cont">
@@ -135,21 +204,31 @@ const PlaylistContent = () => {
                                 <p className="text-gray-300 text-sm uppercase">Lista</p>
                                 <h1>{playlist.name}</h1>
                                 <p>{playlist.description}</p>
-                                <p>{playlist.user?.nickname || "Desconocido"} • Guardada veces • {playlist.songs.length} canciones</p>
+                                <p>{playlist.user?.nickname || "Desconocido"} • Guardada {playlist.likes} veces • {playlist.songs.length} canciones</p>
                             </>
                         )}
-
                     </div>
                 </div>
 
                 <div className="playlist-actions">
                     {/* Botón principal grande con solo el ícono */}
-                    <button className="play-btn">
-                        <FaPlay />
-                    </button>
+                    <div className="rep-cont">
+                        <button className="play-btn">
+                            <FaPlay/>
+                        </button>
+
+                        <button className="shuffle-btn" onClick={toggleShuffle}>
+                            <SlPlaylist className={`shuffle-icon ${isShuffling ? "active" : ""}`}/>
+                        </button>
+                    </div>
+
                     <div className="actions-right">
-                        <FaHeart className="icon" />
-                        <FaEllipsisH className="icon" />
+                        <button className="shuffle-btn" onClick={toggleLike}>
+                            <FaHeart
+                                className={`icon heart-icon ${isLiked ? "liked" : ""}`}
+                            />
+                        </button>
+                        <FaEllipsisH className="icon"/>
                     </div>
                 </div>
 
@@ -172,32 +251,32 @@ const PlaylistContent = () => {
                                     <span className="song-index">{index + 1}</span>
                                     <button
                                         className="play-icon"
-                                        onClick={() => handlePlaySong(song, index)}
+                                        onClick={() => handlePlaySong(song)}
                                     >
                                         <FaPlay />
                                     </button>
                                 </div>
 
                                 {/* Columna 2: Portada */}
-                                <img src={song.cover} alt={song.name} className="song-cover" />
+                                <img src={song.photo_video} alt={song.name} className="song-cover" />
 
                                 {/* Columna 3: Título */}
                                 <span className="song-title">{song.name}</span>
 
                                 {/* Columna 4: Álbum */}
                                 <span className="song-artist">
-                  {song.album?.name || "Sin álbum"}
-                </span>
+                                  {song.album?.name || "Sin álbum"}
+                                </span>
 
                                 {/* Columna 5: Fecha */}
                                 <span className="song-date">
-                  {song.song_playlist?.date || "Fecha desconocida"}
-                </span>
+                                  {song.song_playlist?.date || "Fecha desconocida"}
+                                </span>
 
                                 {/* Columna 6: Duración (min:seg) */}
                                 <span className="song-duration">
-                  {formatDuration(song.duration)}
-                </span>
+                                  {formatDuration(song.duration)}
+                                </span>
                             </div>
                         ))}
                     </div>

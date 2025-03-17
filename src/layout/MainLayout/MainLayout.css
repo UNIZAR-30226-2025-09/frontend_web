@@ -25,13 +25,13 @@ html, body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 300px;
+    width: 370px;
     background: #2c2c2c;
     padding: 20px;
     border-radius: 20px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
     flex-shrink: 0;
-    height: 100vh; /* 🔹 La sidebar ocupará toda la altura de la pantalla */
+    height: 110vh;
     position: sticky;
     top: 0;
 }
@@ -54,11 +54,32 @@ html, body {
 
 /* Contenedor del reproductor */
 .player-container {
-    background: #3a3a3a;
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
+    width: 100%; /* o el valor que quieras */
+    background: linear-gradient(to bottom, #0399b6, #ffffff);
     color: white;
+    border-radius: 12px;
+
+    /* Ocupa toda la altura de la pantalla */
+    height: 100vh;
+    box-sizing: border-box;
+
+    /* Si quieres que la barra lateral siga fija al hacer scroll en la página: */
+    position: sticky;
+    top: 0;
+
+    /* Flexbox para centrar en vertical y horizontal */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centra verticalmente */
+    align-items: center;     /* Centra horizontalmente */
+
+    /* Si la sidebar tiene contenido extra (menús, enlaces, etc.)
+       y deseas que el reproductor se mantenga centrado,
+       pon ese contenido por arriba o abajo y ajusta su estilo en consecuencia.
+       Si el contenido es demasiado largo, la sidebar podría scrollear. */
+    overflow-y: auto;
+    /* Con 'overflow-y: auto;', si la sidebar sobrepasa la pantalla,
+       se activará un scroll interno en la columna. */
 }
 
 /* Mantiene la barra superior fija dentro del contenedor */
