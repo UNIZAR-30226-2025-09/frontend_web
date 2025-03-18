@@ -6,6 +6,7 @@ const Home = () => {
     const { playlistsRef, recommendationsRef, albumsRef, artistsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp } = useOutletContext();
 
     const [vibraPlaylists, setVibraPlaylists] = useState([]);
+    const [popularArtists, setPopularArtists] = useState([]);
 
     // Obtener playlists con typeP = "Vibra" desde el backend
     useEffect(() => {
@@ -20,6 +21,20 @@ const Home = () => {
         };
 
         fetchVibraPlaylists();
+    }, []);
+
+    useEffect(() => {
+        const fetchArtists = async () => {
+            try {
+                const response = await fetch("http://localhost:5001/api/artist/artists");
+                const data = await response.json();
+                setPopularArtists(data);
+            } catch (error) {
+                console.error("Error al obtener los artistas:", error);
+            }
+        };
+
+        fetchArtists();
     }, []);
 
     return (
@@ -44,14 +59,17 @@ const Home = () => {
                                 : "/default-playlist.jpg";
 
                             return (
-                                <div key={playlist.id} className="home-playlist-card">
-                                    <img
-                                        src={playlistImage}
-                                        alt={playlist.name}
-                                        className="playlist-image"
-                                        onError={(e) => e.target.src = "/default-playlist.jpg"} // Si la imagen falla, usa una por defecto
-                                    />
-                                    <p className="playlist-title">{playlist.name}</p>
+                                <div key={playlist.id}
+                                     className="playlist-wrapper">  {/* 🔥 Contenedor general para que imagen y texto no estén juntos */}
+                                    <div className="home-playlist-card">
+                                        <img
+                                            src={playlistImage}
+                                            alt={playlist.name}
+                                            className="playlist-image"
+                                            onError={(e) => e.target.src = "/default-playlist.jpg"} // Si la imagen falla, usa una por defecto
+                                        />
+                                    </div>
+                                    <p className="playlist-title">{playlist.name}</p> {/* 🔥 Ahora está FUERA del div de la imagen */}
                                 </div>
                             );
                         })
@@ -112,15 +130,32 @@ const Home = () => {
                 onMouseLeave={() => handleMouseUp(artistsRef)}
             >
                 <div className="home-artists">
-                    <div className="home-artist-card">Artista 1</div>
-                    <div className="home-artist-card">Artista 2</div>
-                    <div className="home-artist-card">Artista 3</div>
-                    <div className="home-artist-card">Artista 4</div>
-                    <div className="home-artist-card">Artista 5</div>
-                    <div className="home-artist-card">Artista 6</div>
+                    {popularArtists.length > 0 ? (
+                        popularArtists.map((artist) => {
+                            const artistImage = artist.photo
+                                ? artist.photo.startsWith("http")
+                                    ? artist.photo
+                                    : `http://localhost:5001/${artist.photo.replace(/^\/?/, "")}`
+                                : "/default-artist.jpg";
+
+                            return (
+                                <div key={artist.id} className="artist-wrapper">
+                                    <div className="home-artist-card">
+                                        <img
+                                            src={artistImage}
+                                            alt={artist.name}
+                                            className="artist-image"
+                                            onError={(e) => e.target.src = "/default-artist.jpg"}
+                                        />
+                                    </div>
+                                    <p className="artist-title">{artist.name}</p>
+                                </div>
+                            );                        })
+                    ) : (
+                        <p>Cargando artistas...</p>
+                    )}
                 </div>
             </div>
-
         </div>
     );
 };
