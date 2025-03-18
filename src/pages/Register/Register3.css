@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
+
+.register3-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #1e1e1e;
+}
+
+.register3-box {
+    background-color: #121212;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.692);
+    text-align: center;
+    color: white;
+    width: 550px; /* Ancho igual al de register2 */
+    border: 2px solid #79e2ff; /* Borde azul */
+}
+
+.logo {
+    width: 80px;
+    cursor: pointer;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 5px;
+    background-color: #333;
+    border-radius: 2px;
+    margin: 15px 0;
+}
+
+.progress {
+    height: 100%;
+    background-color: #79e2ff; /* Azul */
+    border-radius: 2px;
+}
+
+.title {
+    font-size: 22px;
+    margin: 10px 0;
+}
+
+.terms-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 20px 0;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background-color: #232323;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.checkbox-container input {
+    margin-top: 5px;
+}
+
+.checkbox-container label {
+    font-size: 14px;
+    text-align: left;
+    flex: 1;
+}
+
+.terms-text {
+    font-size: 12px;
+    color: #b3b3b3;
+    margin: 10px 0;
+}
+
+.terms-text a {
+    color: #79e2ff; /* Azul */
+    text-decoration: none;
+}
+
+.terms-text a:hover {
+    text-decoration: underline;
+}
+
+.register-btn {
+    background-color: #79e2ff; /* Azul */
+    color: black;
+    border: none;
+    padding: 12px;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.register-btn:hover {
+    background-color: #5ac2e0;
+}

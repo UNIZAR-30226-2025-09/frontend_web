@@ -3,7 +3,7 @@ import { useNavigate, Outlet } from "react-router-dom";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import Navbar from "../../components/Navbar/Navbar";
 import Player from "../../components/Player/Player";
-import logo from "/public/vibra.png";
+const logo = "/vibra.png"; // ✅ Esto funciona en Vite
 import "./MainLayout.css";
 
 const MainLayout = () => {
@@ -92,6 +92,7 @@ const MainLayout = () => {
 
     return (
         <div className="main-layout">
+
             <aside className="sidebar">
                 <div className="profile-container">
                     {user ? (
