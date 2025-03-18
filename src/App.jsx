@@ -11,6 +11,9 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Register1 from "./pages/Register/Register1";
 import Register2 from "./pages/Register/Register2";
+import Register3 from "./pages/Register/Register3";
+import TerminosYCondiciones from "./pages/Register/TerminosYCondiciones";
+import PoliticaPrivacidad from "./pages/Register/PoliticaPrivacidad";
 import Playlist from "./pages/Playlist/Playlist";
 import Library from "./pages/Library/Library";
 import AccountInfo from "./pages/AccountInfo/AccountInfo";
@@ -26,6 +29,7 @@ function App() {
                     <Route path="/register" element={<Register />} />
                     <Route path="/register1" element={<Register1 />} />
                     <Route path="/register2" element={<Register2 />} />
+                    <Route path="/register3" element={<Register3 />} />
 
                     {/* Páginas dentro del MainLayout */}
                     <Route path="/" element={<MainLayout />}>

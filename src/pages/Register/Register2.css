@@ -1,11 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
+
 .register2-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #121212; /* Color corregido para que coincida con Register1 */
+    background-color: #1b1b1b !important; /* Mismo color que Register y Register1 */
 }
 
 .register2-box {
@@ -16,6 +18,17 @@
     width: 550px;
     color: white;
     box-shadow: 0 4px 8px rgba(255, 255, 255, 0.692);
+}
+
+/* Aseguramos que no afecte a otras páginas */
+body.register2-page {
+    background-color: #1b1b1b !important;
+}
+
+
+/* Asegurar que ningún otro estilo lo sobreescriba */
+body {
+    background-color: #1e1e1e !important;
 }
 
 .register2-logo {
@@ -122,6 +135,7 @@
 }
 
 .register2-btn-next:hover {
-    background-color: #79e2ffc2;
+    background-color: #1e1e1e; /* Mismo color que Register y Register1 */
+
 }
 
