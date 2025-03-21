@@ -16,10 +16,34 @@ function Register() {
             return;
         }
 
-        // Guardar el correo en localStorage para pasarlo a los siguientes pasos
-        localStorage.setItem("email", email);
+        try {
+            // Hacer una petición al backend para verificar si el correo ya está registrado
+            const response = await fetch("http://localhost:5001/api/user/check-email", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ mail: email }),
+            });
 
-        navigate("/register1"); // Redirige a Register1 después de validar el correo
+            const data = await response.json();
+
+            // Si el correo ya está registrado
+            if (data.exists) {
+                setErrorMessage("El correo electrónico ya está registrado.");
+                return;
+            }
+
+            // Guardar el correo en localStorage para pasarlo a los siguientes pasos
+            localStorage.setItem("email", email);
+
+            // Redirigir al siguiente paso del registro
+            navigate("/register1");
+
+        } catch (error) {
+            console.error("Error al verificar el correo:", error);
+            setErrorMessage("Hubo un problema al verificar el correo.");
+        }
     };
 
     return (
