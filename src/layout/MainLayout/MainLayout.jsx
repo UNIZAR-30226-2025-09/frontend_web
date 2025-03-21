@@ -5,17 +5,29 @@ import Navbar from "../../components/Navbar/Navbar";
 import Player from "../../components/Player/Player";
 const logo = "/vibra.png"; // ✅ Esto funciona en Vite
 import "./MainLayout.css";
+import {PlayerProvider, usePlayer} from "../../components/Player/PlayerContext";
+
 
 const MainLayout = () => {
     const navigate = useNavigate();
 
     const [user, setUser] = useState(null);
+    const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs, setSongs } = usePlayer();
 
-    const [currentSong, setCurrentSong] = useState(null);
 
     const setCurrentSongWrapper = (song) => {
         console.log("🎶 Recibiendo nueva canción en MainLayout:", song);
         setCurrentSong(song);
+    };
+
+    const setCurrentIndexWrapper = (index) => {
+        console.log("🎶 Recibiendo nuevo indice en MainLayout:", index);
+        setCurrentIndex(index);
+    };
+
+    const setCurrentSongsWrapper = (songs) => {
+        console.log("🎶 Recibiendo nuevas songs en MainLayout:", songs);
+        setSongs(songs);
     };
 
     useEffect(() => {
@@ -129,8 +141,7 @@ const MainLayout = () => {
                 </div>
                 <Navbar />
                 <div className="player-container">
-                    <Player key={currentSong ? currentSong.id : "no-song"} currentSong={currentSong} />
-
+                        <Player currentSong={currentSong} currentIndex={currentIndex} songs={songs} />
                 </div>
             </aside>
 
@@ -146,6 +157,9 @@ const MainLayout = () => {
                 </div>
 
                 <Outlet context={{
+                    currentSong,
+                    currentIndex,
+                    songs,
                     playlistsRef,
                     recommendationsRef,
                     albumsRef,
@@ -157,6 +171,8 @@ const MainLayout = () => {
                     handleMouseMove,
                     handleMouseUp,
                     setCurrentSong: setCurrentSongWrapper,
+                    setCurrentIndex: setCurrentIndexWrapper,
+                    setSongs: setCurrentSongsWrapper,
 
                 }}/>
             </div>
@@ -164,4 +180,13 @@ const MainLayout = () => {
     );
 };
 
-export default MainLayout;
+// Envolver MainLayout con PlayerProvider
+const MainLayoutWithProvider = () => {
+    return (
+        <PlayerProvider>
+            <MainLayout />
+        </PlayerProvider>
+    );
+};
+
+export default MainLayoutWithProvider;

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {useOutletContext, useParams} from "react-router-dom";
 import "./Playlist.css"; // Layout y estilos generales
 import "../../components/SongItem/songItem.css"; // Estilos de la lista de canciones
-import { PlayerProvider, usePlayer } from "../../components/Player/PlayerContext.jsx";
+import { PlayerProvider} from "../../components/Player/PlayerContext.jsx";
 import {SlPlaylist} from "react-icons/sl";
 
 // Convierte segundos a m:ss
@@ -18,19 +18,17 @@ function formatDuration(seconds) {
 const PlaylistContent = () => {
     const { playlistId } = useParams();
     const [playlist, setPlaylist] = useState(null);
-    const { setSongs } = usePlayer();
     const [isEditing, setIsEditing] = useState(false);
     const [newTitle, setNewTitle] = useState("");
     const [newDescription, setNewDescription] = useState("");
     const [isShuffling, setIsShuffling] = useState(false);
-    const [setCurrentPlaylist] = useState(playlist);
     const [isLiked, setIsLiked] = useState(false);
     const user_Id = 2;
-    const { setCurrentSong, setActiveSection, activeSection } = useOutletContext();
+    const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs } = useOutletContext();
 
 
     useEffect(() => {
-        console.log("📌 Entrando a Playlist, activando sección...");
+        console.log(" Entrando a Playlist, activando sección...");
 
         if (activeSection !== "playlists") {
             setActiveSection("playlists");
@@ -40,14 +38,6 @@ const PlaylistContent = () => {
     // Alternar el estado del modo aleatorio
     const toggleShuffle = () => {
         setIsShuffling(prev => !prev);
-
-        if (!isShuffling) {
-            // Si se activa el aleatorio, mezclar la lista
-            setCurrentPlaylist(shuffleArray([...playlist]));
-        } else {
-            // Si se desactiva, volver al orden original
-            setCurrentPlaylist(playlist);
-        }
     };
 
     // Función para mezclar la lista (algoritmo de Fisher-Yates)
@@ -73,10 +63,9 @@ const PlaylistContent = () => {
                 const data = await response.json();
                 console.log("Playlist cargada:", data);
                 setPlaylist(data);
-                setSongs(data.songs); // Actualiza la lista de canciones en el contexto
-
+                console.log("Canciones de la playlist", data.songs);
                 // Verificar si el usuario ya ha dado like
-                const likeResponse = await fetch(`http://localhost:5001/api/playlists/${playlistId}/like`, {
+                const likeResponse = await fetch(`http://localhost:5001/api/playlists/${playlistId}/like?user_id=${user_Id}`, {
                     method: "GET",
                     headers: { "Content-Type": "application/json" }
                 });
@@ -89,7 +78,7 @@ const PlaylistContent = () => {
         };
 
         fetchPlaylist();
-    }, [playlistId, setSongs]);
+    }, [playlistId, user_Id]);
 
     const toggleLike = async () => {
         try {
@@ -123,11 +112,31 @@ const PlaylistContent = () => {
         return <p>Cargando playlist...</p>;
     }
 
-    const handlePlaySong = (song) => {
+    const handlePlaySong = (song, index, songs) => {
         console.log(`Reproduciendo: ${song.name}`);
         console.log("Guardando canción en el estado:", song);
         setCurrentSong( song );
+        setCurrentIndex( index );
+        setSongs(songs);
     };
+    const handlePlaySongs = (songs) => {
+        console.log("Reproduciendo canciones en modo aleatorio...");
+
+        if(isShuffling){
+            // Shuffle array of songs
+            const shuffledSongs = shuffleArray(songs);
+            // Reproducir la primera canción del array mezclado
+            setCurrentSong(shuffledSongs[0]); // o la canción que desees
+            setCurrentIndex(0); // O el índice correspondiente
+            setSongs(shuffledSongs); // Actualiza las canciones
+        }
+        else{
+            setCurrentSong(songs[0]); // o la canción que desees
+            setCurrentIndex(0); // O el índice correspondiente
+            setSongs(songs); // Actualiza las canciones
+        }
+    };
+
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
     };
@@ -213,7 +222,7 @@ const PlaylistContent = () => {
                 <div className="playlist-actions">
                     {/* Botón principal grande con solo el ícono */}
                     <div className="rep-cont">
-                        <button className="play-btn">
+                        <button className="play-btn" onClick={() => handlePlaySongs(playlist.songs)}>
                             <FaPlay/>
                         </button>
 
@@ -251,7 +260,7 @@ const PlaylistContent = () => {
                                     <span className="song-index">{index + 1}</span>
                                     <button
                                         className="play-icon"
-                                        onClick={() => handlePlaySong(song)}
+                                        onClick={() => handlePlaySong(song, index, playlist.songs)}
                                     >
                                         <FaPlay />
                                     </button>

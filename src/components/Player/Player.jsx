@@ -1,20 +1,17 @@
 import  { useEffect, useState, useRef } from "react";
 import { Howl } from "howler";
-import { usePlayer } from "./PlayerContext.jsx";
 import { AiFillPlayCircle, AiFillPauseCircle } from "react-icons/ai";
 import { BiSkipNext, BiSkipPrevious } from "react-icons/bi";
 import { IconContext } from "react-icons";
 
 /* Importa las clases desde tu archivo CSS Module */
 import styles from "./PlayerStyles.module.css";
+import { usePlayer} from "../../components/Player/PlayerContext";
 
-function Player({ currentSong }) {
-    const {
-        songs,
-        setCurrentSong,
-        currentIndex,
-        setCurrentIndex
-    } = usePlayer();
+function Player() {
+    const [noSongSelected, setNoSongSelected] = useState(true);
+
+    const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs } = usePlayer();
 
     const [isPlaying, setIsPlaying] = useState(false);
     const [currTime, setCurrTime] = useState({ min: 0, sec: 0 });
@@ -25,8 +22,14 @@ function Player({ currentSong }) {
     const soundRef = useRef(null);
     const intervalRef = useRef(null);
 
-    // Para saber si hay o no canción seleccionada:
-    const noSongSelected = !currentSong;
+    // Si el contexto cambia, actualizamos el estado de noSongSelected
+    useEffect(() => {
+        if (!currentSong) {
+            setNoSongSelected(true);
+        } else {
+            setNoSongSelected(false);
+        }
+    }, [currentSong]);
 
     // Obtenemos la URL de la canción
     const songUrl = currentSong?.url_mp3
@@ -34,6 +37,10 @@ function Player({ currentSong }) {
             ? currentSong.url_mp3
             : `http://localhost:5001/${currentSong.url_mp3.replace(/^\/?/, "")}`
         : null;
+
+    useEffect(() => {
+        console.log("🎵 Player detecta cambio de index:", currentIndex);
+    }, [currentIndex]);
 
     useEffect(() => {
         console.log("🎵 Player detecta cambio de canción:", currentSong);
@@ -62,6 +69,7 @@ function Player({ currentSong }) {
             format: ["mp3"],
             onload: () => {
                 console.log("✅ Canción cargada:", currentSong.name);
+                console.log("✅ Index cargada:", currentIndex);
                 const sec = sound.duration();
                 setDuration(sec * 1000);
                 setTotalTime({
@@ -95,7 +103,7 @@ function Player({ currentSong }) {
                 clearInterval(intervalRef.current);
             }
         };
-    }, [currentSong, songUrl]);
+    }, [currentIndex, currentSong, songUrl]);
 
 
     // Cleanup al desmontar
@@ -145,6 +153,8 @@ function Player({ currentSong }) {
     const handleNext = () => {
         if (!songs.length) return;
         const nextIndex = (currentIndex + 1) % songs.length;
+        console.log("sigueinte indice tusabe", nextIndex);
+        console.log("Siguiente songs: ", songs[nextIndex]);
         setCurrentIndex(nextIndex);
         setCurrentSong(songs[nextIndex]);
     };
