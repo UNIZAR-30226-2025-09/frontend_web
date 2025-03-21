@@ -15,11 +15,13 @@
 
 /* Contenedor de la imagen de la canción */
 .musicCover {
-    width: 300px;
-    height: 300px;
+    width: 250px;
+    height: 250px;
     object-fit: cover;
     border-radius: var(--borderRadius);
     margin-bottom: 1.5rem;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Contenedor de la información de la canción */
@@ -55,6 +57,7 @@
     background: none;
     border: none;
     cursor: pointer;
+    display: flex;
 }
 
 /* Botón circular grande (Play/Pause) */
