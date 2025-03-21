@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Register.css"; // Asegúrate de que el path sea correcto
+import "./Register.css";
 
 function Register() {
     const [email, setEmail] = useState("");
@@ -15,6 +15,9 @@ function Register() {
             setTimeout(() => setErrorMessage(""), 2000); // El error desaparece después de 2 segundos
             return;
         }
+
+        // Guardar el correo en localStorage para pasarlo a los siguientes pasos
+        localStorage.setItem("email", email);
 
         navigate("/register1"); // Redirige a Register1 después de validar el correo
     };
@@ -44,7 +47,7 @@ function Register() {
                         />
                     </div>
                     {errorMessage && <p style={{ color: "red", fontSize: "14px" }}>{errorMessage}</p>}
-                    <button type="submit" className="btn-blue" >
+                    <button type="submit" className="btn-blue">
                         Siguiente
                     </button>
                 </form>

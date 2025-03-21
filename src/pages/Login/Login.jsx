@@ -13,6 +13,7 @@ function Login() {
         e.preventDefault();
         let error = "";
 
+        // Validación de email y contraseña
         if (!email.includes("@")) {
             error = "El correo electrónico debe contener '@'";
         } else if (password.length < 6) {
@@ -34,7 +35,7 @@ function Login() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    mail: email, // 🔹 Usamos "mail" en lugar de "email" (según el backend)
+                    mail: email, // Usamos "mail" en lugar de "email" (según el backend)
                     password,
                 }),
             });
@@ -46,7 +47,7 @@ function Login() {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("user", JSON.stringify(data.user));
 
-                // Notificar a MainLayout que el usuario ha iniciado sesión
+                // Notificar a MainLayout que el usuario ha iniciado sesión (si necesario)
                 window.dispatchEvent(new Event("storage"));
 
                 alert("Inicio de sesión exitoso");
