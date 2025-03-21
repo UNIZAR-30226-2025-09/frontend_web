@@ -15,11 +15,13 @@
 
 /* Contenedor de la imagen de la canción */
 .musicCover {
-    width: 300px;
-    height: 300px;
+    width: 250px;
+    height: 250px;
     object-fit: cover;
     border-radius: var(--borderRadius);
     margin-bottom: 1.5rem;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Contenedor de la información de la canción */
@@ -40,32 +42,22 @@
     color: var(--colorPrimaryLight2);
 }
 /* Contenedor de controles (prev, play, next) en fila */
-/* Contenedor de los controles, distribuidos en columna */
 .controls {
     display: flex;
-    flex-direction: column;   /* Cambia la dirección a columna */
-    align-items: center;      /* Centra los controles */
-    gap: 1rem;                /* Espacio entre los controles */
+    flex-direction: row;        /* Cambia a 'row' para una distribución horizontal */
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;                  /* Espacio entre botones */
+    margin-bottom: 1rem;
+    text-align: center;
 }
 
-/* Contenedor de los botones prev, play/pause, next */
-.controlButtons {
-    display: flex;
-    flex-direction: row;      /* Mantén los botones en fila */
-    gap: 1rem;
-}
-
-/* Estilo para el botón de "Me Gusta" */
-.likeButtonContainer {
-    margin-top: 1rem;   /* Espacio entre los controles y el botón de "Me Gusta" */
-}
-
-.likeButton {
+/* Botón genérico (prev y next) */
+.controlButton {
     background: none;
     border: none;
-    color: #e74c3c;
     cursor: pointer;
-    font-size: 2.5rem;
+    display: flex;
 }
 
 /* Botón circular grande (Play/Pause) */

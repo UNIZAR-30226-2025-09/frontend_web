@@ -1,7 +1,7 @@
 
 // src/Reproductor/SongList.jsx
 import { useState, useEffect } from "react";
-import { usePlayer } from "./PlayerContext";
+import {useOutletContext} from "react-router-dom";
 
 function SongList() {
     const [loading, setLoading] = useState(true);
@@ -13,7 +13,7 @@ function SongList() {
         setSongs,
         setCurrentSong,
         setCurrentIndex
-    } = usePlayer();
+    } = useOutletContext();
 
     useEffect(() => {
         const fetchData = async () => {

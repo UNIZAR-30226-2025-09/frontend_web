@@ -230,3 +230,11 @@
     background-color: #0399b6;
 }
 
+.heart-icon {
+    color: #ccc;  /* Color predeterminado (gris) */
+}
+
+.heart-icon.liked {
+    color: #dd1e41;  /* Color rojo cuando se le da like */
+}
+

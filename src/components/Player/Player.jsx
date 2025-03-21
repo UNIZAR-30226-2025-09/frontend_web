@@ -1,36 +1,35 @@
-import { useEffect, useState, useRef } from "react";
+import  { useEffect, useState, useRef } from "react";
 import { Howl } from "howler";
-import { usePlayer } from "./PlayerContext.jsx";
 import { AiFillPlayCircle, AiFillPauseCircle } from "react-icons/ai";
 import { BiSkipNext, BiSkipPrevious } from "react-icons/bi";
-import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";  // Iconos de corazón
 import { IconContext } from "react-icons";
 
 /* Importa las clases desde tu archivo CSS Module */
 import styles from "./PlayerStyles.module.css";
-import axios from 'axios';
+import { usePlayer} from "../../components/Player/PlayerContext";
 
-function Player({ currentSong }) {
-    const userId=1;
-    const {
-        songs,
-        setCurrentSong,
-        currentIndex,
-        setCurrentIndex
-    } = usePlayer();
+function Player() {
+    const [noSongSelected, setNoSongSelected] = useState(true);
+
+    const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs } = usePlayer();
 
     const [isPlaying, setIsPlaying] = useState(false);
     const [currTime, setCurrTime] = useState({ min: 0, sec: 0 });
     const [totalTime, setTotalTime] = useState({ min: 0, sec: 0 });
     const [seconds, setSeconds] = useState(0);
     const [duration, setDuration] = useState(0);
-    const [isLiked, setIsLiked] = useState(false); // Estado para saber si la canción está en favoritos
 
     const soundRef = useRef(null);
     const intervalRef = useRef(null);
 
-    // Para saber si hay o no canción seleccionada:
-    const noSongSelected = !currentSong;
+    // Si el contexto cambia, actualizamos el estado de noSongSelected
+    useEffect(() => {
+        if (!currentSong) {
+            setNoSongSelected(true);
+        } else {
+            setNoSongSelected(false);
+        }
+    }, [currentSong]);
 
     // Obtenemos la URL de la canción
     const songUrl = currentSong?.url_mp3
@@ -38,6 +37,10 @@ function Player({ currentSong }) {
             ? currentSong.url_mp3
             : `http://localhost:5001/${currentSong.url_mp3.replace(/^\/?/, "")}`
         : null;
+
+    useEffect(() => {
+        console.log("🎵 Player detecta cambio de index:", currentIndex);
+    }, [currentIndex]);
 
     useEffect(() => {
         console.log("🎵 Player detecta cambio de canción:", currentSong);
@@ -66,6 +69,7 @@ function Player({ currentSong }) {
             format: ["mp3"],
             onload: () => {
                 console.log("✅ Canción cargada:", currentSong.name);
+                console.log("✅ Index cargada:", currentIndex);
                 const sec = sound.duration();
                 setDuration(sec * 1000);
                 setTotalTime({
@@ -99,23 +103,21 @@ function Player({ currentSong }) {
                 clearInterval(intervalRef.current);
             }
         };
-    }, [currentSong, songUrl]);
+    }, [currentIndex, currentSong, songUrl]);
 
-    // Función para verificar si la canción está en los favoritos
+
+    // Cleanup al desmontar
     useEffect(() => {
-        if (!currentSong || !userId) return;
-
-        const checkIfLiked = async () => {
-            try {
-                const response = await axios.get(`/api/song_like/check?userId=${userId}&songId=${currentSong.id}`);
-                setIsLiked(response.data.isLiked);
-            } catch (error) {
-                console.error("Error al verificar los favoritos:", error);
+        return () => {
+            if (soundRef.current) {
+                soundRef.current.stop();
+                soundRef.current.unload();
+            }
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
             }
         };
-
-        checkIfLiked();
-    }, [currentSong, userId]);
+    }, []);
 
     // Botón de play/pause
     const playingButton = () => {
@@ -151,39 +153,15 @@ function Player({ currentSong }) {
     const handleNext = () => {
         if (!songs.length) return;
         const nextIndex = (currentIndex + 1) % songs.length;
+        console.log("sigueinte indice tusabe", nextIndex);
+        console.log("Siguiente songs: ", songs[nextIndex]);
         setCurrentIndex(nextIndex);
         setCurrentSong(songs[nextIndex]);
     };
 
-    const toggleLike = async () => {
-        try {
-            console.log('userId:', userId, 'currentSong.id:', currentSong.id);
-            const url = isLiked
-                ? 'http://localhost:5001/api/song_like/unlike' // If already liked, unlike it
-                : 'http://localhost:5001/api/song_like/like'; // If not liked, like it
-
-            const response = await axios.post(url, {
-                user_id: userId, // Use the ID of the user from the props
-                song_id: currentSong.id, // Use the ID of the song from the props
-            });
-
-            if (response.status === 200) {
-                setIsLiked(!isLiked); // Change the state of "like"
-            }
-        } catch (error) {
-            console.error('Error al agregar/eliminar el like', error);
-            alert('Error al agregar/eliminar el like');
-        }
-    };
-
-
-
-    // Aquí va el return con el JSX del Player
-
-
     return (
         <div className={styles.playerContainer}>
-            {/* Portada de la canción */}
+            {/* Siempre mostramos la portada, aunque no haya canción. */}
             <img
                 className={styles.musicCover}
                 src={
@@ -194,7 +172,7 @@ function Player({ currentSong }) {
                 alt={noSongSelected ? "Sin canción seleccionada" : "Portada de la canción"}
             />
 
-            {/* Información de la canción */}
+            {/* Siempre mostramos info, aunque esté vacía */}
             <div className={styles.info}>
                 <h3 className={styles.title}>
                     {noSongSelected ? "Ninguna canción seleccionada" : currentSong.name}
@@ -208,53 +186,40 @@ function Player({ currentSong }) {
                 </p>
             </div>
 
-            {/* Controles de reproducción */}
             <div className={styles.controls}>
-                <div className={styles.controlButtons}>
-                    <button
-                        className={styles.controlButton}
-                        onClick={handlePrevious}
-                        disabled={noSongSelected}
-                    >
-                        <IconContext.Provider value={{ size: "3em", color: "#21a1f1" }}>
-                            <BiSkipPrevious />
-                        </IconContext.Provider>
-                    </button>
+                <button
+                    className={styles.controlButton}
+                    onClick={handlePrevious}
+                    disabled={noSongSelected}
+                >
+                    <IconContext.Provider value={{size: "3em", color: "#21a1f1" }}>
+                        <BiSkipPrevious />
+                    </IconContext.Provider>
+                </button>
 
-                    {/* Botón de Play/Pause */}
-                    <button
-                        className={styles.playerControlPlay}
-                        onClick={playingButton}
-                        disabled={noSongSelected}
-                    >
-                        <IconContext.Provider value={{ size: "3em", color: "#ffffff" }}>
-                            {isPlaying ? <AiFillPauseCircle /> : <AiFillPlayCircle />}
-                        </IconContext.Provider>
-                    </button>
+                {/* Botón de Play/Pause con estilo circular */}
+                <button
+                    className={styles.playerControlPlay}
+                    onClick={playingButton}
+                    disabled={noSongSelected}
+                >
+                    <IconContext.Provider value={{ size: "3em", color: "#ffffff" }}>
+                        {isPlaying ? <AiFillPauseCircle /> : <AiFillPlayCircle />}
+                    </IconContext.Provider>
+                </button>
 
-                    <button
-                        className={styles.controlButton}
-                        onClick={handleNext}
-                        disabled={noSongSelected}
-                    >
-                        <IconContext.Provider value={{ size: "3em", color: "#21a1f1" }}>
-                            <BiSkipNext />
-                        </IconContext.Provider>
-                    </button>
-                </div>
-
-                {/* Contenedor para el botón "Me Gusta" debajo de los controles */}
-                <div className={styles.likeButtonContainer}>
-                    <button className={styles.likeButton} onClick={toggleLike} disabled={noSongSelected}>
-                        {isLiked ? (
-                            <AiFillHeart color="#E74C3C" />
-                        ) : (
-                            <AiOutlineHeart color="#E74C3C" />
-                        )}
-                    </button>
-                </div>
+                <button
+                    className={styles.controlButton}
+                    onClick={handleNext}
+                    disabled={noSongSelected}
+                >
+                    <IconContext.Provider value={{ size: "3em", color: "#21a1f1" }}>
+                        <BiSkipNext />
+                    </IconContext.Provider>
+                </button>
             </div>
-            {/* Barra de progreso */}
+
+            {/* Barra de progreso siempre presente, pero deshabilitada si no hay canción */}
             <div className={styles.timelineContainer}>
                 <div className={styles.time}>
                     <div className={styles.timeSection}>
