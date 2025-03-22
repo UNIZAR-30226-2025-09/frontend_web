@@ -3,6 +3,7 @@ import { useNavigate, Outlet } from "react-router-dom";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import Navbar from "../../components/Navbar/Navbar";
 import Player from "../../components/Player/Player";
+import ProfileCard from "../../components/ProfileCard/ProfileCard";
 const logo = "/vibra.png"; // ✅ Esto funciona en Vite
 import "./MainLayout.css";
 import {PlayerProvider, usePlayer} from "../../components/Player/PlayerContext";
@@ -104,32 +105,18 @@ const MainLayout = () => {
 
     return (
         <div className="main-layout">
-
             <aside className="sidebar">
                 <div className="profile-container">
                     {user ? (
-                        <div>
-                            <img
-                                src={user.profilePicture || "/default-avatar.png"}
-                                alt="Avatar"
-                                className="profile-pic"
-                            />
-                            <p>{user.nickname}</p>
-                            <p>{user.mail}</p>
-
-                            {/* Botón para cerrar sesión */}
-                            <button
-                                className="logout-button"
-                                onClick={() => {
-                                    localStorage.removeItem("user"); // Eliminar usuario
-                                    localStorage.removeItem("token"); // Eliminar token
-                                    window.dispatchEvent(new Event("storage")); // Notificar cambio de sesión
-                                    navigate("/login");
-                                }}
-                            >
-                                Cerrar Sesión
-                            </button>
-                        </div>
+                        <ProfileCard
+                            user={user}
+                            onLogout={() => {
+                                localStorage.removeItem("user");
+                                localStorage.removeItem("token");
+                                window.dispatchEvent(new Event("storage"));
+                                navigate("/");
+                            }}
+                        />
                     ) : (
                         <button
                             className="login-button"

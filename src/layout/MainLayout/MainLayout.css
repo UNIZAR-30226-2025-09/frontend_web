@@ -57,7 +57,7 @@ html, body {
 .top-bar {
     position: sticky;
     width: 100%;
-    background: #2c2c2c;
+    background: #3a3a3a;
     padding: 10px 20px;
     display: flex;
     justify-content: space-between;
@@ -68,7 +68,7 @@ html, body {
 /* Asegura que el contenedor principal tenga espacio suficiente para la top-bar */
 .main-content {
     flex-grow: 1;
-    background: #2c2c2c;
+    background: #3a3a3a;
     padding: 30px;
     border-radius: 20px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
