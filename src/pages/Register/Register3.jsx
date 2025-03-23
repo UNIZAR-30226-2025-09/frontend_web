@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "#utils/apiFetch";
 import "./Register3.css";
 
 const Register3 = () => {
@@ -7,7 +8,6 @@ const Register3 = () => {
     const [checked2, setChecked2] = useState(false);
     const navigate = useNavigate();
 
-    // Obtiene los datos de los pasos anteriores desde localStorage
     const userData = JSON.parse(localStorage.getItem("userData"));
 
     const handleRegister = async () => {
@@ -17,30 +17,21 @@ const Register3 = () => {
         }
 
         try {
-            // Registro del usuario en el backend
-            const response = await fetch("http://localhost:5001/api/user/register", {
+            await apiFetch("/user/register", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    nickname: userData.nickname,  // Datos del formulario de registro
+                body: {
+                    nickname: userData.nickname,
                     password: userData.password,
-                    mail: userData.email,  // Correo del formulario
-                    name: userData.name,  // Nombre del formulario
-                    dob: userData.dob,  // Fecha de nacimiento
-                    gender: userData.gender,  // Género del formulario
-                    style_fav: userData.style_fav || "ninguno",  // Estilo favorito por defecto
-                }),
+                    mail: userData.email,
+                    name: userData.name,
+                    dob: userData.dob,
+                    gender: userData.gender,
+                    style_fav: userData.style_fav || "ninguno",
+                },
             });
 
-            if (!response.ok) {
-                throw new Error("Error al registrar el usuario");
-            }
-
-            // Después de registrar al usuario, redirigir al login
             alert("¡Registro completado, por favor inicia sesión!");
-            navigate("/login"); // Redirige a la página de login
+            navigate("/login");
 
         } catch (error) {
             console.error("Error al registrar el usuario:", error);
