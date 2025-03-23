@@ -6,6 +6,8 @@ import {SlPlaylist} from "react-icons/sl";
 import "./Playlist.css"; // Layout y estilos generales
 import "../../components/SongItem/SongItem.css"; // Estilos de la lista de canciones
 import {apiFetch} from "#utils/apiFetch";
+import { getImageUrl } from "#utils/getImageUrl";
+
 
 "#utils/apiFetch.js"
 
@@ -63,6 +65,7 @@ const PlaylistContent = () => {
                 });
 
                 console.log("Playlist cargada:", data);
+                console.log("Imagen de portada:", data.front_page); // Aquí verás la URL de la portada
                 setPlaylist(data);
                 console.log("Canciones de la playlist", data.songs);
 
@@ -163,7 +166,12 @@ const PlaylistContent = () => {
             <div className="box">
                 <div className="play-cont">
                     <div className="image" onClick={handleEditToggle} style={{cursor: "pointer"}}>
-                        <img src={playlist.front_page} width="275" alt="Playlist Cover"/>
+                        <img
+                            src={getImageUrl(playlist.front_page)}  // Usa getImageUrl aquí para generar la URL completa
+                            width="275"
+                            alt="Playlist Cover"
+                            onError={(e) => (e.target.src = "/default-playlist.jpg")} // Si la imagen falla, muestra la imagen por defecto
+                        />
                     </div>
                     <div className="playlist-info">
                         {isEditing ? (
