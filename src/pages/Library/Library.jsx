@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
+import { apiFetch } from "#utils/apiFetch"; // ✅ Asegurate que este alias (#utils) esté definido
 import "./Library.css";
 
 const Library = () => {
-    const { setActive, handleMouseDown, handleMouseMove, handleMouseUp } = useOutletContext();
+    const { setActive, handleMouseDown, handleMouseMove, handleMouseUp } = useOutletContext(); NEVER USED
     const [user, setUser] = useState(null);
     const [likedSongs, setLikedSongs] = useState([]);
     const [userPlaylists, setUserPlaylists] = useState([]);
@@ -19,24 +20,39 @@ const Library = () => {
     }, []);
 
     useEffect(() => {
-        fetch("http://localhost:5001/api/songs/liked")
-            .then(res => res.json())
-            .then(setLikedSongs)
-            .catch(error => console.error("Error al obtener canciones con like:", error));
+        const getLikedSongs = async () => {
+            try {
+                const data = await apiFetch("/songs/liked");
+                setLikedSongs(data);
+            } catch (error) {
+                console.error("Error al obtener canciones con like:", error);
+            }
+        };
+        getLikedSongs();
     }, []);
 
     useEffect(() => {
-        fetch("http://localhost:5001/api/playlists/user")
-            .then(res => res.json())
-            .then(setUserPlaylists)
-            .catch(error => console.error("Error al obtener playlists del usuario:", error));
+        const getUserPlaylists = async () => {
+            try {
+                const data = await apiFetch("/playlists/user");
+                setUserPlaylists(data);
+            } catch (error) {
+                console.error("Error al obtener playlists del usuario:", error);
+            }
+        };
+        getUserPlaylists();
     }, []);
 
     useEffect(() => {
-        fetch("http://localhost:5001/api/playlists/liked")
-            .then(res => res.json())
-            .then(setLikedPlaylists)
-            .catch(error => console.error("Error al obtener playlists con like:", error));
+        const getLikedPlaylists = async () => {
+            try {
+                const data = await apiFetch("/playlists/liked");
+                setLikedPlaylists(data);
+            } catch (error) {
+                console.error("Error al obtener playlists con like:", error);
+            }
+        };
+        getLikedPlaylists();
     }, []);
 
     const sortPlaylists = (type, setFunction, option) => {
@@ -64,7 +80,7 @@ const Library = () => {
         <div className="library-content">
             {user && <h1 className="library-title">Bienvenido a tu biblioteca, {user.nickname}!</h1>}
 
-            {/* 🔹 Sección: Canciones que te han gustado */}
+            {/* Sección: Canciones que te han gustado */}
             <div className="library-section-header">
                 <h2>Canciones que te han  gustado</h2>
             </div>
@@ -75,11 +91,11 @@ const Library = () => {
                             <img src={song.cover || "/default-song.jpg"} alt={song.title} className="library-song-image"/>
                             <p className="library-song-title">{song.title}</p>
                         </div>
-                    )) : <div className="empty-message">No tienes canciones con "Me gusta".</div>}
+                    )) : <div className="empty-message">No tienes canciones con Me gusta.</div>}
                 </div>
             </div>
 
-            {/* 🔹 Sección: Tus Playlists */}
+            {/* Sección: Tus Playlists */}
             <div className="library-section-header">
                 <h2>Tus Playlists</h2>
                 <div className="sort-options">
@@ -99,7 +115,7 @@ const Library = () => {
                 </div>
             </div>
 
-            {/* 🔹 Sección: Playlists que te han gustado */}
+            {/* Sección: Playlists que te han gustado */}
             <div className="library-section-header">
                 <h2>Playlists que te han gustado</h2>
                 <div className="sort-options">
