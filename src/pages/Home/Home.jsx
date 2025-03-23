@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import "./Home.css";
+import {apiFetch} from "#utils/apiFetch";
+import { getImageUrl } from "#utils/getImageUrl";
 
 const Home = () => {
     const { playlistsRef, recommendationsRef, albumsRef, artistsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp } = useOutletContext();
@@ -8,12 +10,10 @@ const Home = () => {
     const [vibraPlaylists, setVibraPlaylists] = useState([]);
     const [popularArtists, setPopularArtists] = useState([]);
 
-    // Obtener playlists con typeP = "Vibra" desde el backend
     useEffect(() => {
         const fetchVibraPlaylists = async () => {
             try {
-                const response = await fetch("http://localhost:5001/api/playlists/vibra");
-                const data = await response.json();
+                const data = await apiFetch("/playlists/vibra");
                 setVibraPlaylists(data);
             } catch (error) {
                 console.error("Error al obtener las playlists de Vibra:", error);
@@ -26,8 +26,7 @@ const Home = () => {
     useEffect(() => {
         const fetchArtists = async () => {
             try {
-                const response = await fetch("http://localhost:5001/api/artist/artists");
-                const data = await response.json();
+                const data = await apiFetch("/artist/artists");
                 setPopularArtists(data);
             } catch (error) {
                 console.error("Error al obtener los artistas:", error);
@@ -52,12 +51,7 @@ const Home = () => {
                 <div className="home-playlists">
                     {vibraPlaylists.length > 0 ? (
                         vibraPlaylists.map((playlist) => {
-                            const playlistImage = playlist.front_page
-                                ? playlist.front_page.startsWith("http")
-                                    ? playlist.front_page
-                                    : `http://localhost:5001/${playlist.front_page.replace(/^\/?/, "")}`
-                                : "/default-playlist.jpg";
-
+                            const playlistImage = getImageUrl(playlist.front_page, "/default-playlist.jpg");
                             return (
                                 <div key={playlist.id}
                                      className="playlist-wrapper">  {/* 🔥 Contenedor general para que imagen y texto no estén juntos */}
@@ -132,11 +126,7 @@ const Home = () => {
                 <div className="home-artists">
                     {popularArtists.length > 0 ? (
                         popularArtists.map((artist) => {
-                            const artistImage = artist.photo
-                                ? artist.photo.startsWith("http")
-                                    ? artist.photo
-                                    : `http://localhost:5001/${artist.photo.replace(/^\/?/, "")}`
-                                : "/default-artist.jpg";
+                            const artistImage = getImageUrl(artist.photo, "/default-artist.jpg");
 
                             return (
                                 <div key={artist.id} className="artist-wrapper">

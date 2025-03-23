@@ -1,10 +1,13 @@
 import { FaHeart, FaEllipsisH, FaPlay } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {useOutletContext, useParams} from "react-router-dom";
-import "./Playlist.css"; // Layout y estilos generales
-import "../../components/SongItem/SongItem.css"; // Estilos de la lista de canciones
 import { PlayerProvider} from "../../components/Player/PlayerContext.jsx";
 import {SlPlaylist} from "react-icons/sl";
+import "./Playlist.css"; // Layout y estilos generales
+import "../../components/SongItem/SongItem.css"; // Estilos de la lista de canciones
+import {apiFetch} from "#utils/apiFetch";
+
+"#utils/apiFetch.js"
 
 // Convierte segundos a m:ss
 function formatDuration(seconds) {
@@ -13,7 +16,6 @@ function formatDuration(seconds) {
     const sec = Math.floor(seconds % 60);
     return `${min}:${sec < 10 ? "0" + sec : sec}`;
 }
-
 
 const PlaylistContent = () => {
     const { playlistId } = useParams();
@@ -25,7 +27,6 @@ const PlaylistContent = () => {
     const [isLiked, setIsLiked] = useState(false);
     const user_Id = 2;
     const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs } = useOutletContext();
-
 
     useEffect(() => {
         console.log(" Entrando a Playlist, activando sección...");
@@ -56,24 +57,22 @@ const PlaylistContent = () => {
         const fetchPlaylist = async () => {
             try {
                 console.log(`Obteniendo playlist con ID: ${playlistId}`);
-                const response = await fetch(`http://localhost:5001/api/playlists/${playlistId}`);
-                if (!response.ok) {
-                    throw new Error(`Error en la solicitud: ${response.status}`);
-                }
-                const data = await response.json();
+
+                const data = await apiFetch(`/playlists/${playlistId}`, {
+                    method: "GET"
+                });
+
                 console.log("Playlist cargada:", data);
                 setPlaylist(data);
                 console.log("Canciones de la playlist", data.songs);
-                // Verificar si el usuario ya ha dado like
-                const likeResponse = await fetch(`http://localhost:5001/api/playlists/${playlistId}/like?user_id=${user_Id}`, {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json" }
+
+                const likeData = await apiFetch(`/playlists/${playlistId}/like?user_id=${user_Id}`, {
+                    method: "GET"
                 });
 
-                const likeData = await likeResponse.json();
                 setIsLiked(likeData.isLiked);
             } catch (error) {
-                console.json("Error al obtener la playlist:", error);
+                console.error("Error al obtener la playlist:", error);
             }
         };
 
@@ -82,31 +81,22 @@ const PlaylistContent = () => {
 
     const toggleLike = async () => {
         try {
-            const method = "POST"; // Siempre hacemos una petición POST (Sequelize maneja el toggle)
-
             console.log(" Enviando petición de like/unlike:");
             console.log(" user_id:", user_Id);
             console.log(" playlist_id:", playlistId);
 
-            const response = await fetch(`http://localhost:5001/api/playlists/${playlistId}/like`, {
-                method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_id: user_Id })
+            const responseData = await apiFetch(`/playlists/${playlistId}/like`, {
+                method: "POST",
+                body: { user_id: user_Id }
             });
 
-            const responseData = await response.json();
             console.log(" Respuesta del servidor:", responseData);
-
-            if (!response.ok) throw new Error(responseData.error || "Error al cambiar el estado del like");
 
             setIsLiked(responseData.liked);
         } catch (error) {
             console.error("Error al dar/quitar like:", error);
         }
     };
-
-
-
 
     if (!playlist) {
         return <p>Cargando playlist...</p>;
@@ -149,19 +139,11 @@ const PlaylistContent = () => {
                 description: newDescription || playlist.description
             };
 
-            const response = await fetch(`http://localhost:5001/api/playlists/${playlistId}`, {
+            const data = await apiFetch(`/playlists/${playlistId}`, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(updatedPlaylist)
+                body: updatedPlaylist
             });
 
-            if (!response.ok) {
-                throw new Error(`Error al actualizar: ${response.status}`);
-            }
-
-            const data = await response.json();
             setPlaylist(data);
             setIsEditing(false);
             console.log("Playlist actualizada en el backend:", data);
