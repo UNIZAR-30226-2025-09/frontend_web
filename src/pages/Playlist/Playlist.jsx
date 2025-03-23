@@ -2,7 +2,7 @@ import { FaHeart, FaEllipsisH, FaPlay } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {useOutletContext, useParams} from "react-router-dom";
 import "./Playlist.css"; // Layout y estilos generales
-import "../../components/SongItem/songItem.css"; // Estilos de la lista de canciones
+import "../../components/SongItem/SongItem.css"; // Estilos de la lista de canciones
 import { PlayerProvider} from "../../components/Player/PlayerContext.jsx";
 import {SlPlaylist} from "react-icons/sl";
 
