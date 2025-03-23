@@ -73,7 +73,7 @@ const PlaylistContent = () => {
                 const likeData = await likeResponse.json();
                 setIsLiked(likeData.isLiked);
             } catch (error) {
-                console.error("Error al obtener la playlist:", error);
+                console.json("Error al obtener la playlist:", error);
             }
         };
 

@@ -3,7 +3,9 @@ import { useNavigate, Outlet } from "react-router-dom";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import Navbar from "../../components/Navbar/Navbar";
 import Player from "../../components/Player/Player";
-const logo = "/vibra.png"; // ✅ Esto funciona en Vite
+import ProfileCard from "../../components/ProfileCard/ProfileCard";
+import Footer from "../../components/Footer/Footer";
+const logo = "/vibra.png";
 import "./MainLayout.css";
 import {PlayerProvider, usePlayer} from "../../components/Player/PlayerContext";
 
@@ -16,22 +18,22 @@ const MainLayout = () => {
 
 
     const setCurrentSongWrapper = (song) => {
-        console.log("🎶 Recibiendo nueva canción en MainLayout:", song);
+        console.log("Recibiendo nueva canción en MainLayout:", song);
         setCurrentSong(song);
     };
 
     const setCurrentIndexWrapper = (index) => {
-        console.log("🎶 Recibiendo nuevo indice en MainLayout:", index);
+        console.log("Recibiendo nuevo indice en MainLayout:", index);
         setCurrentIndex(index);
     };
 
     const setCurrentSongsWrapper = (songs) => {
-        console.log("🎶 Recibiendo nuevas songs en MainLayout:", songs);
+        console.log("Recibiendo nuevas songs en MainLayout:", songs);
         setSongs(songs);
     };
 
     useEffect(() => {
-        console.log("🎶 Nueva canción en Player:", currentSong);
+        console.log("Nueva canción en Player:", currentSong);
     }, [currentSong]);
 
     // obtener usuario de localStorage al cargar el componente
@@ -104,32 +106,18 @@ const MainLayout = () => {
 
     return (
         <div className="main-layout">
-
             <aside className="sidebar">
                 <div className="profile-container">
                     {user ? (
-                        <div>
-                            <img
-                                src={user.profilePicture || "/default-avatar.png"}
-                                alt="Avatar"
-                                className="profile-pic"
-                            />
-                            <p>{user.nickname}</p>
-                            <p>{user.mail}</p>
-
-                            {/* Botón para cerrar sesión */}
-                            <button
-                                className="logout-button"
-                                onClick={() => {
-                                    localStorage.removeItem("user"); // Eliminar usuario
-                                    localStorage.removeItem("token"); // Eliminar token
-                                    window.dispatchEvent(new Event("storage")); // Notificar cambio de sesión
-                                    navigate("/login");
-                                }}
-                            >
-                                Cerrar Sesión
-                            </button>
-                        </div>
+                        <ProfileCard
+                            user={user}
+                            onLogout={() => {
+                                localStorage.removeItem("user");
+                                localStorage.removeItem("token");
+                                window.dispatchEvent(new Event("storage"));
+                                navigate("/");
+                            }}
+                        />
                     ) : (
                         <button
                             className="login-button"
@@ -175,6 +163,8 @@ const MainLayout = () => {
                     setSongs: setCurrentSongsWrapper,
 
                 }}/>
+
+                <Footer />
             </div>
         </div>
     );

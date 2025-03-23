@@ -57,7 +57,7 @@ html, body {
 .top-bar {
     position: sticky;
     width: 100%;
-    background: #2c2c2c;
+    background: #3a3a3a;
     padding: 10px 20px;
     display: flex;
     justify-content: space-between;
@@ -68,7 +68,7 @@ html, body {
 /* Asegura que el contenedor principal tenga espacio suficiente para la top-bar */
 .main-content {
     flex-grow: 1;
-    background: #2c2c2c;
+    background: #3a3a3a;
     padding: 30px;
     border-radius: 20px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
@@ -128,4 +128,31 @@ html, body {
 
 .app-logo:hover {
     transform: scale(1.1);
+}
+
+/* Botón de Iniciar Sesión */
+.login-button {
+    background-color: #1b82c3; /* Azul inicial de la aplicación */
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 30px; /* Bordes redondeados */
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Transición suave */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 4px 15px rgba(33, 161, 241, 0.5);
+}
+
+.login-button:hover {
+    background-color: #79e2ff; /* Nuevo azul al pasar el ratón */
+    transform: scale(1.05); /* Aumento de tamaño */
+    box-shadow: 0px 6px 18px rgba(33, 161, 241, 0.6); /* Sombra más pronunciada */
+}
+
+.login-button:focus {
+    outline: none; /* Quitar el contorno predeterminado */
 }
