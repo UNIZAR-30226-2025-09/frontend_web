@@ -4,7 +4,8 @@ import SearchBar from "../../components/SearchBar/SearchBar";
 import Navbar from "../../components/Navbar/Navbar";
 import Player from "../../components/Player/Player";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
-const logo = "/vibra.png"; // ✅ Esto funciona en Vite
+import Footer from "../../components/Footer/Footer";
+const logo = "/vibra.png";
 import "./MainLayout.css";
 import {PlayerProvider, usePlayer} from "../../components/Player/PlayerContext";
 
@@ -17,22 +18,22 @@ const MainLayout = () => {
 
 
     const setCurrentSongWrapper = (song) => {
-        console.log("🎶 Recibiendo nueva canción en MainLayout:", song);
+        console.log("Recibiendo nueva canción en MainLayout:", song);
         setCurrentSong(song);
     };
 
     const setCurrentIndexWrapper = (index) => {
-        console.log("🎶 Recibiendo nuevo indice en MainLayout:", index);
+        console.log("Recibiendo nuevo indice en MainLayout:", index);
         setCurrentIndex(index);
     };
 
     const setCurrentSongsWrapper = (songs) => {
-        console.log("🎶 Recibiendo nuevas songs en MainLayout:", songs);
+        console.log("Recibiendo nuevas songs en MainLayout:", songs);
         setSongs(songs);
     };
 
     useEffect(() => {
-        console.log("🎶 Nueva canción en Player:", currentSong);
+        console.log("Nueva canción en Player:", currentSong);
     }, [currentSong]);
 
     // obtener usuario de localStorage al cargar el componente
@@ -162,6 +163,8 @@ const MainLayout = () => {
                     setSongs: setCurrentSongsWrapper,
 
                 }}/>
+
+                <Footer />
             </div>
         </div>
     );
