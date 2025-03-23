@@ -1,6 +1,7 @@
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Register.css"; // Asegúrate de que el path sea correcto
+import { apiFetch } from "#utils/apiFetch";
+import "./Register.css";
+import {useState} from "react";
 
 function Register() {
     const [email, setEmail] = useState("");
@@ -12,11 +13,28 @@ function Register() {
 
         if (!email.includes("@")) {
             setErrorMessage("El correo electrónico debe contener '@'");
-            setTimeout(() => setErrorMessage(""), 2000); // El error desaparece después de 2 segundos
+            setTimeout(() => setErrorMessage(""), 2000);
             return;
         }
 
-        navigate("/register1"); // Redirige a Register1 después de validar el correo
+        try {
+            const data = await apiFetch("/user/check-email", {
+                method: "POST",
+                body: { mail: email },
+            });
+
+            if (data.exists) {
+                setErrorMessage("El correo electrónico ya está registrado.");
+                return;
+            }
+
+            localStorage.setItem("email", email);
+            navigate("/register1");
+
+        } catch (error) {
+            console.error("Error al verificar el correo:", error);
+            setErrorMessage("Hubo un problema al verificar el correo.");
+        }
     };
 
     return (
@@ -44,7 +62,7 @@ function Register() {
                         />
                     </div>
                     {errorMessage && <p style={{ color: "red", fontSize: "14px" }}>{errorMessage}</p>}
-                    <button type="submit" className="btn-blue" >
+                    <button type="submit" className="btn-blue">
                         Siguiente
                     </button>
                 </form>

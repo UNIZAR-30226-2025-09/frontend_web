@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
+import {apiFetch} from "#utils/apiFetch";
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -13,6 +14,7 @@ function Login() {
         e.preventDefault();
         let error = "";
 
+        // Validación de email y contraseña
         if (!email.includes("@")) {
             error = "El correo electrónico debe contener '@'";
         } else if (password.length < 6) {
@@ -28,38 +30,27 @@ function Login() {
         }
 
         try {
-            const response = await fetch("http://localhost:5001/api/user/login", {
+            const data = await apiFetch("/user/login", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    mail: email, // 🔹 Usamos "mail" en lugar de "email" (según el backend)
+                body: {
+                    mail: email,
                     password,
-                }),
+                },
             });
 
-            const data = await response.json();
+            // Si llegamos aquí, la respuesta fue exitosa
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
 
-            if (response.ok) {
-                // Guardar el token en localStorage
-                localStorage.setItem("token", data.token);
-                localStorage.setItem("user", JSON.stringify(data.user));
+            window.dispatchEvent(new Event("storage"));
 
-                // Notificar a MainLayout que el usuario ha iniciado sesión
-                window.dispatchEvent(new Event("storage"));
+            alert("Inicio de sesión exitoso");
+            navigate("/home");
 
-                alert("Inicio de sesión exitoso");
-                navigate("/home"); // Redirige a la pantalla principal
-            } else {
-                setErrorMessage(data.message || "Credenciales incorrectas");
-                setErrorVisible(true);
-                setTimeout(() => setErrorVisible(false), 2000);
-                setTimeout(() => setErrorMessage(""), 3000);
-            }
         } catch (error) {
             console.error("Error en el inicio de sesión:", error);
-            setErrorMessage("Hubo un problema en el servidor");
+
+            setErrorMessage("Error en el inicio de sesión");
             setErrorVisible(true);
             setTimeout(() => setErrorVisible(false), 2000);
             setTimeout(() => setErrorMessage(""), 3000);

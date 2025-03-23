@@ -1,0 +1,88 @@
+.main-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.footer {
+    margin-top: auto;
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+    background-color: transparent; /* Fondo transparente */
+    color: #fff; /* Aseguramos que el texto sea blanco en el pie de página */
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.footer-section {
+    flex: 1;
+    padding: 0 1rem;
+}
+
+.footer-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #fff; /* Títulos en blanco */
+}
+
+.footer-section p {
+    font-size: 0.875rem;
+    color: #ddd; /* Texto más claro para facilitar la lectura */
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin: 0.5rem 0;
+}
+
+.footer-section a {
+    color: #ddd;
+    text-decoration: none;
+}
+
+.footer-bottom {
+    font-size: 0.875rem;
+    color: #ddd; /* Color de texto en pie de página más claro */
+    margin-top: 1rem;
+}
+
+.footer-socials {
+    margin-top: 1rem;
+}
+
+.footer-socials a {
+    margin: 0 10px;
+}
+
+.social-icon {
+    width: 40px;   /* Tamaño del icono */
+    height: 40px;  /* Tamaño del icono */
+    object-fit: cover;  /* Asegura que la imagen se ajuste bien dentro del círculo */
+    border-radius: 50%;  /* Hace que los iconos sean circulares */
+    transition: transform 0.3s ease; /* Añade transición cuando se pasa el cursor */
+}
+
+.social-icon:hover {
+    transform: scale(1.1); /* Efecto de escala al pasar el cursor */
+}
+
+/* Nueva barra de separación */
+.footer-divider {
+    margin: 20px 0;
+    border-top: 2px solid #ddd; /* Línea gris claro que separa las secciones */
+}
+
+.footer-divider hr {
+    margin: 0;
+    border: 0;
+    border-top: 2px solid #ddd; /* Línea gris claro */
+}

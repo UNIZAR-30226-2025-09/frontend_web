@@ -9,7 +9,7 @@
 
 /* 🔹 Texto principal con animaciones */
 .home-content h1 {
-    font-size: 1.3rem;
+    font-size: 1.4rem; /* 🔥 Aumentado ligeramente */
     font-weight: bold;
     color: white;
     margin-bottom: 10px;
@@ -42,7 +42,7 @@
     display: none;
 }
 
-/* 🔹 Estilos generales para las tarjetas */
+/* 🔹 Contenedor de listas de playlists, álbumes, etc */
 .home-playlists, .home-recommendations, .home-albums, .home-artists {
     display: flex;
     gap: 15px;
@@ -51,64 +51,65 @@
     width: 100%;
 }
 
-/* 🔹 Tarjetas de elementos */
-.home-playlist-card, .home-recommendation-card, .home-album-card {
-    flex: 1;
-    max-width: calc(20% - 15px);
-    min-width: 220px;
-    height: 240px; /* Ajustamos la altura */
-    background: #3a3a3a;
-    color: white;
+/* 🔹 Contenedor de cada playlist (IMAGEN + TEXTO) */
+.playlist-wrapper {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; /* Para que el texto quede abajo */
     align-items: center;
-    border-radius: 12px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-    flex-shrink: 0;
-    position: relative; /* Para que el título se superponga sobre la imagen */
-    overflow: hidden; /* Evita que el contenido sobresalga */
+    gap: 3px; /* 🔥 Espacio entre imagen y título */
 }
 
-.home-playlist-card:hover, .home-recommendation-card:hover, .home-album-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.2);
+/* 🔹 Tarjetas de elementos */
+.home-playlist-card {
+    flex: 1;
+    max-width: 220px;
+    min-width: 220px;
+    background: transparent; /* 🔥 Sin fondo */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* 🔥 Añadido efecto de sombra */
+    cursor: pointer;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+/* 🔹 Efecto hover sobre el contenedor completo de la playlist */
+.home-playlist-card:hover {
+    transform: scale(1.05); /* 🔥 Hace el contenedor más grande */
+    box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.2); /* 🔥 Sombra elegante */
 }
 
 /* 🔹 Imagen de la Playlist */
 .playlist-image {
     width: 100%;
-    height: 100%; /* Ahora ocupa toda la tarjeta */
+    height: 220px;
     border-radius: 12px;
-    object-fit: cover; /* Evita distorsión */
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
+    object-fit: cover;
 }
 
-/* 🔹 Título de la Playlist sobre la imagen */
+/* 🔹 Título de la Playlist (SEPARADO DE LA IMAGEN) */
 .playlist-title {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    background: rgba(0, 0, 0, 0.7); /* Fondo semitransparente para mejor visibilidad */
-    padding: 8px;
-    font-size: 14px;
+    font-size: 16px; /* 🔥 AUMENTADO LIGERAMENTE */
+    font-weight: bold;
     color: white;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; /* Agrega "..." si el texto es muy largo */
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
-    z-index: 2; /* Asegura que el texto esté sobre la imagen */
+    text-overflow: ellipsis; /* 🔥 Si el título es muy largo, añade "..." */
+    max-width: 100%;
+    transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease; /* 🔥 TRANSICIÓN PROFESIONAL */
 }
 
-/* 🔹 Tarjetas de Artistas (Formato Circular) */
+/* 🔹 Efecto hover: transiciones PRO */
+.playlist-title:hover {
+    color: #21a1f1;
+    transform: scale(1.1); /* 🔥 Un leve aumento al pasar el ratón */
+    text-shadow: 0px 0px 10px rgba(33, 161, 241, 0.6); /* 🔥 Sombra azulada elegante */
+}
+
+/* 🔹 Contenedor de Artistas (Formato Circular) */
 .home-artist-card {
     width: 180px;
     height: 180px;
@@ -117,12 +118,41 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50%;
+    border-radius: 50%;  /* 🔥 Hacer circular solo para los artistas */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
     flex-shrink: 0;
 }
 
+/* 🔹 Imagen de los Artistas (Circular) */
+.artist-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;  /* 🔥 Hacer circular solo para las imágenes de artistas */
+}
+
+/* 🔹 Títulos de los Artistas */
+.artist-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 🔥 Si el título es muy largo, añade "..." */
+    max-width: 100%;
+    transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease; /* 🔥 TRANSICIÓN PROFESIONAL */
+}
+
+/* 🔹 Efecto hover: transiciones PRO */
+.artist-title:hover {
+    color: #21a1f1;
+    transform: scale(1.1); /* 🔥 Un leve aumento al pasar el ratón */
+    text-shadow: 0px 0px 10px rgba(33, 161, 241, 0.6); /* 🔥 Sombra azulada elegante */
+}
+
+/* 🔹 Efecto de sombra al pasar el ratón por cualquier tarjeta de artista */
 .home-artist-card:hover {
     transform: scale(1.05);
     box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.2);

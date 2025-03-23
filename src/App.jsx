@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { PlayerProvider } from "./components/Player/PlayerContext.jsx";
 
@@ -19,7 +18,7 @@ import Library from "./pages/Library/Library";
 import AccountInfo from "./pages/AccountInfo/AccountInfo";
 
 function App() {
-    const [user, setUser] = useState(null);
+
     return (
         <PlayerProvider>
             <Router>

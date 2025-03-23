@@ -14,11 +14,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 🔥 Arreglar #root */
+/* Arreglar #root */
 #root {
   width: 100%;
   height: auto;
   min-height: 100vh;
   display: block;
-
 }

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Register2.css"; // Estilos específicos
+import "./Register2.css";
 
 function Register2() {
-    const [name, setName] = useState("");
+    const [nickname, setNickname] = useState("");
     const [day, setDay] = useState("");
     const [month, setMonth] = useState("");
     const [year, setYear] = useState("");
@@ -12,10 +12,19 @@ function Register2() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!name || !day || !month || !year || !gender) {
+        if (!nickname || !day || !month || !year || !gender) {
             alert("Por favor, completa todos los campos.");
             return;
         }
+
+        // Recupera los datos previos del localStorage y los añade
+        const userData = JSON.parse(localStorage.getItem("userData"));
+        userData.nickname = nickname;
+        userData.dob = { day, month, year };
+        userData.gender = gender;
+
+        localStorage.setItem("userData", JSON.stringify(userData));
+
         navigate("/register3"); // Redirige al siguiente paso
     };
 
@@ -28,32 +37,28 @@ function Register2() {
                     className="register2-logo"
                     onClick={() => window.location.reload()}
                 />
-
-                {/* Barra de progreso */}
                 <div className="register2-progress-bar">
                     <div className="register2-progress" style={{ width: "66%" }}></div>
                 </div>
 
-                <h2 className="register2-step-title">Paso 2 de 3</h2>
+                <h2>Paso 2 de 3</h2>
                 <h1 className="register2-main-title">Háblanos de ti</h1>
                 <hr className="register2-line" />
 
                 <form onSubmit={handleSubmit}>
-                    {/* Campo de nombre */}
                     <div className="register2-input-label">
-                        <label htmlFor="name">Nombre</label>
+                        <label htmlFor="nickname">Nickname</label>
                         <input
                             type="text"
-                            id="name"
+                            id="nickname"
                             className="register2-globalInput"
                             placeholder="Este nombre aparecerá en tu perfil"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            value={nickname}
+                            onChange={(e) => setNickname(e.target.value)}
                             required
                         />
                     </div>
 
-                    {/* Fecha de nacimiento */}
                     <div className="register2-input-label">
                         <label>Fecha de nacimiento</label>
                         <div className="register2-dob-container">
@@ -93,7 +98,6 @@ function Register2() {
                         </div>
                     </div>
 
-                    {/* Género (Solo Hombre y Mujer) */}
                     <div className="register2-input-label">
                         <label>Género</label>
                         <div className="register2-gender-options">
