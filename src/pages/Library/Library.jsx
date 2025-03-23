@@ -4,7 +4,7 @@ import { apiFetch } from "#utils/apiFetch"; // ✅ Asegurate que este alias (#ut
 import "./Library.css";
 
 const Library = () => {
-    const { setActive, handleMouseDown, handleMouseMove, handleMouseUp } = useOutletContext(); NEVER USED
+    const { setActive, handleMouseDown, handleMouseMove, handleMouseUp } = useOutletContext();
     const [user, setUser] = useState(null);
     const [likedSongs, setLikedSongs] = useState([]);
     const [userPlaylists, setUserPlaylists] = useState([]);
