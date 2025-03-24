@@ -10,6 +10,8 @@ function Register2() {
     const [gender, setGender] = useState("");
     const [dateError, setDateError] = useState("");
     const [fieldError, setFieldError] = useState("");
+    const [genderError, setGenderError] = useState("");
+
 
     const navigate = useNavigate();
 
@@ -53,32 +55,60 @@ function Register2() {
         const mesNum = parseInt(month, 10);
         const anioNum = parseInt(year, 10);
 
-        // Validar campos vacíos
+        // Validar campos vacíos primero, pero solo mostrar mensaje general si no hay errores específicos
         if (!nickname || !day || !month || !year || !gender) {
+            if (!gender) setGenderError("Por favor, selecciona un género.");
             if (!day) {
                 diaInput.setCustomValidity("Por favor, introduce un día.");
                 diaInput.reportValidity();
-            } else if (!year) {
+            }
+            if (!year) {
                 anioInput.setCustomValidity("Por favor, introduce un año.");
                 anioInput.reportValidity();
             }
+            if (nickname && day && month && year && gender) {
+                setFieldError(""); // todo bien
+            } else {
+                setFieldError("Por favor, completa todos los campos.");
+            }
+            return;
+        } else {
+            setFieldError(""); // No hay errores globales
+        }
+
+
+        if (!gender) {
+            setGenderError("Por favor, selecciona un género.");
+            return;
+        } else {
+            setGenderError("");
+        }
+
+
+// Validar año específico
+        if (isNaN(anioNum)) {
+            anioInput.setCustomValidity("Por favor, introduce un año.");
+            anioInput.reportValidity();
+            return;
+        }
+        if (anioNum < 1900) {
+            anioInput.setCustomValidity("Introduce un año superior a 1900");
+            anioInput.reportValidity();
+            return;
+        }
+        if (anioNum > 2024) {
+            anioInput.setCustomValidity("Introduce un año inferior a 2024");
+            anioInput.reportValidity();
             return;
         }
 
-        // Validar día
+// Validar día
         if (isNaN(diaNum) || diaNum < 1 || diaNum > 31) {
             diaInput.setCustomValidity("Día inválido");
             diaInput.reportValidity();
             return;
         }
 
-
-        // Validar año
-        if (isNaN(anioNum) || anioNum < 1900 || anioNum > new Date().getFullYear()) {
-            anioInput.setCustomValidity("Año inválido");
-            anioInput.reportValidity();
-            return;
-        }
 
         // Validar fecha real (ej: no 31 de febrero)
         const fecha = new Date(anioNum, mesNum - 1, diaNum);
@@ -91,6 +121,7 @@ function Register2() {
             diaInput.reportValidity();
             return;
         }
+
 
         // Guardar datos
         const userData = JSON.parse(localStorage.getItem("userData"));
@@ -129,9 +160,13 @@ function Register2() {
                             className="register2-globalInput"
                             placeholder="Este nombre aparecerá en tu perfil"
                             value={nickname}
-                            onChange={(e) => setNickname(e.target.value)}
+                            onChange={(e) => {
+                                setNickname(e.target.value);
+                                setFieldError("");
+                            }}
                             required
                         />
+
                     </div>
 
                     <div className="register2-input-label">
@@ -144,7 +179,13 @@ function Register2() {
                                 pattern="[0-9]*"
                                 maxLength={2}
                                 value={day}
-                                onChange={(e) => setDay(e.target.value)}
+                                onChange={(e) => {
+                                    setDay(e.target.value);
+                                    setFieldError("");
+                                    setDateError("");
+                                    const diaInput = e.target;
+                                    diaInput.setCustomValidity("");
+                                }}
                                 required
                             />
                             <select value={month} onChange={(e) => setMonth(e.target.value)} required>
@@ -169,7 +210,13 @@ function Register2() {
                                 pattern="[0-9]*"
                                 maxLength={4}
                                 value={year}
-                                onChange={(e) => setYear(e.target.value)}
+                                onChange={(e) => {
+                                    setYear(e.target.value);
+                                    setFieldError("");
+                                    setDateError("");
+                                    const anioInput = e.target;
+                                    anioInput.setCustomValidity("");
+                                }}
                                 required
                             />
                         </div>
@@ -178,15 +225,77 @@ function Register2() {
 
                     <div className="register2-input-label">
                         <label>Género</label>
-                        <div className="register2-gender-options">
-                            <label><input type="radio" name="gender" value="hombre"/> Hombre</label>
-                            <label><input type="radio" name="gender" value="mujer"/> Mujer</label>
-                            <label><input type="radio" name="gender" value="no-binario"/> No binario</label>
-                            <label><input type="radio" name="gender" value="prefiero-no-decirlo"/> Prefiero no
-                                decirlo</label>
-                            <label><input type="radio" name="gender" value="otro"/> Otro</label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="gender"
+                                value="hombre"
+                                onChange={(e) => {
+                                    setGender(e.target.value);
+                                    setGenderError("");
+                                    setFieldError("");
+                                }}
+                            />
+                            Hombre
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="gender"
+                                value="mujer"
+                                onChange={(e) => {
+                                    setGender(e.target.value);
+                                    setGenderError("");
+                                    setFieldError("");
+                                }}
+                            />
+                            Mujer
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="gender"
+                                value="no binario"
+                                onChange={(e) => {
+                                    setGender(e.target.value);
+                                    setGenderError("");
+                                    setFieldError("");
+                                }}
+                            />
+                            No binario
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="gender"
+                                value="prefiero no decirlo"
+                                onChange={(e) => {
+                                    setGender(e.target.value);
+                                    setGenderError("");
+                                    setFieldError("");
+                                }}
+                            />
+                            Prefiero no decirlo
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="gender"
+                                value="otro"
+                                onChange={(e) => {
+                                    setGender(e.target.value);
+                                    setGenderError("");
+                                    setFieldError("");
+                                }}
+                            />
+                            Otro
+                        </label>
 
-                        </div>
+                        {genderError && (
+                            <p style={{color: "#ff6b6b", marginTop: "5px"}}>{genderError}</p>
+                        )}
+
+
                     </div>
 
                     <button type="submit" className="btn-blue">Siguiente</button>
