@@ -51,24 +51,33 @@ function Register1() {
 
     return (
         <div className="login-container" style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-            <div className="login-box" style={{ backgroundColor: "#1e1e1e" }}>
+            <div className="login-box" style={{backgroundColor: "#1e1e1e"}}>
                 <img
                     src="../vibrablanco.png"
                     alt="Vibra Logo"
                     className="logo"
                     onClick={() => window.location.reload()}
                 />
-                <div className="progress-bar" style={{ width: "100%", height: "5px", backgroundColor: "#333", borderRadius: "2px", marginBottom: "15px" }}>
-                    <div style={{ width: "33%", height: "100%", backgroundColor: "#79e2ff", borderRadius: "2px" }}></div>
+                <div className="progress-bar" style={{
+                    width: "100%",
+                    height: "5px",
+                    backgroundColor: "#333",
+                    borderRadius: "2px",
+                    marginBottom: "15px"
+                }}>
+                    <div style={{width: "33%", height: "100%", backgroundColor: "#79e2ff", borderRadius: "2px"}}></div>
                 </div>
 
-                <h2>Paso 1 de 3</h2>
-                <h1 className="login-txt" style={{ fontSize: "22px" }}>Crea una contraseña</h1>
-                <hr className="line" />
+                <h2 style={{textAlign: "center", width: "100%", marginBottom: "10px", marginLeft: "50px"}}>Paso 1 de 3</h2>
+
+
+                <h1 className="login-txt" style={{fontSize: "22px"}}>Crea una contraseña</h1>
+                <hr className="line"/>
                 <form onSubmit={handleSubmit}>
-                    <div className="input-label" style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <div className="input-label"
+                         style={{position: "relative", display: "flex", flexDirection: "column", alignItems: "center"}}>
                         <label htmlFor="password">Contraseña</label>
-                        <div style={{ position: "relative", width: "80%", display: "flex", alignItems: "center" }}>
+                        <div style={{position: "relative", width: "80%", display: "flex", alignItems: "center"}}>
                             <input
                                 type={showPassword ? "text" : "password"}
                                 id="password"
@@ -104,24 +113,27 @@ function Register1() {
                         </div>
                     </div>
 
-                    <p style={{ fontSize: "14px", color: "#fff", textAlign: "left", marginLeft: "20%" }}>
+                    <p style={{fontSize: "14px", color: "#fff", textAlign: "left", marginLeft: "20%"}}>
                         La contraseña debe contener al menos:
                     </p>
-                    <ul className="password-validation" style={{ textAlign: "left", fontSize: "14px", color: "#fff", marginLeft: "20%" }}>
-                        <li style={{ color: validations.hasLetter ? "green" : (isSubmitted ? "red" : "white") }}>
-                            <input type="checkbox" checked={validations.hasLetter} readOnly /> 1 letra
+                    <ul className="password-validation"
+                        style={{textAlign: "left", fontSize: "14px", color: "#fff", marginLeft: "20%"}}>
+                        <li style={{color: validations.hasLetter ? "green" : (isSubmitted ? "red" : "white")}}>
+                            <input type="checkbox" checked={validations.hasLetter} readOnly/> 1 letra
                         </li>
-                        <li style={{ color: validations.hasSpecialCharOrNumber ? "green" : (isSubmitted ? "red" : "white") }}>
-                            <input type="checkbox" checked={validations.hasSpecialCharOrNumber} readOnly /> 1 número o carácter especial
+                        <li style={{color: validations.hasSpecialCharOrNumber ? "green" : (isSubmitted ? "red" : "white")}}>
+                            <input type="checkbox" checked={validations.hasSpecialCharOrNumber} readOnly/> 1 número o
+                            carácter especial
                         </li>
-                        <li style={{ color: validations.hasMinLength ? "green" : (isSubmitted ? "red" : "white") }}>
-                            <input type="checkbox" checked={validations.hasMinLength} readOnly /> 10 caracteres
+                        <li style={{color: validations.hasMinLength ? "green" : (isSubmitted ? "red" : "white")}}>
+                            <input type="checkbox" checked={validations.hasMinLength} readOnly/> 10 caracteres
                         </li>
                     </ul>
 
-                    <button type="submit" className="btn-blue" style={{ backgroundColor: "#79e2ff", color: "black" }}>
+                    <button type="submit" className="btn-blue">
                         Siguiente
                     </button>
+
                 </form>
             </div>
         </div>
