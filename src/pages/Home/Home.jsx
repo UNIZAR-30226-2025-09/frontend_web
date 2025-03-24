@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import "./Home.css";
 import {apiFetch} from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 
 const Home = () => {
+    const navigate = useNavigate();
     const { playlistsRef, recommendationsRef, albumsRef, artistsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp } = useOutletContext();
 
     const [vibraPlaylists, setVibraPlaylists] = useState([]);
@@ -36,6 +37,11 @@ const Home = () => {
         fetchArtists();
     }, []);
 
+    // Función para redirigir a la página de detalles de la playlist
+    const handlePlaylistClick = (playlistId) => {
+        navigate(`/playlist/${playlistId}`);  // Navega a la ruta de la playlist usando su id
+    };
+
     return (
         <div className="home-content">
             {/* Sección de playlists creadas por Vibra */}
@@ -53,9 +59,8 @@ const Home = () => {
                         vibraPlaylists.map((playlist) => {
                             const playlistImage = getImageUrl(playlist.front_page, "/default-playlist.jpg");
                             return (
-                                <div key={playlist.id}
-                                     className="playlist-wrapper">  {/* 🔥 Contenedor general para que imagen y texto no estén juntos */}
-                                    <div className="home-playlist-card">
+                                <div key={playlist.id} className="playlist-wrapper">  {/* 🔥 Contenedor general para que imagen y texto no estén juntos */}
+                                    <div className="home-playlist-card" onClick={() => handlePlaylistClick(playlist.id)}>
                                         <img
                                             src={playlistImage}
                                             alt={playlist.name}
@@ -63,7 +68,9 @@ const Home = () => {
                                             onError={(e) => e.target.src = "/default-playlist.jpg"} // Si la imagen falla, usa una por defecto
                                         />
                                     </div>
-                                    <p className="playlist-title">{playlist.name}</p> {/* 🔥 Ahora está FUERA del div de la imagen */}
+                                    <div onClick={() => handlePlaylistClick(playlist.id)}>
+                                        <p className="playlist-title">{playlist.name} </p>
+                                    </div>
                                 </div>
                             );
                         })

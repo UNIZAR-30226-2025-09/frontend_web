@@ -3,10 +3,11 @@ import { Howl } from "howler";
 import { AiFillPlayCircle, AiFillPauseCircle } from "react-icons/ai";
 import { BiSkipNext, BiSkipPrevious } from "react-icons/bi";
 import { IconContext } from "react-icons";
+import { getImageUrl } from "#utils/getImageUrl";
 
 /* Importa las clases desde tu archivo CSS Module */
 import styles from "./PlayerStyles.module.css";
-import { usePlayer} from "../../components/Player/PlayerContext";
+import { usePlayer} from "./PlayerContext.jsx";
 
 function Player() {
     const [noSongSelected, setNoSongSelected] = useState(true);
@@ -167,10 +168,11 @@ function Player() {
                 src={
                     noSongSelected
                         ? "https://via.placeholder.com/300x300.png?text=Sin+Canci%C3%B3n"
-                        : currentSong.photo_video
+                        : getImageUrl(currentSong.photo_video)  // Usa getImageUrl aquí para manejar la imagen correctamente
                 }
                 alt={noSongSelected ? "Sin canción seleccionada" : "Portada de la canción"}
             />
+
 
             {/* Siempre mostramos info, aunque esté vacía */}
             <div className={styles.info}>
@@ -192,8 +194,8 @@ function Player() {
                     onClick={handlePrevious}
                     disabled={noSongSelected}
                 >
-                    <IconContext.Provider value={{size: "3em", color: "#21a1f1" }}>
-                        <BiSkipPrevious />
+                    <IconContext.Provider value={{size: "3em", color: "#21a1f1"}}>
+                        <BiSkipPrevious/>
                     </IconContext.Provider>
                 </button>
 
@@ -203,8 +205,8 @@ function Player() {
                     onClick={playingButton}
                     disabled={noSongSelected}
                 >
-                    <IconContext.Provider value={{ size: "3em", color: "#ffffff" }}>
-                        {isPlaying ? <AiFillPauseCircle /> : <AiFillPlayCircle />}
+                    <IconContext.Provider value={{size: "3em", color: "#ffffff"}}>
+                        {isPlaying ? <AiFillPauseCircle/> : <AiFillPlayCircle/>}
                     </IconContext.Provider>
                 </button>
 
@@ -213,8 +215,8 @@ function Player() {
                     onClick={handleNext}
                     disabled={noSongSelected}
                 >
-                    <IconContext.Provider value={{ size: "3em", color: "#21a1f1" }}>
-                        <BiSkipNext />
+                    <IconContext.Provider value={{size: "3em", color: "#21a1f1"}}>
+                        <BiSkipNext/>
                     </IconContext.Provider>
                 </button>
             </div>

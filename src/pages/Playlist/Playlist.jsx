@@ -27,7 +27,7 @@ const PlaylistContent = () => {
     const [newDescription, setNewDescription] = useState("");
     const [isShuffling, setIsShuffling] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
-    const user_Id = 2;
+    const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
     const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs } = useOutletContext();
 
     useEffect(() => {
@@ -257,7 +257,7 @@ const PlaylistContent = () => {
                                 </div>
 
                                 {/* Columna 2: Portada */}
-                                <img src={song.photo_video} alt={song.name} className="song-cover" />
+                                <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover" />
 
                                 {/* Columna 3: Título */}
                                 <span className="song-title">{song.name}</span>
