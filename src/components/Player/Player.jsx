@@ -101,23 +101,29 @@ function Player({ currentSong }) {
         };
     }, [currentSong, songUrl]);
 
-    // Función para verificar si la canción está en los favoritos
     useEffect(() => {
         if (!currentSong || !userId) return;
 
+        console.log("useEffect - Verificando favoritos para la canción:", currentSong);
+        console.log("useEffect - userId:", userId);
+
         const checkIfLiked = async () => {
             try {
-                const response = await axios.get(`/api/song_like/check?userId=${userId}&songId=${currentSong.id}`);
+                const url = `http://localhost:5001/api/song_like/${currentSong.id}/like?userId=${userId}`;
+                console.log("useEffect - Llamando a URL:", url);
+
+                const response = await axios.get(url);
+                console.log("useEffect - Respuesta del endpoint checkIfLiked:", response.data);
+
                 setIsLiked(response.data.isLiked);
             } catch (error) {
-                console.error("Error al verificar los favoritos:", error);
+                console.error("useEffect - Error al verificar los favoritos:", error);
             }
         };
 
-        if (currentSong?.id && userId) {
-            checkIfLiked();
-        }
+        checkIfLiked();
     }, [currentSong, userId]);
+
 
     // Botón de play/pause
     const playingButton = () => {
@@ -159,7 +165,15 @@ function Player({ currentSong }) {
 
     const toggleLike = async () => {
         try {
-            const songId = currentSong.id;  // Asegúrate de que currentSong está definido
+            // Primero, obtener o crear la playlist de "Me Gusta" para el usuario.
+            const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/liked', {
+                user_id: userId
+            });
+            console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.data.playlist);
+            // Aquí podrías guardar likedPlaylistRes.data.playlist.id si lo necesitas
+
+            // Luego, proceder con el toggle de like para la canción.
+            const songId = currentSong.id;  // Asegúrate de que currentSong esté definido
             console.log("Enviando petición de like/unlike:");
             console.log("user_id:", userId);
             console.log("song_id:", songId);
@@ -167,13 +181,13 @@ function Player({ currentSong }) {
             const response = await axios.post(`http://localhost:5001/api/song_like/${songId}/like`, {
                 user_id: userId
             });
-
             console.log("Respuesta del servidor:", response.data);
             setIsLiked(response.data.liked);
         } catch (error) {
             console.error("Error al agregar/eliminar el like", error);
         }
     };
+
 
 
 
