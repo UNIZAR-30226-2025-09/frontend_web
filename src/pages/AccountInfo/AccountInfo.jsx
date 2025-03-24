@@ -1,65 +1,52 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import "./AccountInfo.css";
 
 function AccountInfo() {
-    const navigate = useNavigate();
-
     return (
-        <div className="account-container">
-            {/* Sección del plan */}
-            <div className="account-box">
-                <h2>Tu Plan</h2>
-                <p><strong>Premium Individual</strong></p>
-                <p>Tu próxima factura es de $6.99 y se emite el 8/3/25.</p>
-                <p>Visa terminada en 2258</p>
+        <>
+            <div className="header">
+                <div className="logo-container">
+                    <img
+                        src="../vibrablanco.png"
+                        alt="Vibra Logo"
+                        className="logo"
+                        onClick={() => window.location.reload()}
+                    />
+                    <span className="logo-text">Vibra</span>
+                </div>
+                <div className="profile-container">
+                    <div className="profile-picture">
+                        {/* Aquí puedes poner la foto si el usuario tiene una */}
+                        <img
+                            src="../profile-placeholder.png"
+                            alt="Foto de perfil"
+                            className="profile-img"
+                        />
+                    </div>
+                </div>
+
             </div>
 
-            {/* Sección de cuenta */}
-            <div className="account-box">
-                <h2>Cuenta</h2>
-                <div className="account-option">
-                    <button className="account-button">Editar Perfil</button>
+            <div className="account-info-page">
+                {/* Sección: Plan */}
+                <div className="plan-box">
+                    <div className="plan-header">
+                        <span className="plan-label">Tu plan</span>
+                        <h2 className="plan-title">Premium Individual</h2>
+                        <p className="plan-details">Tu próxima factura es de $6.99 y se emite el 8/3/25.</p>
+                        <p className="plan-details">Visa terminada en 2258</p>
+                    </div>
                 </div>
-                <div className="account-option">
-                    <button className="account-button">Recuperar Listas</button>
-                </div>
-                <div className="account-option">
-                    <button className="account-button">Dirección</button>
+
+                {/* Botones de acción */}
+                <div className="account-actions">
+                    <button className="action-button">Editar perfil</button>
+                    <button className="action-button">Administrar suscripción</button>
+                    <button className="action-button">Cancelar suscripción</button>
+                    <button className="action-button logout">Cerrar sesión</button>
                 </div>
             </div>
-
-            {/* Sección de suscripción */}
-            <div className="account-box">
-                <h2>Suscripción</h2>
-                <div className="account-option">
-                    <button className="account-button">Suscripciones Disponibles</button>
-                </div>
-                <div className="account-option">
-                    <button className="account-button">Administrar Suscripción</button>
-                </div>
-                <div className="account-option">
-                    <button className="account-button">Cancelar Suscripción</button>
-                </div>
-            </div>
-
-         {/* Sección de pago */}
-<div className="account-box">
-    <h2>Método de Pago</h2>
-    <div className="account-option">
-        <button className="account-button">Actualizar Tarjeta</button>
-    </div>
-</div>
-
-
-
-            {/* Botón de volver */}
-            <div className="account-footer">
-                <button className="back-button" onClick={() => navigate(-1)}>
-                    Volver
-                </button>
-            </div>
-        </div>
+        </>
     );
 }
 

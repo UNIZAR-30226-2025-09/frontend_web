@@ -23,7 +23,7 @@ function App() {
         <PlayerProvider>
             <Router>
                 <Routes>
-                    {/* Páginas de autenticación sin sidebar ni reproductor */}
+                    {/* Rutas sin layout */}
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/register1" element={<Register1 />} />
@@ -31,17 +31,17 @@ function App() {
                     <Route path="/register3" element={<Register3 />} />
                     <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
                     <Route path="/terminos-condiciones" element={<TerminosYCondiciones />} />
+                    <Route path="/account" element={<AccountInfo />} /> {/* <-- MUEVE AQUÍ */}
 
-
-                    {/* Páginas dentro del MainLayout */}
+                    {/* Páginas con layout principal */}
                     <Route path="/" element={<MainLayout />}>
-                        <Route index element={<Home />} /> {/* Página principal en "/" */}
+                        <Route index element={<Home />} />
                         <Route path="home" element={<Home />} />
                         <Route path="playlist/:playlistId" element={<Playlist />} />
                         <Route path="library" element={<Library />} />
-                        <Route path="account" element={<AccountInfo />} />
                     </Route>
                 </Routes>
+
             </Router>
         </PlayerProvider>
     );
