@@ -121,8 +121,8 @@ body {
     font-size: 14px;
 }
 
-.register2-btn-next {
-    width: 100%;
+.btn-blue {
+    width: 65%;
     background-color: #79e2ff;
     color: black;
     padding: 10px;
@@ -134,8 +134,8 @@ body {
     margin-top: 15px;
 }
 
-.register2-btn-next:hover {
-    background-color: #1e1e1e; /* Mismo color que Register y Register1 */
-
+.btn-blue:hover {
+    background-color: #79e2ffc2;
 }
+
 
