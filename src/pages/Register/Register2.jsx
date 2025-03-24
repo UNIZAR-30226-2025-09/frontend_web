@@ -68,8 +68,6 @@ function Register2() {
             }
             if (nickname && day && month && year && gender) {
                 setFieldError(""); // todo bien
-            } else {
-                setFieldError("Por favor, completa todos los campos.");
             }
             return;
         } else {
@@ -164,8 +162,10 @@ function Register2() {
                                 setNickname(e.target.value);
                                 setFieldError("");
                             }}
+                            autoComplete="off"
                             required
                         />
+
 
                     </div>
 
@@ -225,78 +225,38 @@ function Register2() {
 
                     <div className="register2-input-label">
                         <label>Género</label>
-                        <label>
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="hombre"
-                                onChange={(e) => {
-                                    setGender(e.target.value);
-                                    setGenderError("");
-                                    setFieldError("");
-                                }}
-                            />
-                            Hombre
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="mujer"
-                                onChange={(e) => {
-                                    setGender(e.target.value);
-                                    setGenderError("");
-                                    setFieldError("");
-                                }}
-                            />
-                            Mujer
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="no binario"
-                                onChange={(e) => {
-                                    setGender(e.target.value);
-                                    setGenderError("");
-                                    setFieldError("");
-                                }}
-                            />
-                            No binario
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="prefiero no decirlo"
-                                onChange={(e) => {
-                                    setGender(e.target.value);
-                                    setGenderError("");
-                                    setFieldError("");
-                                }}
-                            />
-                            Prefiero no decirlo
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="otro"
-                                onChange={(e) => {
-                                    setGender(e.target.value);
-                                    setGenderError("");
-                                    setFieldError("");
-                                }}
-                            />
-                            Otro
-                        </label>
-
+                        <div className="register2-gender-row">
+                            <label><input type="radio" name="gender" value="hombre" onChange={(e) => {
+                                setGender(e.target.value);
+                                setGenderError("");
+                                setFieldError("");
+                            }}/> Hombre</label>
+                            <label><input type="radio" name="gender" value="mujer" onChange={(e) => {
+                                setGender(e.target.value);
+                                setGenderError("");
+                                setFieldError("");
+                            }}/> Mujer</label>
+                            <label><input type="radio" name="gender" value="no-binario" onChange={(e) => {
+                                setGender(e.target.value);
+                                setGenderError("");
+                                setFieldError("");
+                            }}/> No binario</label>
+                            <label><input type="radio" name="gender" value="prefiero-no-decirlo" onChange={(e) => {
+                                setGender(e.target.value);
+                                setGenderError("");
+                                setFieldError("");
+                            }}/> Prefiero no decirlo</label>
+                            <label><input type="radio" name="gender" value="otro" onChange={(e) => {
+                                setGender(e.target.value);
+                                setGenderError("");
+                                setFieldError("");
+                            }}/> Otro</label>
+                        </div>
                         {genderError && (
                             <p style={{color: "#ff6b6b", marginTop: "5px"}}>{genderError}</p>
                         )}
-
-
                     </div>
+
 
                     <button type="submit" className="btn-blue">Siguiente</button>
                     {fieldError && <p style={{color: "#ff6b6b", marginTop: "10px"}}>{fieldError}</p>}
