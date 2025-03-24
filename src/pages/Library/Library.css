@@ -1,10 +1,10 @@
+/* 🔹 Contenedor principal */
 .library-content {
     width: 100%;
     padding: 20px;
     display: flex;
     flex-direction: column;
     color: white;
-    background: #2c2c2c;
     border-radius: 20px;
     overflow: hidden;
 }
@@ -77,35 +77,63 @@ h2:hover {
     width: 100%;
 }
 
-/* 🔹 Tarjetas de playlists y canciones */
-.library-playlist-card, .library-song-card {
-    width: 180px;
-    height: 220px;
-    background: #4a4a4a;
-    border-radius: 12px;
+/* 🔹 Contenedor de cada playlist (IMAGEN + TEXTO) */
+.playlist-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
+    gap: 3px; /* Espacio entre imagen y título */
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.library-playlist-card:hover, .library-song-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.2);
+/* 🔹 Tarjetas de playlists */
+.library-playlist-card {
+    flex: 1;
+    max-width: 220px;
+    min-width: 220px;
+    background: transparent; /* Sin fondo */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Efecto de sombra */
+    cursor: pointer;
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
-.library-playlist-image, .library-song-image {
+/* 🔹 Efecto hover sobre el contenedor completo de la playlist */
+.library-playlist-card:hover {
+    transform: scale(1.05); /* Hace el contenedor más grande */
+    box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.2); /* Sombra elegante */
+}
+
+/* 🔹 Imagen de la Playlist */
+.library-playlist-image {
     width: 100%;
     height: 140px;
     border-radius: 12px;
     object-fit: cover;
 }
 
-.library-playlist-title, .library-song-title {
-    margin-top: 8px;
-    font-size: 14px;
+/* 🔹 Título de la Playlist (SEPARADO DE LA IMAGEN) */
+.library-playlist-title {
+    font-size: 16px; /* Aumentado ligeramente */
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Si el título es muy largo, añade "..." */
+    max-width: 100%;
+    transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
+}
+
+/* 🔹 Efecto hover: transiciones PRO */
+.library-playlist-title:hover {
+    color: #21a1f1;
+    transform: scale(1.1); /* Un leve aumento al pasar el ratón */
+    text-shadow: 0px 0px 10px rgba(33, 161, 241, 0.6); /* Sombra azulada elegante */
 }
 
 /* 🔹 Mensajes cuando no hay contenido */

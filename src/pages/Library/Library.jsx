@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { apiFetch } from "#utils/apiFetch"; // ✅ Asegurate que este alias (#utils) esté definido
+import { apiFetch } from "#utils/apiFetch";
+import {getImageUrl} from "#utils/getImageUrl";
 import "./Library.css";
 
 const Library = () => {
@@ -19,6 +20,7 @@ const Library = () => {
         }
     }, []);
 
+    /*
     useEffect(() => {
         const getLikedSongs = async () => {
             try {
@@ -42,18 +44,26 @@ const Library = () => {
         };
         getUserPlaylists();
     }, []);
+     */
 
+    // Fetch de las playlists que te han gustado
     useEffect(() => {
         const getLikedPlaylists = async () => {
             try {
-                const data = await apiFetch("/playlists/liked");
-                setLikedPlaylists(data);
+                const userId = user ? user.id : null; // Obtener el userId desde el estado de usuario
+                if (userId) {
+                    const data = await apiFetch(`/playlists/liked/${userId}`);
+                    setLikedPlaylists(data); // Almacena las playlists que te han gustado
+                }
             } catch (error) {
                 console.error("Error al obtener playlists con like:", error);
             }
         };
-        getLikedPlaylists();
-    }, []);
+
+        if (user) {
+            getLikedPlaylists(); // Llama a la API solo si el usuario está disponible
+        }
+    }, [user]);
 
     const sortPlaylists = (type, setFunction, option) => {
         setFunction(option);
@@ -82,13 +92,14 @@ const Library = () => {
 
             {/* Sección: Canciones que te han gustado */}
             <div className="library-section-header">
-                <h2>Canciones que te han  gustado</h2>
+                <h2>Canciones que te han gustado</h2>
             </div>
             <div className="scroll-container">
                 <div className="library-playlists">
                     {likedSongs.length > 0 ? likedSongs.map(song => (
                         <div key={song.id} className="library-song-card">
-                            <img src={song.cover || "/default-song.jpg"} alt={song.title} className="library-song-image"/>
+                            <img src={song.cover || "/default-song.jpg"} alt={song.title}
+                                 className="library-song-image"/>
                             <p className="library-song-title">{song.title}</p>
                         </div>
                     )) : <div className="empty-message">No tienes canciones con Me gusta.</div>}
@@ -100,7 +111,8 @@ const Library = () => {
                 <h2>Tus Playlists</h2>
                 <div className="sort-options">
                     <button onClick={() => sortPlaylists("user", setSortUserPlaylists, "recent")}>Recientes</button>
-                    <button onClick={() => sortPlaylists("user", setSortUserPlaylists, "alphabetical")}>Alfabético</button>
+                    <button onClick={() => sortPlaylists("user", setSortUserPlaylists, "alphabetical")}>Alfabético
+                    </button>
                     <button onClick={() => sortPlaylists("user", setSortUserPlaylists, "popular")}>Populares</button>
                 </div>
             </div>
@@ -108,7 +120,8 @@ const Library = () => {
                 <div className="library-playlists">
                     {userPlaylists.length > 0 ? userPlaylists.map(playlist => (
                         <div key={playlist.id} className="library-playlist-card">
-                            <img src={playlist.front_page || "/default-playlist.jpg"} alt={playlist.name} className="library-playlist-image"/>
+                            <img src={playlist.front_page || "/default-playlist.jpg"} alt={playlist.name}
+                                 className="library-playlist-image"/>
                             <p className="library-playlist-title">{playlist.name}</p>
                         </div>
                     )) : <div className="empty-message">No tienes playlists creadas.</div>}
@@ -120,15 +133,22 @@ const Library = () => {
                 <h2>Playlists que te han gustado</h2>
                 <div className="sort-options">
                     <button onClick={() => sortPlaylists("liked", setSortLikedPlaylists, "recent")}>Recientes</button>
-                    <button onClick={() => sortPlaylists("liked", setSortLikedPlaylists, "alphabetical")}>Alfabético</button>
+                    <button onClick={() => sortPlaylists("liked", setSortLikedPlaylists, "alphabetical")}>Alfabético
+                    </button>
                     <button onClick={() => sortPlaylists("liked", setSortLikedPlaylists, "popular")}>Populares</button>
                 </div>
             </div>
             <div className="scroll-container">
                 <div className="library-playlists">
                     {likedPlaylists.length > 0 ? likedPlaylists.map(playlist => (
-                        <div key={playlist.id} className="library-playlist-card">
-                            <img src={playlist.front_page || "/default-playlist.jpg"} alt={playlist.name} className="library-playlist-image"/>
+                        <div key={playlist.id} className="playlist-wrapper">
+                            <div className="library-playlist-card">
+                                <img
+                                    src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
+                                    alt={playlist.name}
+                                    className="library-playlist-image"
+                                />
+                            </div>
                             <p className="library-playlist-title">{playlist.name}</p>
                         </div>
                     )) : <div className="empty-message">No has dado like a ninguna playlist.</div>}

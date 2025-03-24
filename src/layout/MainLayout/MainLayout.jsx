@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -8,6 +9,7 @@ import Footer from "../../components/Footer/Footer";
 const logo = "/vibra.png";
 import "./MainLayout.css";
 import {PlayerProvider, usePlayer} from "../../components/Player/PlayerContext";
+import {apiFetch} from "#utils/apiFetch";
 
 
 const MainLayout = () => {
@@ -36,21 +38,46 @@ const MainLayout = () => {
         console.log("Nueva canción en Player:", currentSong);
     }, [currentSong]);
 
-    // obtener usuario de localStorage al cargar el componente
+    // Verificar si el usuario está guardado en localStorage y si sigue existiendo en la base de datos
     useEffect(() => {
-        const updateUser = () => {
-            const storedUser = localStorage.getItem("user");
-            setUser(storedUser ? JSON.parse(storedUser) : null);
+        const checkUserSession = async () => {
+            const token = localStorage.getItem("token");
+            const storedUser = JSON.parse(localStorage.getItem("user"));
+
+            if (token && storedUser) {
+                try {
+                    // Verificar si el usuario sigue existiendo en la base de datos
+                    const response = await apiFetch(`/user/${storedUser.id}`, {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    // Verificar si la respuesta es válida y tiene datos
+                    if (response && response.id) {
+                        // Aquí ya tenemos los datos del usuario directamente en 'response'
+                        setUser(response); // Cargar los datos del usuario
+                    } else {
+                        console.error("Error: no se recibieron datos del usuario");
+                        localStorage.removeItem("token");
+                        localStorage.removeItem("user");
+                        navigate("/");
+                    }
+                } catch (error) {
+                    console.error("Error al verificar usuario:", error);
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("user");
+                    navigate("/"); // Redirigir al login en caso de error
+                }
+            } else {
+                // Si no hay token o usuario, redirigir al login
+                navigate("/");
+            }
         };
 
-        updateUser(); // Cargar usuario al inicio
-
-        window.addEventListener("storage", updateUser);
-
-        return () => {
-            window.removeEventListener("storage", updateUser);
-        };
-    }, []);
+        checkUserSession(); // Verificar al cargar el componente
+    }, [navigate]);
 
     //  Referencias para cada sección scrollable
     const playlistsRef = useRef(null);
@@ -129,7 +156,7 @@ const MainLayout = () => {
                 </div>
                 <Navbar />
                 <div className="player-container">
-                        <Player currentSong={currentSong} currentIndex={currentIndex} songs={songs} />
+                    <Player currentSong={currentSong} currentIndex={currentIndex} songs={songs} />
                 </div>
             </aside>
 
