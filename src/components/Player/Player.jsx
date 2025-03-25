@@ -25,7 +25,9 @@ function Player({ currentSong }) {
     const [seconds, setSeconds] = useState(0);
     const [duration, setDuration] = useState(0);
     const [isLiked, setIsLiked] = useState(false); // Estado para saber si la canción está en favoritos
-    const user_Id = JSON.parse(localStorage.getItem('user')).id;
+    // Asegurarnos de que `user` existe antes de intentar acceder a su `id`
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userId = user ? user.id : null; // Usar un valor predeterminado en caso de que `user` sea null
     const soundRef = useRef(null);
     const intervalRef = useRef(null);
 
@@ -188,12 +190,7 @@ function Player({ currentSong }) {
         }
     };
 
-
-
-
-
     // Aquí va el return con el JSX del Player
-
 
     return (
         <div className={styles.playerContainer}>
