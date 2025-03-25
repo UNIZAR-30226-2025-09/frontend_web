@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { PlayerProvider } from "./components/Player/PlayerContext.jsx";
 
@@ -30,6 +29,9 @@ function App() {
                     <Route path="/register1" element={<Register1 />} />
                     <Route path="/register2" element={<Register2 />} />
                     <Route path="/register3" element={<Register3 />} />
+                    <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
+                    <Route path="/terminos-condiciones" element={<TerminosYCondiciones />} />
+
 
                     {/* Páginas dentro del MainLayout */}
                     <Route path="/" element={<MainLayout />}>

@@ -11,15 +11,15 @@
 }
 
 .register3-box {
-    background-color: #121212;
+    background-color: #1e1e1e;
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.692);
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.692);
     text-align: center;
     color: white;
-    width: 550px; /* Ancho igual al de register2 */
-    border: 2px solid #79e2ff; /* Borde azul */
+    width: 550px;
 }
+
 
 .logo {
     width: 80px;
@@ -54,7 +54,7 @@
 
 .checkbox-container {
     display: flex;
-    align-items: flex-start;
+    align-items: center; /* <- cambio clave aquí */
     gap: 10px;
     background-color: #232323;
     padding: 10px;
@@ -64,8 +64,10 @@
 }
 
 .checkbox-container input {
-    margin-top: 5px;
+    margin: 0; /* quitamos el margen que empujaba hacia abajo */
+    align-self: center; /* opcional */
 }
+
 
 .checkbox-container label {
     font-size: 14px;
@@ -88,19 +90,20 @@
     text-decoration: underline;
 }
 
-.register-btn {
-    background-color: #79e2ff; /* Azul */
+.btn-blue {
+    width: 65%;
+    background-color: #79e2ff;
     color: black;
-    border: none;
-    padding: 12px;
-    border-radius: 20px;
+    padding: 10px;
     font-size: 16px;
+    border: none;
+    border-radius: 50px;
     cursor: pointer;
-    width: 100%;
     font-weight: bold;
     margin-top: 15px;
 }
 
-.register-btn:hover {
-    background-color: #5ac2e0;
+.btn-blue:hover {
+    background-color: #79e2ffc2;
 }
+

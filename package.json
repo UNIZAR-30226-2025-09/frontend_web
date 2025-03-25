@@ -31,5 +31,8 @@
     "eslint-plugin-react-refresh": "^0.4.18",
     "globals": "^15.14.0",
     "vite": "^6.2.0"
+  },
+  "imports": {
+    "#utils/*":"./src/utils/*.js"
   }
 }

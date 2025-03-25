@@ -23,7 +23,7 @@ const ProfileCard = ({ user, onLogout }) => {
     };
 
     // Si no tiene imagen de perfil, se asigna un color aleatorio para el fondo
-    const profileColor = user.profilePicture ? null : generateRandomColor();
+    const profileColor = user.user_picture ? null : generateRandomColor();
     const initials = getInitial(user.nickname);
 
     // Función para alternar la visibilidad del menú de opciones
@@ -35,7 +35,7 @@ const ProfileCard = ({ user, onLogout }) => {
     return (
         <div className="profile-card">
             <div className="profile-pic-container">
-                {user.profilePicture ? (
+                {user.user_picture ? (
                     <img
                         src={user.profilePicture}
                         alt="Profile"

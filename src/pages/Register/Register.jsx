@@ -1,6 +1,7 @@
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "#utils/apiFetch";
 import "./Register.css";
+import {useState} from "react";
 
 function Register() {
     const [email, setEmail] = useState("");
@@ -12,32 +13,22 @@ function Register() {
 
         if (!email.includes("@")) {
             setErrorMessage("El correo electrónico debe contener '@'");
-            setTimeout(() => setErrorMessage(""), 2000); // El error desaparece después de 2 segundos
+            setTimeout(() => setErrorMessage(""), 2000);
             return;
         }
 
         try {
-            // Hacer una petición al backend para verificar si el correo ya está registrado
-            const response = await fetch("http://localhost:5001/api/user/check-email", {
+            const data = await apiFetch("/user/check-email", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ mail: email }),
+                body: { mail: email },
             });
 
-            const data = await response.json();
-
-            // Si el correo ya está registrado
             if (data.exists) {
                 setErrorMessage("El correo electrónico ya está registrado.");
                 return;
             }
 
-            // Guardar el correo en localStorage para pasarlo a los siguientes pasos
             localStorage.setItem("email", email);
-
-            // Redirigir al siguiente paso del registro
             navigate("/register1");
 
         } catch (error) {

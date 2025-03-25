@@ -1,5 +1,8 @@
 import React from 'react';
 import './footer.css';
+const logoInsta = "/insta.png";
+const logoTwitter = "/twitter.png";
+const logoFacebook = "/facebook.png";
 
 const Footer = () => {
     return (
@@ -25,17 +28,23 @@ const Footer = () => {
                     <p><strong>Dirección:</strong> Calle Musical, 45, 28001, Madrid, España</p>
                 </div>
             </div>
+
+            {/* Barra de separación */}
+            <div className="footer-divider">
+                <hr />
+            </div>
+
             <div className="footer-bottom">
                 <p>&copy; 2024 Vibra. Todos los derechos reservados.</p>
                 <div className="footer-socials">
                     <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
-                        <img src="/path-to-instagram-logo.png" alt="Instagram" className="social-icon" />
+                        <img src={logoInsta} alt="Instagram" className="social-icon"/>
                     </a>
                     <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
-                        <img src="/path-to-facebook-logo.png" alt="Facebook" className="social-icon" />
+                        <img src={logoFacebook} alt="Facebook" className="social-icon"/>
                     </a>
                     <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer">
-                        <img src="/path-to-twitter-logo.png" alt="Twitter" className="social-icon" />
+                        <img src={logoTwitter} alt="Twitter" className="social-icon"/>
                     </a>
                 </div>
             </div>
