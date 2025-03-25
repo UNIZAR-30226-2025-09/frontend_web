@@ -131,6 +131,18 @@ const MainLayout = () => {
         ref.current.style.cursor = "grab";
     };
 
+    const onLogout = () => {
+        // Eliminar los datos del usuario y token del localStorage
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+
+        // Actualizar el estado de 'user' para reflejar que no hay un usuario logueado
+        setUser(null);
+
+        // Redirigir a la página principal (o a cualquier ruta que prefieras)
+        navigate("/");
+    };
+
     return (
         <div className="main-layout">
             <aside className="sidebar">
@@ -138,12 +150,7 @@ const MainLayout = () => {
                     {user ? (
                         <ProfileCard
                             user={user}
-                            onLogout={() => {
-                                localStorage.removeItem("user");
-                                localStorage.removeItem("token");
-                                window.dispatchEvent(new Event("storage"));
-                                navigate("/");
-                            }}
+                            onLogout={onLogout}
                         />
                     ) : (
                         <button

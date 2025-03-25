@@ -82,38 +82,39 @@ h2:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px; /* Espacio entre imagen y título */
+    gap: 10px; /* Espacio entre imagen y título */
     cursor: pointer;
 }
 
 /* 🔹 Tarjetas de playlists */
 .library-playlist-card {
-    flex: 1;
     max-width: 220px;
     min-width: 220px;
     background: transparent; /* Sin fondo */
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     border-radius: 12px;
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Efecto de sombra */
     cursor: pointer;
     flex-shrink: 0;
     overflow: hidden;
+    box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.1); /* Sombra ligera por defecto */
 }
 
 /* 🔹 Efecto hover sobre el contenedor completo de la playlist */
 .library-playlist-card:hover {
     transform: scale(1.05); /* Hace el contenedor más grande */
-    box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.2); /* Sombra elegante */
+    box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.4); /* Sombra más fuerte al hacer hover */
 }
 
 /* 🔹 Imagen de la Playlist */
 .library-playlist-image {
     width: 100%;
-    height: 140px;
+    height: 220px; /* Ajustado a la misma altura que en .home-content */
     border-radius: 12px;
-    object-fit: cover;
+    object-fit: cover; /* Asegura que las imágenes se ajusten al contenedor sin deformarse */
 }
 
 /* 🔹 Título de la Playlist (SEPARADO DE LA IMAGEN) */
@@ -129,7 +130,7 @@ h2:hover {
     transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
 }
 
-/* 🔹 Efecto hover: transiciones PRO */
+/* 🔹 Efecto hover sobre el título de la playlist */
 .library-playlist-title:hover {
     color: #21a1f1;
     transform: scale(1.1); /* Un leve aumento al pasar el ratón */

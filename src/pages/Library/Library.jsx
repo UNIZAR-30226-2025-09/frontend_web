@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import { apiFetch } from "#utils/apiFetch";
 import {getImageUrl} from "#utils/getImageUrl";
 import "./Library.css";
 
 const Library = () => {
+    const navigate = useNavigate();
     const { setActive, handleMouseDown, handleMouseMove, handleMouseUp } = useOutletContext();
     const [user, setUser] = useState(null);
     const [likedSongs, setLikedSongs] = useState([]);
@@ -86,6 +87,11 @@ const Library = () => {
         type === "user" ? setUserPlaylists(sortedPlaylists) : setLikedPlaylists(sortedPlaylists);
     };
 
+    // Función para redirigir a la página de detalles de la playlist
+    const handlePlaylistClick = (playlistId) => {
+        navigate(`/playlist/${playlistId}`);  // Navega a la ruta de la playlist usando su id
+    };
+
     return (
         <div className="library-content">
             {user && <h1 className="library-title">Bienvenido a tu biblioteca, {user.nickname}!</h1>}
@@ -142,14 +148,16 @@ const Library = () => {
                 <div className="library-playlists">
                     {likedPlaylists.length > 0 ? likedPlaylists.map(playlist => (
                         <div key={playlist.id} className="playlist-wrapper">
-                            <div className="library-playlist-card">
+                            <div className="library-playlist-card" onClick={() => handlePlaylistClick(playlist.id)}>
                                 <img
                                     src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
                                     alt={playlist.name}
                                     className="library-playlist-image"
                                 />
                             </div>
-                            <p className="library-playlist-title">{playlist.name}</p>
+                            <div onClick={() => handlePlaylistClick(playlist.id)}>
+                                <p className="library-playlist-title">{playlist.name}</p>
+                            </div>
                         </div>
                     )) : <div className="empty-message">No has dado like a ninguna playlist.</div>}
                 </div>
