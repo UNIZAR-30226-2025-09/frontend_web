@@ -7,7 +7,7 @@ import "./Playlist.css"; // Layout y estilos generales
 import "../../components/SongItem/SongItem.css"; // Estilos de la lista de canciones
 import {apiFetch} from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
-
+import { useNavigate } from "react-router-dom";
 
 "#utils/apiFetch.js"
 
@@ -29,6 +29,12 @@ const PlaylistContent = () => {
     const [isLiked, setIsLiked] = useState(false);
     const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
     const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs } = useOutletContext();
+    const navigate = useNavigate();
+
+    const redirectToSong = (songId) => {
+        console.log("Redirigiendo a la canción...", songId);
+        navigate(`/songs/${songId}`); // Cambia la ruta según la estructura de tu aplicación
+    };
 
     useEffect(() => {
         console.log(" Entrando a Playlist, activando sección...");
@@ -203,8 +209,11 @@ const PlaylistContent = () => {
                                 <p className="text-gray-300 text-sm uppercase">Lista</p>
                                 <h1>{playlist.name}</h1>
                                 <p>{playlist.description}</p>
-                                <p>{playlist.user?.nickname || "Desconocido"} • Guardada {playlist.likes} veces • {playlist.songs.length} canciones</p>
-                            </>
+                                <p>
+                                    {playlist.owner?.nickname || "Desconocido"} •
+                                    Guardada {playlist.likes?.length || 0} veces •
+                                    {playlist.songs?.length} canciones
+                                </p>                            </>
                         )}
                     </div>
                 </div>
@@ -230,17 +239,16 @@ const PlaylistContent = () => {
                         <FaEllipsisH className="icon"/>
                     </div>
                 </div>
-
+                <div className="song-header">
+                    <span># / Play</span>
+                    <span>Portada</span>
+                    <span>Título</span>
+                    <span>Álbum</span>
+                    <span>Fecha Añadida</span>
+                    <span>Duración</span>
+                </div>
                 <div className="song-cont">
                     {/* Cabecera: 6 columnas (#/Play, Portada, Título, Álbum, Fecha, Duración) */}
-                    <div className="song-header">
-                        <span># / Play</span>
-                        <span>Portada</span>
-                        <span>Título</span>
-                        <span>Álbum</span>
-                        <span>Fecha Añadida</span>
-                        <span>Duración</span>
-                    </div>
 
                     <div className="song-list">
                         {playlist.songs.map((song, index) => (
@@ -252,15 +260,15 @@ const PlaylistContent = () => {
                                         className="play-icon"
                                         onClick={() => handlePlaySong(song, index, playlist.songs)}
                                     >
-                                        <FaPlay />
+                                        <FaPlay/>
                                     </button>
                                 </div>
 
                                 {/* Columna 2: Portada */}
-                                <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover" />
+                                <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>
 
                                 {/* Columna 3: Título */}
-                                <span className="song-title">{song.name}</span>
+                                <span className="song-title" onClick={() => redirectToSong(song.id)}>{song.name}</span>
 
                                 {/* Columna 4: Álbum */}
                                 <span className="song-artist">
@@ -288,7 +296,7 @@ const PlaylistContent = () => {
 const Playlist = () => {
     return (
         <PlayerProvider>
-            <PlaylistContent />
+            <PlaylistContent/>
         </PlayerProvider>
     );
 };

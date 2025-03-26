@@ -1,7 +1,7 @@
 // NUBE
-const BASE_URL = "http://164.90.160.181/request";
+//const BASE_URL = "http://164.90.160.181/request";
 // LOCAL
-//const BASE_URL = "http://localhost/request";
+const BASE_URL = "http://localhost/request";
 
 // PRE:
 // Esta función recibe un path relativo (como una imagen del backend) y construye una URL absoluta
