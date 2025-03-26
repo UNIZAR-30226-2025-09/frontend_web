@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -8,16 +7,15 @@ import ProfileCard from "../../components/ProfileCard/ProfileCard";
 import Footer from "../../components/Footer/Footer";
 const logo = "/vibra.png";
 import "./MainLayout.css";
-import {PlayerProvider, usePlayer} from "../../components/Player/PlayerContext";
-import {apiFetch} from "#utils/apiFetch";
-
+import { PlayerProvider, usePlayer } from "../../components/Player/PlayerContext";
+import { apiFetch } from "#utils/apiFetch";
 
 const MainLayout = () => {
     const navigate = useNavigate();
 
     const [user, setUser] = useState(null);
     const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs, setSongs } = usePlayer();
-
+    const [showLoginPopup, setShowLoginPopup] = useState(false);  // Estado para mostrar el popup
 
     const setCurrentSongWrapper = (song) => {
         console.log("Recibiendo nueva canción en MainLayout:", song);
@@ -46,7 +44,6 @@ const MainLayout = () => {
 
             if (token && storedUser) {
                 try {
-                    // Verificar si el usuario sigue existiendo en la base de datos
                     const response = await apiFetch(`/user/${storedUser.id}`, {
                         method: "GET",
                         headers: {
@@ -54,15 +51,13 @@ const MainLayout = () => {
                         },
                     });
 
-                    // Verificar si la respuesta es válida y tiene datos
                     if (response && response.id) {
-                        // Aquí ya tenemos los datos del usuario directamente en 'response'
                         setUser(response); // Cargar los datos del usuario
                     } else {
                         console.error("Error: no se recibieron datos del usuario");
                         localStorage.removeItem("token");
                         localStorage.removeItem("user");
-                        navigate("/");
+                        navigate("/"); // Redirigir al login si no se validan los datos
                     }
                 } catch (error) {
                     console.error("Error al verificar usuario:", error);
@@ -71,8 +66,7 @@ const MainLayout = () => {
                     navigate("/"); // Redirigir al login en caso de error
                 }
             } else {
-                // Si no hay token o usuario, redirigir al login
-                navigate("/");
+                navigate("/"); // Redirigir al login si no hay token o usuario
             }
         };
 
@@ -140,7 +134,19 @@ const MainLayout = () => {
         setUser(null);
 
         // Redirigir a la página principal (o a cualquier ruta que prefieras)
-        navigate("/");
+        navigate("/"); // Redirigir al login
+    };
+
+    // Función para manejar el acceso sin login y mostrar el popup
+    const handleAccessWithoutLogin = (e) => {
+        if (!user) {
+            e.preventDefault(); // Prevenir la acción
+            setShowLoginPopup(true);  // Mostrar el popup si no hay usuario logueado
+        }
+    };
+
+    const closeLoginPopup = () => {
+        setShowLoginPopup(false);  // Cerrar el popup
     };
 
     return (
@@ -161,9 +167,9 @@ const MainLayout = () => {
                         </button>
                     )}
                 </div>
-                <Navbar />
+                <Navbar handleAccessWithoutLogin={handleAccessWithoutLogin} />
                 <div className="player-container">
-                    <Player currentSong={currentSong} currentIndex={currentIndex} songs={songs} />
+                    <Player/>
                 </div>
             </aside>
 
@@ -171,10 +177,10 @@ const MainLayout = () => {
                 {/* Ahora la barra superior queda fija dentro de .main-content */}
                 <div className="top-bar">
                     <div className="nav-arrows">
-                        <button className="arrow left" onClick={() => scrollActiveSection("left")}>{"<"}</button>
-                        <button className="arrow right" onClick={() => scrollActiveSection("right")}>{">"}</button>
+                        <button className="arrow left" onClick={(e) => { scrollActiveSection("left"); handleAccessWithoutLogin(e); }}>{"<"}</button>
+                        <button className="arrow right" onClick={(e) => { scrollActiveSection("right"); handleAccessWithoutLogin(e); }}>{">"}</button>
                     </div>
-                    <SearchBar/>
+                    <SearchBar onClick={(e) => handleAccessWithoutLogin(e)} />
                     <img src={logo} alt="Logo" className="app-logo"/>
                 </div>
 
@@ -195,11 +201,22 @@ const MainLayout = () => {
                     setCurrentSong: setCurrentSongWrapper,
                     setCurrentIndex: setCurrentIndexWrapper,
                     setSongs: setCurrentSongsWrapper,
-
+                    handleAccessWithoutLogin,  // Pasar la función al Outlet
                 }}/>
 
                 <Footer />
             </div>
+
+            {/* Popup de inicio de sesión */}
+            {showLoginPopup && (
+                <div className="login-popup">
+                    <div className="popup-content">
+                        <p>Para acceder a esta sección, por favor inicie sesión.</p>
+                        <button onClick={() => navigate("/login")}>Ir a Iniciar Sesión</button>
+                        <button onClick={closeLoginPopup}>Cerrar</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
