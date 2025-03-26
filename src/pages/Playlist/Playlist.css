@@ -1,26 +1,28 @@
+/* 🔹 Contenedor principal */
 .layout {
     display: flex;
     width: 100%;
-    height: 100vh;         /* Ocupa toda la altura de la ventana */
+    min-height: 100vh;  /* Cambié a min-height para que siempre ocupe toda la ventana */
     margin: 0;
     padding: 0;
-    overflow: auto;       /* Evita que la página crezca y tenga scroll global */
+    overflow-x: hidden; /* No queremos scroll horizontal */
+    overflow-y: auto;   /* El scroll lo manejamos desde el navegador */
 }
-
 
 /* Columna derecha (contenido principal) */
 .box {
-    flex: 1;               /* Toma el resto del espacio horizontal */
+    flex: 1;
+    width: 100%;
     background: linear-gradient(to bottom, #0399b6, #121212);
     color: white;
     padding: 40px;
     border-radius: 12px;
-
-    /* Para que esta columna también tenga scroll interno y no se extienda la página */
-    height: auto;
-    /*max-height: 100vh;     /* No sobrepasará la altura de la ventana */
-    /*overflow-y: auto;*/
     box-sizing: border-box;
+
+    /* Aseguramos que el contenedor no tiene restricciones de altura */
+    height: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Encabezado con la portada y el nombre de la playlist */
@@ -28,11 +30,11 @@
     display: flex;
     width: 100%;
     max-width: 1200px;
-    height: auto;             /* Quita la altura fija */
+    height: auto;
     align-items: flex-end;
     justify-content: flex-start;
     gap: 20px;
-    margin-bottom: 2rem;      /* En lugar de position absolute */
+    margin-bottom: 2rem;
 }
 
 /* Imagen de la playlist */
@@ -60,7 +62,6 @@
 .image:hover::after {
     opacity: 1;
 }
-
 
 /* Información de la playlist (título, etc.) */
 .playlist-info {
@@ -91,9 +92,8 @@
     width: 100%;               /* Se extiende al ancho disponible */
     border-bottom: 2px solid #282828;
     padding-bottom: 10px;
-    margin-bottom: 2rem;       /* Espacio debajo para separar de la lista */
+    margin-bottom: 2rem;
     justify-content: space-between;
-    /* Eliminado position absolute, top, left, transform */
 }
 
 /* Contenedor botones principales izquierda */
@@ -162,7 +162,8 @@
 .icon:hover {
     color: #0399b6;
 }
-{/* Estilos edicion de playlist */}
+
+/* Estilos de edición de playlist */
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -227,6 +228,7 @@
     border-radius: 5px;
     cursor: pointer;
 }
+
 .save-btn:hover {
     background-color: #0399b6;
 }
@@ -238,4 +240,3 @@
 .heart-icon.liked {
     color: #dd1e41;  /* Color rojo cuando se le da like */
 }
-
