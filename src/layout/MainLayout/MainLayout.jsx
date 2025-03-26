@@ -7,15 +7,15 @@ import ProfileCard from "../../components/ProfileCard/ProfileCard";
 import Footer from "../../components/Footer/Footer";
 const logo = "/vibra.png";
 import "./MainLayout.css";
-import {PlayerProvider, usePlayer} from "../../components/Player/PlayerContext";
-
+import { PlayerProvider, usePlayer } from "../../components/Player/PlayerContext";
+import { apiFetch } from "#utils/apiFetch";
 
 const MainLayout = () => {
     const navigate = useNavigate();
 
     const [user, setUser] = useState(null);
     const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs, setSongs } = usePlayer();
-
+    const [showLoginPopup, setShowLoginPopup] = useState(false);  // Estado para mostrar el popup
 
     const setCurrentSongWrapper = (song) => {
         console.log("Recibiendo nueva canción en MainLayout:", song);
@@ -36,21 +36,42 @@ const MainLayout = () => {
         console.log("Nueva canción en Player:", currentSong);
     }, [currentSong]);
 
-    // obtener usuario de localStorage al cargar el componente
+    // Verificar si el usuario está guardado en localStorage y si sigue existiendo en la base de datos
     useEffect(() => {
-        const updateUser = () => {
-            const storedUser = localStorage.getItem("user");
-            setUser(storedUser ? JSON.parse(storedUser) : null);
+        const checkUserSession = async () => {
+            const token = localStorage.getItem("token");
+            const storedUser = JSON.parse(localStorage.getItem("user"));
+
+            if (token && storedUser) {
+                try {
+                    const response = await apiFetch(`/user/${storedUser.id}`, {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    if (response && response.id) {
+                        setUser(response); // Cargar los datos del usuario
+                    } else {
+                        console.error("Error: no se recibieron datos del usuario");
+                        localStorage.removeItem("token");
+                        localStorage.removeItem("user");
+                        navigate("/"); // Redirigir al login si no se validan los datos
+                    }
+                } catch (error) {
+                    console.error("Error al verificar usuario:", error);
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("user");
+                    navigate("/"); // Redirigir al login en caso de error
+                }
+            } else {
+                navigate("/"); // Redirigir al login si no hay token o usuario
+            }
         };
 
-        updateUser(); // Cargar usuario al inicio
-
-        window.addEventListener("storage", updateUser);
-
-        return () => {
-            window.removeEventListener("storage", updateUser);
-        };
-    }, []);
+        checkUserSession(); // Verificar al cargar el componente
+    }, [navigate]);
 
     //  Referencias para cada sección scrollable
     const playlistsRef = useRef(null);
@@ -104,6 +125,30 @@ const MainLayout = () => {
         ref.current.style.cursor = "grab";
     };
 
+    const onLogout = () => {
+        // Eliminar los datos del usuario y token del localStorage
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+
+        // Actualizar el estado de 'user' para reflejar que no hay un usuario logueado
+        setUser(null);
+
+        // Redirigir a la página principal (o a cualquier ruta que prefieras)
+        navigate("/"); // Redirigir al login
+    };
+
+    // Función para manejar el acceso sin login y mostrar el popup
+    const handleAccessWithoutLogin = (e) => {
+        if (!user) {
+            e.preventDefault(); // Prevenir la acción
+            setShowLoginPopup(true);  // Mostrar el popup si no hay usuario logueado
+        }
+    };
+
+    const closeLoginPopup = () => {
+        setShowLoginPopup(false);  // Cerrar el popup
+    };
+
     return (
         <div className="main-layout">
             <aside className="sidebar">
@@ -111,12 +156,7 @@ const MainLayout = () => {
                     {user ? (
                         <ProfileCard
                             user={user}
-                            onLogout={() => {
-                                localStorage.removeItem("user");
-                                localStorage.removeItem("token");
-                                window.dispatchEvent(new Event("storage"));
-                                navigate("/");
-                            }}
+                            onLogout={onLogout}
                         />
                     ) : (
                         <button
@@ -127,9 +167,9 @@ const MainLayout = () => {
                         </button>
                     )}
                 </div>
-                <Navbar />
+                <Navbar handleAccessWithoutLogin={handleAccessWithoutLogin} />
                 <div className="player-container">
-                        <Player currentSong={currentSong} currentIndex={currentIndex} songs={songs} />
+                    <Player/>
                 </div>
             </aside>
 
@@ -137,10 +177,10 @@ const MainLayout = () => {
                 {/* Ahora la barra superior queda fija dentro de .main-content */}
                 <div className="top-bar">
                     <div className="nav-arrows">
-                        <button className="arrow left" onClick={() => scrollActiveSection("left")}>{"<"}</button>
-                        <button className="arrow right" onClick={() => scrollActiveSection("right")}>{">"}</button>
+                        <button className="arrow left" onClick={(e) => { scrollActiveSection("left"); handleAccessWithoutLogin(e); }}>{"<"}</button>
+                        <button className="arrow right" onClick={(e) => { scrollActiveSection("right"); handleAccessWithoutLogin(e); }}>{">"}</button>
                     </div>
-                    <SearchBar/>
+                    <SearchBar onClick={(e) => handleAccessWithoutLogin(e)} />
                     <img src={logo} alt="Logo" className="app-logo"/>
                 </div>
 
@@ -161,11 +201,22 @@ const MainLayout = () => {
                     setCurrentSong: setCurrentSongWrapper,
                     setCurrentIndex: setCurrentIndexWrapper,
                     setSongs: setCurrentSongsWrapper,
-
+                    handleAccessWithoutLogin,  // Pasar la función al Outlet
                 }}/>
 
                 <Footer />
             </div>
+
+            {/* Popup de inicio de sesión */}
+            {showLoginPopup && (
+                <div className="login-popup">
+                    <div className="popup-content">
+                        <p>Para acceder a esta sección, por favor inicie sesión.</p>
+                        <button onClick={() => navigate("/login")}>Ir a Iniciar Sesión</button>
+                        <button onClick={closeLoginPopup}>Cerrar</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

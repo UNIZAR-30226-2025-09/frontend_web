@@ -41,23 +41,47 @@
     font-size: 1.2rem;
     color: var(--colorPrimaryLight2);
 }
-/* Contenedor de controles (prev, play, next) en fila */
+/* Contenedor principal de controles */
 .controls {
     display: flex;
-    flex-direction: row;        /* Cambia a 'row' para una distribución horizontal */
+    flex-direction: column;  /* Para apilar controlButtons y el likeButtonContainer (si estuviera aquí) */
     align-items: center;
-    justify-content: center;
-    gap: 1rem;                  /* Espacio entre botones */
+    gap: 1rem;
     margin-bottom: 1rem;
     text-align: center;
 }
 
-/* Botón genérico (prev y next) */
+/* Subcontenedor donde van Prev, Play y Next */
+.controlButtons {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin: 0 auto; /* Centra el bloque en la pantalla */
+}
+
+/* Botón genérico (Prev y Next) */
 .controlButton {
     background: none;
     border: none;
     cursor: pointer;
     display: flex;
+    /* Si deseas ajustar el tamaño del ícono, puedes usar font-size o IconContext.Provider */
+}
+/* Contenedor del botón de like (debajo de .controls) */
+.likeButtonContainer {
+    /* Puedes agregar margen superior o usar el gap del padre */
+    /* margin-top: 1rem; */
+    display: flex;
+    justify-content: center;
+}
+
+/* Botón de like en sí */
+.likeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem; /* Ajusta según tu preferencia */
+    /* cualquier otro estilo que quieras */
 }
 
 /* Botón circular grande (Play/Pause) */

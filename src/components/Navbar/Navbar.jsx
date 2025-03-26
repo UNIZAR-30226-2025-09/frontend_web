@@ -1,13 +1,15 @@
 import React from "react";
+import { Link } from "react-router-dom"; // Importar Link de react-router-dom
 import "./Navbar.css";
 
-function Navbar() {
+function Navbar({ handleAccessWithoutLogin }) {
     return (
         <nav className="menu">
-            <a href="/dashboard">Dashboard</a>
-            <a href="/browse">Browse</a>
-            <a href="/search">Search</a>
-            <a href="/library">Library</a>
+            {/* Usar Link de react-router-dom para la navegación interna */}
+            <Link to="/home" onClick={(e) => handleAccessWithoutLogin(e)}>Dashboard</Link>
+            <Link to="/browse" onClick={(e) => handleAccessWithoutLogin(e)}>Browse</Link>
+            <Link to="/search" onClick={(e) => handleAccessWithoutLogin(e)}>Search</Link>
+            <Link to="/library" onClick={(e) => handleAccessWithoutLogin(e)}>Library</Link>
         </nav>
     );
 }

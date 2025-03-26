@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import "./Home.css";
-import {apiFetch} from "#utils/apiFetch";
+import { apiFetch } from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 
 const Home = () => {
-    const { playlistsRef, recommendationsRef, albumsRef, artistsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp } = useOutletContext();
+    const navigate = useNavigate();
+    const { playlistsRef, recommendationsRef, albumsRef, artistsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp, handleAccessWithoutLogin } = useOutletContext(); // Obtener la función del Outlet
 
     const [vibraPlaylists, setVibraPlaylists] = useState([]);
     const [popularArtists, setPopularArtists] = useState([]);
@@ -36,6 +37,16 @@ const Home = () => {
         fetchArtists();
     }, []);
 
+    // Función para redirigir a la página de detalles de la playlist
+    const handlePlaylistClick = (playlistId, e) => {
+        if (!localStorage.getItem("token")) {
+            e.preventDefault();  // Prevenir la redirección si el usuario no está logueado
+            handleAccessWithoutLogin(e); // Mostrar el popup
+        } else {
+            navigate(`/playlist/${playlistId}`);  // Navegar si el usuario está logueado
+        }
+    };
+
     return (
         <div className="home-content">
             {/* Sección de playlists creadas por Vibra */}
@@ -53,9 +64,8 @@ const Home = () => {
                         vibraPlaylists.map((playlist) => {
                             const playlistImage = getImageUrl(playlist.front_page, "/default-playlist.jpg");
                             return (
-                                <div key={playlist.id}
-                                     className="playlist-wrapper">  {/* 🔥 Contenedor general para que imagen y texto no estén juntos */}
-                                    <div className="home-playlist-card">
+                                <div key={playlist.id} className="playlist-wrapper" onClick={(e) => handleAccessWithoutLogin(e)}>
+                                    <div className="home-playlist-card" onClick={(e) => handlePlaylistClick(playlist.id, e)}>
                                         <img
                                             src={playlistImage}
                                             alt={playlist.name}
@@ -63,7 +73,9 @@ const Home = () => {
                                             onError={(e) => e.target.src = "/default-playlist.jpg"} // Si la imagen falla, usa una por defecto
                                         />
                                     </div>
-                                    <p className="playlist-title">{playlist.name}</p> {/* 🔥 Ahora está FUERA del div de la imagen */}
+                                    <div onClick={(e) => handlePlaylistClick(playlist.id, e)}>
+                                        <p className="playlist-title">{playlist.name} </p>
+                                    </div>
                                 </div>
                             );
                         })
@@ -84,12 +96,12 @@ const Home = () => {
                 onMouseLeave={() => handleMouseUp(recommendationsRef)}
             >
                 <div className="home-recommendations">
-                    <div className="home-recommendation-card">Canción 1</div>
-                    <div className="home-recommendation-card">Canción 2</div>
-                    <div className="home-recommendation-card">Canción 3</div>
-                    <div className="home-recommendation-card">Canción 4</div>
-                    <div className="home-recommendation-card">Canción 5</div>
-                    <div className="home-recommendation-card">Canción 6</div>
+                    <div className="home-recommendation-card" onClick={(e) => handleAccessWithoutLogin(e)}>Canción 1</div>
+                    <div className="home-recommendation-card" onClick={(e) => handleAccessWithoutLogin(e)}>Canción 2</div>
+                    <div className="home-recommendation-card" onClick={(e) => handleAccessWithoutLogin(e)}>Canción 3</div>
+                    <div className="home-recommendation-card" onClick={(e) => handleAccessWithoutLogin(e)}>Canción 4</div>
+                    <div className="home-recommendation-card" onClick={(e) => handleAccessWithoutLogin(e)}>Canción 5</div>
+                    <div className="home-recommendation-card" onClick={(e) => handleAccessWithoutLogin(e)}>Canción 6</div>
                 </div>
             </div>
 
@@ -104,12 +116,12 @@ const Home = () => {
                 onMouseLeave={() => handleMouseUp(albumsRef)}
             >
                 <div className="home-albums">
-                    <div className="home-album-card">Álbum 1</div>
-                    <div className="home-album-card">Álbum 2</div>
-                    <div className="home-album-card">Álbum 3</div>
-                    <div className="home-album-card">Álbum 4</div>
-                    <div className="home-album-card">Álbum 5</div>
-                    <div className="home-album-card">Álbum 6</div>
+                    <div className="home-album-card" onClick={(e) => handleAccessWithoutLogin(e)}>Álbum 1</div>
+                    <div className="home-album-card" onClick={(e) => handleAccessWithoutLogin(e)}>Álbum 2</div>
+                    <div className="home-album-card" onClick={(e) => handleAccessWithoutLogin(e)}>Álbum 3</div>
+                    <div className="home-album-card" onClick={(e) => handleAccessWithoutLogin(e)}>Álbum 4</div>
+                    <div className="home-album-card" onClick={(e) => handleAccessWithoutLogin(e)}>Álbum 5</div>
+                    <div className="home-album-card" onClick={(e) => handleAccessWithoutLogin(e)}>Álbum 6</div>
                 </div>
             </div>
 
@@ -129,7 +141,7 @@ const Home = () => {
                             const artistImage = getImageUrl(artist.photo, "/default-artist.jpg");
 
                             return (
-                                <div key={artist.id} className="artist-wrapper">
+                                <div key={artist.id} className="artist-wrapper" onClick={(e) => handleAccessWithoutLogin(e)}>
                                     <div className="home-artist-card">
                                         <img
                                             src={artistImage}
@@ -140,7 +152,8 @@ const Home = () => {
                                     </div>
                                     <p className="artist-title">{artist.name}</p>
                                 </div>
-                            );                        })
+                            );
+                        })
                     ) : (
                         <p>Cargando artistas...</p>
                     )}
