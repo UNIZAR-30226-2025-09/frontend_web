@@ -4,7 +4,7 @@
     height: 100vh;         /* Ocupa toda la altura de la ventana */
     margin: 0;
     padding: 0;
-    overflow: hidden;       /* Evita que la página crezca y tenga scroll global */
+    overflow: auto;       /* Evita que la página crezca y tenga scroll global */
 }
 
 
@@ -17,8 +17,9 @@
     border-radius: 12px;
 
     /* Para que esta columna también tenga scroll interno y no se extienda la página */
-    height: 100vh;
-    overflow-y: auto;
+    height: auto;
+    /*max-height: 100vh;     /* No sobrepasará la altura de la ventana */
+    /*overflow-y: auto;*/
     box-sizing: border-box;
 }
 
