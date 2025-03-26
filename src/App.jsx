@@ -16,6 +16,7 @@ import PoliticaPrivacidad from "./pages/Register/PoliticaPrivacidad";
 import Playlist from "./pages/Playlist/Playlist";
 import Library from "./pages/Library/Library";
 import AccountInfo from "./pages/AccountInfo/AccountInfo";
+import Song from "./pages/Song/Song.jsx";
 
 function App() {
 
@@ -38,6 +39,7 @@ function App() {
                         <Route index element={<Home />} />
                         <Route path="home" element={<Home />} />
                         <Route path="playlist/:playlistId" element={<Playlist />} />
+                        <Route path="/songs/:songId" element={<Song />} />
                         <Route path="library" element={<Library />} />
                     </Route>
                 </Routes>

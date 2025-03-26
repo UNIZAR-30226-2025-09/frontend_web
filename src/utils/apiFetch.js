@@ -1,7 +1,7 @@
 // NUBE
-const BASE_URL = "http://164.90.160.181/request/api";
+//const BASE_URL = "http://164.90.160.181/request/api";
 // LOCAL
-//const BASE_URL = "http://localhost/request/api";
+const BASE_URL = "http://localhost/request/api";
 
 // PRE:
 // Función reutilizable para hacer peticiones HTTP al backend.

@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 
 // NUBE
+/*
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -20,10 +21,9 @@ export default defineConfig({
     },
   },
 });
-
+*/
 // LOCAL
-/*
+
 export default defineConfig({
   plugins: [react()],
 })
-*/
