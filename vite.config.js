@@ -18,6 +18,7 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+    allowedHosts: ['vibra-sally-floyd.duckdns.org'],
   },
 });
 
