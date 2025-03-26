@@ -160,21 +160,28 @@ function Player() {
 
     const toggleLike = async () => {
         try {
-            const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/liked', {
+            // Primero obtener o crear la playlist de "Me Gusta"
+            const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/songliked', {
                 user_id: userId
             });
             console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.data.playlist);
 
-            const songId = currentSong.id;  // Asegúrate de que currentSong esté definido
+            const playlistId = likedPlaylistRes.data.playlist.id; // Obtener el ID de la playlist
+
+            // Luego agregar la canción a esa playlist
+            const songId = currentSong.id;
             const response = await axios.post(`http://localhost:5001/api/song_like/${songId}/like`, {
-                user_id: userId
+                user_id: userId,
+                playlist_id: playlistId // Pasar el ID de la playlist correcta
             });
+
             console.log("Respuesta del servidor:", response.data);
             setIsLiked(response.data.liked);
         } catch (error) {
             console.error("Error al agregar/eliminar el like", error);
         }
     };
+
 
     return (
         <div className={styles.playerContainer}>
