@@ -21,10 +21,20 @@
 }
 
 
-.logo {
-    width: 80px;
-    cursor: pointer;
+.login-box .logo {
+    display: block;
+    margin: 0 auto 30px;
+    width: 120px !important;
+    height: 120px !important;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+    object-fit: contain;
 }
+
+
 
 .progress-bar {
     width: 100%;
@@ -132,3 +142,51 @@
     color: white;
 }
 
+.register2-box .register2-logo {
+    display: block;
+    margin: 0 auto 30px;
+    width: 120px !important;
+    height: 120px !important;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+    object-fit: contain;
+}
+
+.register2-logo:hover {
+    transform: scale(1.05);
+}
+
+.register3-box .register3-logo {
+    display: block;
+    margin: 0 auto 30px;
+    width: 140px !important;
+    height: 140px !important;
+    padding: 0;
+    object-fit: cover;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+}
+
+
+
+.register3-logo:hover {
+    transform: scale(1.05);
+}
+
+.logo-vibra {
+    display: block;
+    margin: 0 auto 30px;
+    width: 120px !important;
+    height: 120px !important;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    object-fit: contain;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.15));
+}

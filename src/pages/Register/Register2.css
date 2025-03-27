@@ -138,4 +138,34 @@ body {
     background-color: #79e2ffc2;
 }
 
+.login-box .logo {
+    display: block;
+    margin: 0 auto 30px;
+    width: 120px !important;
+    height: 120px !important;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+    object-fit: contain;
+}
+
+.register2-box .register2-logo {
+    display: block;
+    margin: 0 auto 30px;
+    width: 120px !important;
+    height: 120px !important;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+    object-fit: contain;
+}
+
+.register2-logo:hover {
+    transform: scale(1.05);
+}
+
 

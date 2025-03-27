@@ -40,11 +40,22 @@
 
 /* Logo */
 .logo {
-    width: 120px;
-    margin-top: 5px;
-    margin-bottom: 0px;
-    cursor: pointer;
+    display: block;
+    margin: 0 auto 30px;
+    width: 100px;
+    height: 100px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+    object-fit: contain;
 }
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
 
 .input-label {
     display: flex;
