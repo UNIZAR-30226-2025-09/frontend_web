@@ -1,42 +1,65 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
 
-.politica-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+body {
     background-color: #1e1e1e;
+    font-family: 'Inter Tight', sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
-.politica-box {
-    background-color: #121212;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.692);
-    text-align: center;
-    color: white;
-    width: 550px; /* Igual a las otras páginas */
-    border: 2px solid #79e2ff; /* Borde azul */
-    max-height: 80vh;
-    overflow-y: auto;
+.politica-container {
+    padding: 40px 10% 40px;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    line-height: 1.6;
 }
 
-.logo {
-    width: 80px;
-    cursor: pointer;
+.politica-container .logo {
+    display: block;
+    margin: 0 auto 30px;
+    width: 100px !important;
+    height: 100px !important;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+    object-fit: contain;
+}
+
+.logo:hover {
+    transform: scale(1.05);
 }
 
 .politica-title {
-    font-size: 24px;
-    margin-bottom: 15px;
-    font-weight: bold;
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 40px;
+    color: white;
 }
 
 .politica-text {
-    text-align: left;
-    font-size: 14px;
-    line-height: 1.6;
-    color: #b3b3b3;
+    max-width: 900px;
+    margin: 0 auto;
+    font-size: 15px;
+    color: #cccccc;
+}
+
+.politica-text h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 30px;
+    color: #ffffff;
+}
+
+.politica-text p,
+.politica-text li {
+    margin-bottom: 15px;
+}
+
+.politica-text ul {
+    padding-left: 20px;
 }
 
 .politica-text a {
@@ -49,17 +72,20 @@
 }
 
 .btn-close {
+    display: block;
     background-color: #79e2ff;
     color: black;
     border: none;
-    padding: 10px;
-    border-radius: 20px;
+    padding: 12px 20px;
+    border-radius: 30px;
     font-size: 16px;
     cursor: pointer;
-    width: 100%;
     font-weight: bold;
-    margin-top: 15px;
+    width: 200px;
+    margin: 40px auto 0;
+    transition: background-color 0.3s ease;
 }
+
 
 .btn-close:hover {
     background-color: #5ac2e0;

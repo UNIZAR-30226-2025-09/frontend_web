@@ -41,10 +41,20 @@
 
 /* Logo */
 .logo {
-    width: 120px;
-    margin-top: 5px;
-    margin-bottom: 0;
-    cursor: pointer;
+    display: block;
+    margin: 0 auto 30px;
+    width: 100px;
+    height: 100px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+    object-fit: contain;
+}
+
+.logo:hover {
+    transform: scale(1.05);
 }
 
 /* Contenedor de cada campo del formulario */
@@ -83,24 +93,25 @@ label {
     outline: none;
 }
 
-.globalInput:hover {
-    border:.btn-blue {
+.GlobalInput:hover {
     width: 65%;
     background-color: #79e2ff;
     color: black;
     padding: 10px;
     font-size: 16px;
-    border: none;
+    border: 1px solid #79e2ff; /* aquí lo arreglamos */
     border-radius: 50px;
     cursor: pointer;
     font-weight: bold;
 }
 
-    .btn-blue:hover {
-        background-color: #79e2ffc2;
-    }
-    1px solid #79e2ff;
+.btn-blue:hover {
+    background-color: #79e2ffc2;
+    border: 1px solid #79e2ff; /* aquí también */
 }
+
+
+
 
 /* Botón de acción (Registrarse/Siguiente) */
 .btn-blue {

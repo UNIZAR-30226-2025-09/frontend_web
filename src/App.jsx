@@ -13,6 +13,7 @@ import Register2 from "./pages/Register/Register2";
 import Register3 from "./pages/Register/Register3";
 import TerminosYCondiciones from "./pages/Register/TerminosYCondiciones";
 import PoliticaPrivacidad from "./pages/Register/PoliticaPrivacidad";
+import QuienesSomos from "./pages/Register/QuienesSomos";
 import Playlist from "./pages/Playlist/Playlist";
 import Library from "./pages/Library/Library";
 import AccountInfo from "./pages/AccountInfo/AccountInfo";
@@ -32,6 +33,7 @@ function App() {
                     <Route path="/register3" element={<Register3 />} />
                     <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
                     <Route path="/terminos-condiciones" element={<TerminosYCondiciones />} />
+                    <Route path="/quienes-somos" element={<QuienesSomos />} />
                     <Route path="/account" element={<AccountInfo />} /> {/* <-- MUEVE AQUÍ */}
 
                     {/* Páginas con layout principal */}

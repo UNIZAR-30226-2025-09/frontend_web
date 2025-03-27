@@ -42,11 +42,13 @@ const Register3 = () => {
     return (
         <div className="register3-container">
             <div className="register3-box">
-                <img src="../vibrablanco.png" alt="Vibra Logo" className="logo"/>
+                <img src="/vibrablanco.png" alt="Logo Vibra" className="logo-vibra"/>
+
                 <div className="progress-bar">
                     <div className="progress" style={{width: "100%"}}></div>
                 </div>
-                <h2 style={{textAlign: "center", width: "100%", marginBottom: "10px", marginLeft: "50px"}}>Paso 3 de 3</h2>
+                <h2 style={{textAlign: "center", width: "100%", marginBottom: "10px", marginLeft: "50px"}}>Paso 3 de
+                    3</h2>
                 <h1 className="title">Términos y Condiciones</h1>
                 <div className="terms-container">
                     <div className="checkbox-container">
