@@ -8,6 +8,7 @@ import { IconContext } from "react-icons";
 import { getImageUrl } from "#utils/getImageUrl";
 import styles from "./PlayerStyles.module.css";
 import axios from 'axios';
+import {apiFetch} from "#utils/apiFetch";
 
 function Player() {
     const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs } = usePlayer();
@@ -105,10 +106,10 @@ function Player() {
 
         const checkIfLiked = async () => {
             try {
-                const url = `http://localhost:5001/api/song_like/${currentSong.id}/like?userId=${userId}`;
+                const url = `/song_like/${currentSong.id}/like?userId=${userId}`;
                 console.log("useEffect - Llamando a URL:", url);
 
-                const response = await axios.get(url);
+                const response = await apiFetch(url);
                 console.log("useEffect - Respuesta del endpoint checkIfLiked:", response.data);
 
                 setIsLiked(response.data.isLiked);
