@@ -8,7 +8,6 @@ import { IconContext } from "react-icons";
 import { getImageUrl } from "#utils/getImageUrl";
 import styles from "./PlayerStyles.module.css";
 import axios from 'axios';
-import {apiFetch} from "#utils/apiFetch";
 
 function Player() {
     const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs } = usePlayer();
@@ -97,7 +96,6 @@ function Player() {
         };
     }, [currentSong, songUrl]);
 
-    // Verificar si la canción está en favoritos (solo si el usuario está logueado)
     useEffect(() => {
         if (!currentSong || !userId) return;
 
@@ -106,13 +104,25 @@ function Player() {
 
         const checkIfLiked = async () => {
             try {
-                const url = `/song_like/${currentSong.id}/like?userId=${userId}`;
+                const url = `http://localhost:5001/api/song_like/${currentSong.id}/like?userId=${userId}`;
                 console.log("useEffect - Llamando a URL:", url);
 
-                const response = await apiFetch(url);
-                console.log("useEffect - Respuesta del endpoint checkIfLiked:", response.data);
+                // Hacemos la solicitud con fetch
+                const response = await fetch(url, {
+                    method: 'GET',  // Método GET
+                    headers: {
+                        'Content-Type': 'application/json',  // Especificamos el tipo de contenido
+                    },
+                });
 
-                setIsLiked(response.data.isLiked);
+                if (!response.ok) {
+                    throw new Error(`Error en la solicitud: ${response.status}`);
+                }
+
+                const data = await response.json();  // Obtener los datos de la respuesta
+                console.log("useEffect - Respuesta del endpoint checkIfLiked:", data);
+
+                setIsLiked(data.isLiked);  // Actualizamos el estado con la respuesta
             } catch (error) {
                 console.error("useEffect - Error al verificar los favoritos:", error);
             }
@@ -120,6 +130,7 @@ function Player() {
 
         checkIfLiked();
     }, [currentSong, userId]);
+
 
     // Botón de play/pause
     const playingButton = () => {
@@ -162,26 +173,50 @@ function Player() {
     const toggleLike = async () => {
         try {
             // Primero obtener o crear la playlist de "Me Gusta"
-            const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/songliked', {
-                user_id: userId
+            const responsePlaylist = await fetch('http://localhost:5001/api/playlists/songliked', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                }),
             });
-            console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.data.playlist);
 
-            const playlistId = likedPlaylistRes.data.playlist.id; // Obtener el ID de la playlist
+            if (!responsePlaylist.ok) {
+                throw new Error(`Error al obtener o crear la playlist: ${responsePlaylist.status}`);
+            }
+
+            const likedPlaylistRes = await responsePlaylist.json();
+            console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.playlist);
+
+            const playlistId = likedPlaylistRes.playlist.id;  // Obtener el ID de la playlist
 
             // Luego agregar la canción a esa playlist
             const songId = currentSong.id;
-            const response = await axios.post(`http://localhost:5001/api/song_like/${songId}/like`, {
-                user_id: userId,
-                playlist_id: playlistId // Pasar el ID de la playlist correcta
+            const responseLike = await fetch(`http://localhost:5001/api/song_like/${songId}/like`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    playlist_id: playlistId,  // Pasar el ID de la playlist correcta
+                }),
             });
 
-            console.log("Respuesta del servidor:", response.data);
-            setIsLiked(response.data.liked);
+            if (!responseLike.ok) {
+                throw new Error(`Error al agregar el like: ${responseLike.status}`);
+            }
+
+            const likeResponse = await responseLike.json();
+            console.log("Respuesta del servidor:", likeResponse);
+            setIsLiked(likeResponse.liked);
         } catch (error) {
             console.error("Error al agregar/eliminar el like", error);
         }
     };
+
 
 
     return (
