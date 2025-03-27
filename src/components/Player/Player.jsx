@@ -6,18 +6,11 @@ import { BiSkipNext, BiSkipPrevious } from "react-icons/bi";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";  // Iconos de corazón
 import { IconContext } from "react-icons";
 import { getImageUrl } from "#utils/getImageUrl";
-
-/* Importa las clases desde tu archivo CSS Module */
 import styles from "./PlayerStyles.module.css";
 import axios from 'axios';
 
-function Player({ currentSong }) {
-    const {
-        songs,
-        setCurrentSong,
-        currentIndex,
-        setCurrentIndex
-    } = usePlayer();
+function Player() {
+    const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs } = usePlayer();
 
     const [isPlaying, setIsPlaying] = useState(false);
     const [currTime, setCurrTime] = useState({ min: 0, sec: 0 });
@@ -25,11 +18,11 @@ function Player({ currentSong }) {
     const [seconds, setSeconds] = useState(0);
     const [duration, setDuration] = useState(0);
     const [isLiked, setIsLiked] = useState(false); // Estado para saber si la canción está en favoritos
-    // Asegurarnos de que `user` existe antes de intentar acceder a su `id`
-    const user = JSON.parse(localStorage.getItem('user'));
-    const userId = user ? user.id : null; // Usar un valor predeterminado en caso de que `user` sea null
     const soundRef = useRef(null);
     const intervalRef = useRef(null);
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userId = user ? user.id : null; // Evitar errores si el usuario no está logueado
 
     // Para saber si hay o no canción seleccionada:
     const noSongSelected = !currentSong;
@@ -103,6 +96,7 @@ function Player({ currentSong }) {
         };
     }, [currentSong, songUrl]);
 
+    // Verificar si la canción está en favoritos (solo si el usuario está logueado)
     useEffect(() => {
         if (!currentSong || !userId) return;
 
@@ -125,7 +119,6 @@ function Player({ currentSong }) {
 
         checkIfLiked();
     }, [currentSong, userId]);
-
 
     // Botón de play/pause
     const playingButton = () => {
@@ -167,22 +160,21 @@ function Player({ currentSong }) {
 
     const toggleLike = async () => {
         try {
-            // Primero, obtener o crear la playlist de "Me Gusta" para el usuario.
-            const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/liked', {
+            // Primero obtener o crear la playlist de "Me Gusta"
+            const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/songliked', {
                 user_id: userId
             });
             console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.data.playlist);
-            // Aquí podrías guardar likedPlaylistRes.data.playlist.id si lo necesitas
 
-            // Luego, proceder con el toggle de like para la canción.
-            const songId = currentSong.id;  // Asegúrate de que currentSong esté definido
-            console.log("Enviando petición de like/unlike:");
-            console.log("user_id:", userId);
-            console.log("song_id:", songId);
+            const playlistId = likedPlaylistRes.data.playlist.id; // Obtener el ID de la playlist
 
+            // Luego agregar la canción a esa playlist
+            const songId = currentSong.id;
             const response = await axios.post(`http://localhost:5001/api/song_like/${songId}/like`, {
-                user_id: userId
+                user_id: userId,
+                playlist_id: playlistId // Pasar el ID de la playlist correcta
             });
+
             console.log("Respuesta del servidor:", response.data);
             setIsLiked(response.data.liked);
         } catch (error) {
@@ -190,25 +182,19 @@ function Player({ currentSong }) {
         }
     };
 
-    // Aquí va el return con el JSX del Player
 
     return (
         <div className={styles.playerContainer}>
             {/* Portada de la canción */}
             <img
                 className={styles.musicCover}
-                src={
-                    noSongSelected
-                        ? "https://via.placeholder.com/300x300.png?text=Sin+Canci%C3%B3n"
-                        : getImageUrl(currentSong.photo_video)  // Usa getImageUrl aquí para manejar la imagen correctamente
-                }
+                src={noSongSelected
+                    ? "https://via.placeholder.com/300x300.png?text=Sin+Canci%C3%B3n"
+                    : getImageUrl(currentSong.photo_video)}
                 alt={noSongSelected ? "Sin canción seleccionada" : "Portada de la canción"}
             />
 
             {/* Información de la canción */}
-
-
-            {/* Siempre mostramos info, aunque esté vacía */}
             <div className={styles.info}>
                 <h3 className={styles.title}>
                     {noSongSelected ? "Ninguna canción seleccionada" : currentSong.name}
@@ -225,35 +211,36 @@ function Player({ currentSong }) {
             {/* Controles de reproducción */}
             <div className={styles.controls}>
                 <div className={styles.controlButtons}>
+                    {/* Flecha anterior */}
                     <button
                         className={styles.controlButton}
                         onClick={handlePrevious}
                         disabled={noSongSelected}
                     >
-                        <IconContext.Provider value={{ size: "3em", color: "#21a1f1" }}>
-                            <BiSkipPrevious />
+                        <IconContext.Provider value={{size: "3em", color: "#21a1f1"}}>
+                            <BiSkipPrevious/>
                         </IconContext.Provider>
                     </button>
 
-                    {/* Botón de Play/Pause */}
+                    {/* Botón de Play/Pause con estilo circular */}
                     <button
                         className={styles.playerControlPlay}
                         onClick={playingButton}
                         disabled={noSongSelected}
                     >
-                        <IconContext.Provider value={{ size: "3em", color: "#ffffff" }}>
-                            {isPlaying ? <AiFillPauseCircle /> : <AiFillPlayCircle />}
+                        <IconContext.Provider value={{size: "3em", color: "#ffffff"}}>
+                            {isPlaying ? <AiFillPauseCircle/> : <AiFillPlayCircle/>}
                         </IconContext.Provider>
                     </button>
 
-
+                    {/* Flecha siguiente */}
                     <button
                         className={styles.controlButton}
                         onClick={handleNext}
                         disabled={noSongSelected}
                     >
-                        <IconContext.Provider value={{ size: "3em", color: "#21a1f1" }}>
-                            <BiSkipNext />
+                        <IconContext.Provider value={{size: "3em", color: "#21a1f1"}}>
+                            <BiSkipNext/>
                         </IconContext.Provider>
                     </button>
                 </div>
@@ -266,17 +253,11 @@ function Player({ currentSong }) {
                     onClick={toggleLike}
                     disabled={noSongSelected}
                 >
-
-                    {isLiked ? (
-                        <AiFillHeart color="#E74C3C" />
-                    ) : (
-                        <AiOutlineHeart color="#E74C3C" />
-                    )}
-
+                    {isLiked ? <AiFillHeart color="#E74C3C"/> : <AiOutlineHeart color="#E74C3C"/>}
                 </button>
             </div>
 
-            {/* Barra de progreso */}
+            {/* Barra de progreso siempre presente, pero deshabilitada si no hay canción */}
             <div className={styles.timelineContainer}>
                 <div className={styles.time}>
                     <div className={styles.timeSection}>

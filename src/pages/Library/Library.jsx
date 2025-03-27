@@ -8,7 +8,7 @@ const Library = () => {
     const navigate = useNavigate();
     const { setActive, handleMouseDown, handleMouseMove, handleMouseUp } = useOutletContext();
     const [user, setUser] = useState(null);
-    const [likedSongs, setLikedSongs] = useState([]);
+    const [likedSongPlaylist, setLikedSongPlaylist] = useState(null); // Playlist "Me Gusta"
     const [userPlaylists, setUserPlaylists] = useState([]);
     const [likedPlaylists, setLikedPlaylists] = useState([]);
     const [sortUserPlaylists, setSortUserPlaylists] = useState("recent");
@@ -66,6 +66,27 @@ const Library = () => {
         }
     }, [user]);
 
+    // Fetch de la playlist "Me Gusta"
+    useEffect(() => {
+        const getLikedSongPlaylist = async () => {
+            try {
+                const userId = user ? user.id : null;
+                if (userId) {
+                    // Petición para obtener la playlist de tipo "Vibra_likedSong"
+                    const data = await apiFetch(`/playlists/liked-song/${userId}`);
+                    setLikedSongPlaylist(data); // Almacena la playlist "Me Gusta"
+                }
+            } catch (error) {
+                console.error("Error al obtener la playlist 'Me Gusta':", error);
+            }
+        };
+
+        if (user) {
+            getLikedSongPlaylist(); // Llama a la API solo si el usuario está disponible
+        }
+    }, [user]);
+
+
     const sortPlaylists = (type, setFunction, option) => {
         setFunction(option);
         let sortedPlaylists = type === "user" ? [...userPlaylists] : [...likedPlaylists];
@@ -102,13 +123,23 @@ const Library = () => {
             </div>
             <div className="scroll-container">
                 <div className="library-playlists">
-                    {likedSongs.length > 0 ? likedSongs.map(song => (
-                        <div key={song.id} className="library-song-card">
-                            <img src={song.cover || "/default-song.jpg"} alt={song.title}
-                                 className="library-song-image"/>
-                            <p className="library-song-title">{song.title}</p>
+                    {likedSongPlaylist ? (
+                        <div key={likedSongPlaylist.id} className="playlist-wrapper">
+                            <div className="library-playlist-card"
+                                 onClick={() => handlePlaylistClick(likedSongPlaylist.id)}>
+                                <img
+                                    src={getImageUrl(likedSongPlaylist.front_page) || "/default-playlist.jpg"}
+                                    alt={likedSongPlaylist.name}
+                                    className="library-playlist-image"
+                                />
+                            </div>
+                            <div onClick={() => handlePlaylistClick(likedSongPlaylist.id)}>
+                                <p className="library-playlist-title">{likedSongPlaylist.name}</p>
+                            </div>
                         </div>
-                    )) : <div className="empty-message">No tienes canciones con Me gusta.</div>}
+                    ) : (
+                        <div className="empty-message">No tienes una playlist 'Me Gusta'.</div>
+                    )}
                 </div>
             </div>
 

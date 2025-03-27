@@ -52,21 +52,38 @@
 }
 
 /* Subcontenedor donde van Prev, Play y Next */
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
 .controlButtons {
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    margin: 0 auto; /* Centra el bloque en la pantalla */
+    justify-content: space-between;
+    width: 100%;
+    max-width: 300px;  /* O ajusta según el tamaño deseado */
 }
 
-/* Botón genérico (Prev y Next) */
 .controlButton {
     background: none;
     border: none;
     cursor: pointer;
-    display: flex;
-    /* Si deseas ajustar el tamaño del ícono, puedes usar font-size o IconContext.Provider */
+    color: #21a1f1;
 }
+
+/*
+.playerControlPlay {
+    background-color: #000;
+    border: 2px solid #21a1f1;
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+}
+*/
+
 /* Contenedor del botón de like (debajo de .controls) */
 .likeButtonContainer {
     /* Puedes agregar margen superior o usar el gap del padre */
