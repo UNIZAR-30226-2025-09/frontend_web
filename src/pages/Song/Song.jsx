@@ -1,4 +1,4 @@
-import { FaHeart, FaEllipsisH, FaPlay } from "react-icons/fa";
+import {FaHeart, FaEllipsisH, FaPlay, FaPause} from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {useNavigate, useOutletContext, useParams} from "react-router-dom";
 import { apiFetch } from "#utils/apiFetch"; // Suponiendo que esta función existe
@@ -21,7 +21,7 @@ const SongContent = () => {
     const [song, setSong] = useState(null);
     const [isLiked, setIsLiked] = useState(false);
     const user_Id = JSON.parse(localStorage.getItem('user')).id; // Asegúrate de que la clave sea la correcta
-    const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs } = useOutletContext();
+    const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, isPlaying, setIsPlaying, playlistActive, setPlaylistActive } = useOutletContext();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -83,6 +83,20 @@ const SongContent = () => {
         setSongs([song]); // En este caso solo se reproduce esta canción
     };
 
+    const handlePlaySongs = (isPlaying) => {
+        console.log("Reproduciendo canciones en modo aleatorio...");
+
+        if(!isPlaying) {
+            setCurrentSong(song); // o la canción que desees
+            setCurrentIndex(0); // O el índice correspondiente
+            setSongs([song]); // Actualiza las canciones
+
+            setPlaylistActive(songId);
+        }
+
+        console.log("Cambiando isplaying en playlist");
+        setIsPlaying(!isPlaying);
+    };
     // Asegúrate de que 'song' esté disponible antes de intentar acceder a 'song.type'
     const isSingle = song?.type !== "album"; // Corregir la condición
     console.log("es single : ", isSingle);
@@ -120,8 +134,11 @@ const SongContent = () => {
 
                 <div className="song-actions">
                     <div className="rep-cont">
-                        <button className="play-btn" onClick={handlePlaySong}>
-                            <FaPlay/>
+                        <button
+                            className="play-btn"
+                            onClick={() => handlePlaySongs(isPlaying)}
+                        >
+                            {playlistActive === songId && isPlaying ? <FaPause/> : <FaPlay/>}
                         </button>
                     </div>
 

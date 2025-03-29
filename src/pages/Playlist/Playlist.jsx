@@ -1,4 +1,4 @@
-import { FaHeart, FaEllipsisH, FaPlay } from "react-icons/fa";
+import {FaHeart, FaEllipsisH, FaPlay, FaPause} from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {useOutletContext, useParams} from "react-router-dom";
 import { PlayerProvider} from "../../components/Player/PlayerContext.jsx";
@@ -28,7 +28,7 @@ const PlaylistContent = () => {
     const [isShuffling, setIsShuffling] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
     const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
-    const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs } = useOutletContext();
+    const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying, isPlaying, setPlaylistActive, playlistActive } = useOutletContext();
     const navigate = useNavigate();
 
     const redirectToSong = (songId) => {
@@ -118,22 +118,30 @@ const PlaylistContent = () => {
         setCurrentIndex( index );
         setSongs(songs);
     };
-    const handlePlaySongs = (songs) => {
+
+    const handlePlaySongs = (songs, isPlaying) => {
         console.log("Reproduciendo canciones en modo aleatorio...");
 
-        if(isShuffling){
-            // Shuffle array of songs
-            const shuffledSongs = shuffleArray(songs);
-            // Reproducir la primera canción del array mezclado
-            setCurrentSong(shuffledSongs[0]); // o la canción que desees
-            setCurrentIndex(0); // O el índice correspondiente
-            setSongs(shuffledSongs); // Actualiza las canciones
+        if(!isPlaying) {
+            if(isShuffling){
+                // Shuffle array of songs
+                const shuffledSongs = shuffleArray(songs);
+                // Reproducir la primera canción del array mezclado
+                setCurrentSong(shuffledSongs[0]); // o la canción que desees
+                setCurrentIndex(0); // O el índice correspondiente
+                setSongs(shuffledSongs); // Actualiza las canciones
+            }
+            else{
+                setCurrentSong(songs[0]); // o la canción que desees
+                setCurrentIndex(0); // O el índice correspondiente
+                setSongs(songs); // Actualiza las canciones
+            }
+
+            setPlaylistActive(playlistId);
         }
-        else{
-            setCurrentSong(songs[0]); // o la canción que desees
-            setCurrentIndex(0); // O el índice correspondiente
-            setSongs(songs); // Actualiza las canciones
-        }
+
+        console.log("Cambiando isplaying en playlist");
+        setIsPlaying(!isPlaying);
     };
 
     const handleEditToggle = () => {
@@ -221,8 +229,11 @@ const PlaylistContent = () => {
                 <div className="playlist-actions">
                     {/* Botón principal grande con solo el ícono */}
                     <div className="rep-cont">
-                        <button className="play-btn" onClick={() => handlePlaySongs(playlist.songs)}>
-                            <FaPlay/>
+                        <button
+                            className="play-btn"
+                            onClick={() => handlePlaySongs(playlist.songs, isPlaying)}
+                        >
+                            {playlistActive === playlistId && isPlaying ? <FaPause/> : <FaPlay/>}
                         </button>
 
                         <button className="shuffle-btn" onClick={toggleShuffle}>

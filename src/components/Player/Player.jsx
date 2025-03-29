@@ -10,9 +10,8 @@ import styles from "./PlayerStyles.module.css";
 import axios from 'axios';
 
 function Player() {
-    const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs } = usePlayer();
+    const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs, isPlaying, setIsPlaying } = usePlayer();
 
-    const [isPlaying, setIsPlaying] = useState(false);
     const [currTime, setCurrTime] = useState({ min: 0, sec: 0 });
     const [totalTime, setTotalTime] = useState({ min: 0, sec: 0 });
     const [seconds, setSeconds] = useState(0);
@@ -38,11 +37,22 @@ function Player() {
         console.log("🎵 Player detecta cambio de canción:", currentSong);
     }, [currentSong]);
 
+    useEffect(() => {
+        console.log("🎵 Player detecta cambio de playing:", isPlaying);
+    }, [isPlaying]);
+
     // Crea o recarga el Howl cuando la songUrl cambia
     useEffect(() => {
+        // Verifica que currentSong y songUrl estén disponibles
         if (!currentSong || !songUrl) return;
 
         console.log("🎶 Cargando nueva canción en el reproductor:", currentSong.name);
+
+        // Si la canción ya está cargada y está sonando, no recargues
+        if (soundRef.current && soundRef.current._src === songUrl && soundRef.current.playing()) {
+            console.log("La canción ya está cargada y sonando, no la recargo.");
+            return;
+        }
 
         // Limpia la canción anterior si existe
         if (soundRef.current) {
@@ -53,7 +63,8 @@ function Player() {
             clearInterval(intervalRef.current);
         }
 
-        // Crea una nueva instancia de Howl
+        // Crea una nueva instancia de Howl solo si la canción cambia
+        console.log("Creando howl...", songUrl);
         const sound = new Howl({
             src: [songUrl],
             html5: true,
@@ -67,11 +78,9 @@ function Player() {
                     min: Math.floor(sec / 60),
                     sec: Math.floor(sec % 60),
                 });
-                sound.play();
-                setIsPlaying(true);
+                console.log("Reproduciendo: ", currentSong.name);
             },
             onplay: () => {
-                setIsPlaying(true);
                 intervalRef.current = setInterval(() => {
                     const sec = sound.seek();
                     setSeconds(sec);
@@ -79,7 +88,7 @@ function Player() {
                         min: Math.floor(sec / 60),
                         sec: Math.floor(sec % 60),
                     });
-                }, 1000);
+                },);
             },
         });
 
@@ -94,7 +103,9 @@ function Player() {
                 clearInterval(intervalRef.current);
             }
         };
-    }, [currentSong, songUrl]);
+    }, [currentSong, songUrl]);  // Solo se ejecuta cuando currentSong o songUrl cambian
+
+
 
     // Verificar si la canción está en favoritos (solo si el usuario está logueado)
     useEffect(() => {
@@ -126,13 +137,33 @@ function Player() {
             console.log("No hay instancia de Howl. Verifica si se seleccionó una canción.");
             return;
         }
-        if (isPlaying) {
-            soundRef.current.pause();
-        } else {
-            soundRef.current.play();
-        }
+        console.log("Cambiando isplaying en el player");
         setIsPlaying(!isPlaying);
     };
+
+    useEffect(() => {
+        // Asegúrate de que soundRef.current esté inicializado
+        if (!soundRef.current) {
+            return;
+        }
+
+        // Revisa si la canción está reproduciéndose
+        const isSoundPlaying = soundRef.current.playing();
+
+        console.log("¿Está sonando?: ", isSoundPlaying);
+
+
+        // Si isPlaying es true y no está sonando, reproducir
+        if (isPlaying && !isSoundPlaying) {
+            console.log("Reproduciendo canción");
+            soundRef.current.play();
+        }
+        // Si isPlaying es false y está sonando, pausar
+        else if (!isPlaying && isSoundPlaying) {
+            console.log("Pausando canción");
+            soundRef.current.pause();
+        }
+    }, [isPlaying, currentSong]);
 
     // Mover la barra de progreso
     const handleTimelineChange = (e) => {
@@ -148,6 +179,8 @@ function Player() {
         const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
         setCurrentIndex(prevIndex);
         setCurrentSong(songs[prevIndex]);
+        setIsPlaying(true);
+        console.log("Reproduciendo desde flcecha anterior");
     };
 
     // Ir a la canción siguiente
@@ -156,6 +189,8 @@ function Player() {
         const nextIndex = (currentIndex + 1) % songs.length;
         setCurrentIndex(nextIndex);
         setCurrentSong(songs[nextIndex]);
+        setIsPlaying(true);
+        console.log("Reproduciendo desde flcecha siguiente");
     };
 
     const toggleLike = async () => {
