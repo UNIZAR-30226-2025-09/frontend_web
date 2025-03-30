@@ -14,7 +14,8 @@ const MainLayout = () => {
     const navigate = useNavigate();
 
     const [user, setUser] = useState(null);
-    const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs, setSongs, isPlaying, setIsPlaying, playlistActive, setPlaylistActive } = usePlayer();
+    const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs, setSongs, isPlaying,
+            setIsPlaying, playlistActive, setPlaylistActive, songActive, setSongActive } = usePlayer();
     const [showLoginPopup, setShowLoginPopup] = useState(false);  // Estado para mostrar el popup
 
     const setCurrentSongWrapper = (song) => {
@@ -206,6 +207,8 @@ const MainLayout = () => {
                     setIsPlaying,
                     setPlaylistActive,
                     playlistActive,
+                    songActive,
+                    setSongActive,
                 }}/>
 
                 <Footer />
