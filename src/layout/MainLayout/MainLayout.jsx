@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import Navbar from "../../components/Navbar/Navbar";
@@ -14,7 +14,8 @@ const MainLayout = () => {
     const navigate = useNavigate();
 
     const [user, setUser] = useState(null);
-    const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs, setSongs } = usePlayer();
+    const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs, setSongs, isPlaying,
+            setIsPlaying, playlistActive, setPlaylistActive, songActive, setSongActive } = usePlayer();
     const [showLoginPopup, setShowLoginPopup] = useState(false);  // Estado para mostrar el popup
 
     const setCurrentSongWrapper = (song) => {
@@ -187,6 +188,7 @@ const MainLayout = () => {
                 <Outlet context={{
                     currentSong,
                     currentIndex,
+                    isPlaying,
                     songs,
                     playlistsRef,
                     recommendationsRef,
@@ -202,6 +204,11 @@ const MainLayout = () => {
                     setCurrentIndex: setCurrentIndexWrapper,
                     setSongs: setCurrentSongsWrapper,
                     handleAccessWithoutLogin,  // Pasar la función al Outlet
+                    setIsPlaying,
+                    setPlaylistActive,
+                    playlistActive,
+                    songActive,
+                    setSongActive,
                 }}/>
 
                 <Footer />

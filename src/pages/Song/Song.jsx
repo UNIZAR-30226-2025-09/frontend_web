@@ -1,10 +1,11 @@
-import { FaHeart, FaEllipsisH, FaPlay } from "react-icons/fa";
+import {FaHeart, FaEllipsisH, FaPlay, FaPause} from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {useNavigate, useOutletContext, useParams} from "react-router-dom";
 import { apiFetch } from "#utils/apiFetch"; // Suponiendo que esta función existe
 import { getImageUrl } from "#utils/getImageUrl"; // Suponiendo que esta función existe
 import "./Song.css";
-import {PlayerProvider} from "../../components/Player/PlayerContext.jsx"; // Estilos para las canciones
+import {PlayerProvider} from "../../components/Player/PlayerContext.jsx";
+import axios from "axios"; // Estilos para las canciones
 
 "#utils/apiFetch.js"
 
@@ -21,7 +22,8 @@ const SongContent = () => {
     const [song, setSong] = useState(null);
     const [isLiked, setIsLiked] = useState(false);
     const user_Id = JSON.parse(localStorage.getItem('user')).id; // Asegúrate de que la clave sea la correcta
-    const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs } = useOutletContext();
+    const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, isPlaying, 
+            setIsPlaying, setPlaylistActive, songActive, setSongActive, currentSong } = useOutletContext();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -43,14 +45,17 @@ const SongContent = () => {
                     method: "GET"
                 });
 
+                const url = `http://localhost:5001/api/song_like/${songId}/like?userId=${user_Id}`;
+                console.log("useEffect - Llamando a URL:", url);
+
+                const response = await axios.get(url);
+                console.log("useEffect - Respuesta del endpoint checkIfLiked:", response.data);
+
+                setIsLiked(response.data.isLiked);
+
                 console.log("Canción cargada:", data);
                 setSong(data);
 
-                const likeData = await apiFetch(`/songs/${songId}/like?user_id=${user_Id}`, {
-                    method: "GET"
-                });
-
-                setIsLiked(likeData.isLiked);
             } catch (error) {
                 console.error("Error al obtener la canción:", error);
             }
@@ -61,18 +66,25 @@ const SongContent = () => {
 
     const toggleLike = async () => {
         try {
-            console.log("Enviando petición de like/unlike:");
+            // Primero obtener o crear la playlist de "Me Gusta"
+            const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/songliked', {
+                user_id: user_Id
+            });
+            console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.data.playlist);
 
-            const responseData = await apiFetch(`/songs/${songId}/like`, {
-                method: "POST",
-                body: { user_id: user_Id }
+            const playlistId = likedPlaylistRes.data.playlist.id; // Obtener el ID de la playlist
+
+            // Luego agregar la canción a esa playlist
+
+            const response = await axios.post(`http://localhost:5001/api/song_like/${songId}/like`, {
+                user_id: user_Id,
+                playlist_id: playlistId // Pasar el ID de la playlist correcta
             });
 
-            console.log("Respuesta del servidor:", responseData);
-
-            setIsLiked(responseData.liked);
+            console.log("Respuesta del servidor:", response.data);
+            setIsLiked(response.data.liked);
         } catch (error) {
-            console.error("Error al dar/quitar like:", error);
+            console.error("Error al agregar/eliminar el like", error);
         }
     };
 
@@ -83,6 +95,21 @@ const SongContent = () => {
         setSongs([song]); // En este caso solo se reproduce esta canción
     };
 
+    const handlePlaySongs = (isPlaying) => {
+        console.log("Reproduciendo canciones en modo aleatorio...");
+
+        if(!isPlaying) {
+            setCurrentSong(song); // o la canción que desees
+            setCurrentIndex(0); // O el índice correspondiente
+            setSongs([song]); // Actualiza las canciones
+
+            setSongActive(songId);
+            setPlaylistActive(0);
+        }
+
+        console.log("Cambiando isplaying en playlist");
+        setIsPlaying(!isPlaying);
+    };
     // Asegúrate de que 'song' esté disponible antes de intentar acceder a 'song.type'
     const isSingle = song?.type !== "album"; // Corregir la condición
     console.log("es single : ", isSingle);
@@ -120,8 +147,11 @@ const SongContent = () => {
 
                 <div className="song-actions">
                     <div className="rep-cont">
-                        <button className="play-btn" onClick={handlePlaySong}>
-                            <FaPlay/>
+                        <button
+                            className="play-btn"
+                            onClick={() => handlePlaySongs(isPlaying)}
+                        >
+                            {songActive === songId && isPlaying ? <FaPause/> : <FaPlay/>}
                         </button>
                     </div>
 

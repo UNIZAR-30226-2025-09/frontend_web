@@ -12,10 +12,10 @@
 }
 
 /* Cabecera con 6 columnas:
-   1) #/Play, 2) Portada, 3) Título, 4) Álbum, 5) Fecha, 6) Duración */
+   1) #/Play, 2) Portada, 3) Título, 4) Álbum, 5) Fecha, 6) Duración 7) tres puntos*/
 .song-header {
     display: grid;
-    grid-template-columns: 80px 60px 3fr 2fr 2fr 80px;
+    grid-template-columns: 80px 60px 3fr 2fr 2fr 80px 40px;
     align-items: center;
     padding: 10px;
     border-bottom: 2px solid #282828;
@@ -34,7 +34,7 @@
 /* Cada fila (canción) con 6 columnas */
 .song-item {
     display: grid;
-    grid-template-columns: 80px 60px 3fr 2fr 2fr 80px;
+    grid-template-columns: 80px 60px 3fr 2fr 2fr 80px 40px;
     align-items: center;
     padding: 10px;
     border-bottom: 1px solid #333;
@@ -114,4 +114,25 @@
     font-size: 14px;
     color: gray;
     text-align: right;
+}
+
+/* Columna 7: 3 puntos */
+.song-options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Opcional: mostrar sólo en hover */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.song-item:hover .song-options {
+    opacity: 1;
+}
+
+/* Ícono de opciones */
+.song-options-icon {
+    font-size: 1.5em;
+    cursor: pointer;
+    color: white;
 }

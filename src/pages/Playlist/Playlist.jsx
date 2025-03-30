@@ -1,13 +1,14 @@
-import { FaHeart, FaEllipsisH, FaPlay } from "react-icons/fa";
+import {FaHeart, FaEllipsisH, FaPlay, FaPause} from "react-icons/fa";
 import { useEffect, useState } from "react";
-import {useOutletContext, useParams} from "react-router-dom";
+import {useOutletContext, useParams, useNavigate} from "react-router-dom";
 import { PlayerProvider} from "../../components/Player/PlayerContext.jsx";
 import {SlPlaylist} from "react-icons/sl";
 import "./Playlist.css"; // Layout y estilos generales
 import "../../components/SongItem/SongItem.css"; // Estilos de la lista de canciones
 import {apiFetch} from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
-import { useNavigate } from "react-router-dom";
+import CreatePlaylistModal from "../../components/PlaylistModal/PlaylistModal.jsx";
+import OptionsPopup from "../../components/PopUpSelection/OptionsPopup.jsx";
 
 "#utils/apiFetch.js"
 
@@ -27,14 +28,57 @@ const PlaylistContent = () => {
     const [newDescription, setNewDescription] = useState("");
     const [isShuffling, setIsShuffling] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
+    const [userPlaylists, setUserPlaylists] = useState([]);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [selectedSong, setSelectedSong] = useState(null);
     const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
-    const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs } = useOutletContext();
+    const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying,
+            isPlaying, setPlaylistActive, playlistActive, setSongActive } = useOutletContext();
     const navigate = useNavigate();
+
+    const options = [
+        playlist?.user_id && playlist.user_id === user_Id ? { label: "Eliminar Playlist" } : null,
+        playlist?.user_id && playlist.user_id === user_Id ? { label: `Hacer ${playlist?.type === "public" ? "privada" : "pública"}` } : null,
+        { label: "Invitar Colaboradores" },
+        {
+            label: "Compartir",
+            submenu: [
+                { label: "Copiar enlace" },
+                { label: "Compartir con amigos" },
+            ],
+        },
+    ].filter(option => option != null);
+
+    const agregarAFavoritosSubmenu = [
+        { label: "Crear playlist" },
+        ...userPlaylists.map((pl) => ({
+            label: pl.name,
+            playlistId: pl.id,
+        })),
+    ];
+
 
     const redirectToSong = (songId) => {
         console.log("Redirigiendo a la canción...", songId);
-        navigate(`/songs/${songId}`); // Cambia la ruta según la estructura de tu aplicación
+        navigate(`/songs/${songId}`);
     };
+
+    useEffect(() => {
+        const fetchUserPlaylists = async () => {
+            try {
+                const data = await apiFetch(`/playlists/users/${user_Id}/playlists`, {
+                    method: "GET",
+                });
+                setUserPlaylists(data);
+            } catch (error) {
+                console.error("Error al obtener las playlists del usuario:", error);
+            }
+        };
+
+        if (user_Id) {
+            fetchUserPlaylists();
+        }
+    }, [user_Id]);
 
     useEffect(() => {
         console.log(" Entrando a Playlist, activando sección...");
@@ -74,7 +118,7 @@ const PlaylistContent = () => {
                 console.log("Imagen de portada:", data.front_page); // Aquí verás la URL de la portada
                 setPlaylist(data);
                 console.log("Canciones de la playlist", data.songs);
-
+                console.log("LIKES: ", data.likes);
                 const likeData = await apiFetch(`/playlists/${playlistId}/like?user_id=${user_Id}`, {
                     method: "GET"
                 });
@@ -118,22 +162,31 @@ const PlaylistContent = () => {
         setCurrentIndex( index );
         setSongs(songs);
     };
-    const handlePlaySongs = (songs) => {
+
+    const handlePlaySongs = (songs, isPlaying) => {
         console.log("Reproduciendo canciones en modo aleatorio...");
 
-        if(isShuffling){
-            // Shuffle array of songs
-            const shuffledSongs = shuffleArray(songs);
-            // Reproducir la primera canción del array mezclado
-            setCurrentSong(shuffledSongs[0]); // o la canción que desees
-            setCurrentIndex(0); // O el índice correspondiente
-            setSongs(shuffledSongs); // Actualiza las canciones
+        if(!isPlaying) {
+            if(isShuffling){
+                // Shuffle array of songs
+                const shuffledSongs = shuffleArray(songs);
+                // Reproducir la primera canción del array mezclado
+                setCurrentSong(shuffledSongs[0]);
+                setCurrentIndex(0);
+                setSongs(shuffledSongs);
+            }
+            else{
+                setCurrentSong(songs[0]);
+                setCurrentIndex(0);
+                setSongs(songs);
+            }
+
+            setPlaylistActive(playlistId);
+            setSongActive(0);
         }
-        else{
-            setCurrentSong(songs[0]); // o la canción que desees
-            setCurrentIndex(0); // O el índice correspondiente
-            setSongs(songs); // Actualiza las canciones
-        }
+
+        console.log("Cambiando isplaying en playlist");
+        setIsPlaying(!isPlaying);
     };
 
     const handleEditToggle = () => {
@@ -163,6 +216,138 @@ const PlaylistContent = () => {
 
         } catch (error) {
             console.error("Error al actualizar la playlist:", error);
+        }
+    };
+
+    const handleOptionSelect = async (option, index) => {
+        console.log("Opción seleccionada:", option, index);
+
+        if (option.label === "Eliminar Playlist") {
+            if (window.confirm("¿Estás seguro de eliminar la playlist?")) {
+                try {
+                    const response = await apiFetch(`/playlists/${playlistId}`, {
+                        method: "DELETE",
+                    });
+                    console.log("Playlist eliminada:", response);
+                    navigate("/");
+                } catch (error) {
+                    console.error("Error al eliminar la playlist:", error);
+                }
+            }
+        } else if (option.label === "Hacer privada")
+        {
+            try {
+                const response = await apiFetch(`/playlists/${playlistId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: { type: "private" }
+                });
+
+                console.log("Playlist actualizada a privada:", response);
+                window.location.reload();
+            } catch (error) {
+                console.error("Error al eliminar la playlist:", error);
+            }
+        }
+        else if (option.label === "Hacer pública")
+        {
+            try {
+                const response = await apiFetch(`/playlists/${playlistId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: { type: "public" }
+                });
+
+                console.log("Playlist actualizada a privada:", response);
+                window.location.reload();
+            } catch (error) {
+                console.error("Error al eliminar la playlist:", error);
+            }
+        }
+        else
+        {
+            // Aquí manejas las demás opciones
+            console.log("Opción no manejada:", option);
+        }
+    };
+
+
+    const handleSongOptionSelect = async (option, idx, song) => {
+        console.log("Opción seleccionada:", option, idx, song);
+
+        if (option.label === "Crear playlist") {
+            setSelectedSong(song);
+            setShowCreateModal(true);
+        } else if (option.label === "Eliminar canción") {
+            try {
+                const response = await apiFetch(`/playlists/${playlistId}/deleteSong`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: { songId: song.id }
+                });
+                console.log("Canción eliminada de la playlist:", response);
+                window.location.reload();
+            } catch (error) {
+                console.error("Error al eliminar la canción de la playlist:", error);
+            }
+        }
+        else if (option.label === "Ver detalles")
+        {
+            navigate(`/songs/${song.id}`);
+        }
+        else if (userPlaylists.some(pl => pl.id === option.playlistId)) {
+            // Si la opción tiene playlistId, es una playlist existente, por lo que se añade la canción a esa playlist.
+            try {
+                const response = await apiFetch(`/playlists/${option.playlistId}/addSong`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: { songId: song.id }
+                });
+                console.log("Canción agregada a la playlist existente:", response);
+            } catch (error) {
+                console.error("Error al añadir la canción a la playlist existente:", error);
+            }
+        }
+        else
+        {
+            // Aquí manejas las demás opciones
+            console.log("Opción no manejada:", option);
+        }
+    };
+
+    const handleCreatePlaylist = async ({ title, description }) => {
+        try {
+            const newPlaylist = await apiFetch(`/playlists`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: {
+                    name: title,
+                    description: description,
+                    user_id: user_Id,
+                    type: "private",
+                },
+            });
+            console.log("Playlist creada:", newPlaylist);
+
+            // Añade la canción a la nueva playlist
+            const response = await apiFetch(`/playlists/${newPlaylist.id}/addSong`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: { songId: selectedSong.id },
+            });
+            console.log("Canción agregada a la nueva playlist:", response);
+        } catch (error) {
+            console.error("Error al crear la playlist y agregar la canción:", error);
+        } finally {
+            setShowCreateModal(false);
         }
     };
 
@@ -211,9 +396,10 @@ const PlaylistContent = () => {
                                 <p>{playlist.description}</p>
                                 <p>
                                     {playlist.owner?.nickname || "Desconocido"} •
-                                    Guardada {playlist.likes?.length || 0} veces •
-                                    {playlist.songs?.length} canciones
-                                </p>                            </>
+                                    Guardada {playlist.likes || 0} veces •
+                                    Total --  {playlist.songs?.length} canciones
+                                </p>
+                            </>
                         )}
                     </div>
                 </div>
@@ -221,13 +407,25 @@ const PlaylistContent = () => {
                 <div className="playlist-actions">
                     {/* Botón principal grande con solo el ícono */}
                     <div className="rep-cont">
-                        <button className="play-btn" onClick={() => handlePlaySongs(playlist.songs)}>
-                            <FaPlay/>
+                        <button
+                            className="play-btn"
+                            onClick={() => handlePlaySongs(playlist.songs, isPlaying)}
+                        >
+                            {playlistActive === playlistId && isPlaying ? <FaPause/> : <FaPlay/>}
                         </button>
 
                         <button className="shuffle-btn" onClick={toggleShuffle}>
                             <SlPlaylist className={`shuffle-icon ${isShuffling ? "active" : ""}`}/>
                         </button>
+                        <div className="popup-wrapper ">
+                            <OptionsPopup
+                                trigger={<FaEllipsisH className="icon"/>}
+                                options={options}
+                                position="bottom-right"
+                                submenuPosition="right"
+                                onOptionSelect={handleOptionSelect}
+                            />
+                        </div>
                     </div>
 
                     <div className="actions-right">
@@ -236,7 +434,6 @@ const PlaylistContent = () => {
                                 className={`icon heart-icon ${isLiked ? "liked" : ""}`}
                             />
                         </button>
-                        <FaEllipsisH className="icon"/>
                     </div>
                 </div>
                 <div className="song-header">
@@ -284,6 +481,30 @@ const PlaylistContent = () => {
                                 <span className="song-duration">
                                   {formatDuration(song.duration)}
                                 </span>
+
+                                {/* Contenedor de opciones (tres puntos) que aparece al hacer hover */}
+                                <div className="song-options">
+                                    <OptionsPopup
+                                        trigger={<FaEllipsisH className="song-options-icon"/>}
+                                        options={[
+                                            {
+                                                label: "Agregar a favoritos",
+                                                submenu: agregarAFavoritosSubmenu,
+                                            },
+                                            playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
+                                            {label: "Ver detalles"},
+                                        ].filter(option => option != null)}
+                                        position="bottom-right"
+                                        submenuPosition="left"
+                                        onOptionSelect={(option, idx) => handleSongOptionSelect(option, idx, song)}
+                                    />
+                                    {showCreateModal && (
+                                        <CreatePlaylistModal
+                                            onSubmit={handleCreatePlaylist}
+                                            onClose={() => setShowCreateModal(false)}
+                                        />
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </div>

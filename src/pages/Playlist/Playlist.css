@@ -1,4 +1,3 @@
-/* 🔹 Contenedor principal */
 .layout {
     display: flex;
     width: 100%;
@@ -239,4 +238,10 @@
 
 .heart-icon.liked {
     color: #dd1e41;  /* Color rojo cuando se le da like */
+}
+/* Pop up de opciones, 3 puntos*/
+.popup-wrapper {
+    position: relative;
+    overflow: visible;
+    display: inline-block;
 }
