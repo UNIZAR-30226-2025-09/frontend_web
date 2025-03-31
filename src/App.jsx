@@ -6,6 +6,7 @@ import MainLayout from "./layout/MainLayout/MainLayout";
 
 // Páginas principales
 import Home from "./pages/Home/Home";
+import Artist from "./pages/Artist/Artist";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Register1 from "./pages/Register/Register1";
@@ -17,6 +18,7 @@ import QuienesSomos from "./pages/Register/QuienesSomos";
 import Playlist from "./pages/Playlist/Playlist";
 import Library from "./pages/Library/Library";
 import AccountInfo from "./pages/AccountInfo/AccountInfo";
+import Plans from "./pages/Plans/Plans";
 import Song from "./pages/Song/Song.jsx";
 
 function App() {
@@ -34,6 +36,7 @@ function App() {
                     <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
                     <Route path="/terminos-condiciones" element={<TerminosYCondiciones />} />
                     <Route path="/quienes-somos" element={<QuienesSomos />} />
+                    <Route path="/subs" element={<Plans />} />
                     <Route path="/account" element={<AccountInfo />} /> {/* <-- MUEVE AQUÍ */}
 
                     {/* Páginas con layout principal */}
@@ -43,6 +46,9 @@ function App() {
                         <Route path="playlist/:playlistId" element={<Playlist />} />
                         <Route path="/songs/:songId" element={<Song />} />
                         <Route path="library" element={<Library />} />
+                        <Route path="artist" element={<Artist />} />
+                        <Route path="artist/:artistId" element={<Artist />} />
+
                     </Route>
                 </Routes>
 
