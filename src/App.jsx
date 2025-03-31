@@ -17,6 +17,7 @@ import QuienesSomos from "./pages/Register/QuienesSomos";
 import Playlist from "./pages/Playlist/Playlist";
 import Library from "./pages/Library/Library";
 import AccountInfo from "./pages/AccountInfo/AccountInfo";
+import EditAccountInfo from "./pages/EditAccountInfo/EditAccountInfo";
 import Song from "./pages/Song/Song.jsx";
 
 function App() {
@@ -34,7 +35,8 @@ function App() {
                     <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
                     <Route path="/terminos-condiciones" element={<TerminosYCondiciones />} />
                     <Route path="/quienes-somos" element={<QuienesSomos />} />
-                    <Route path="/account" element={<AccountInfo />} /> {/* <-- MUEVE AQUÍ */}
+                    <Route path="/account" element={<AccountInfo />} />
+                    <Route path="/EditAccount" element={<EditAccountInfo />} />
 
                     {/* Páginas con layout principal */}
                     <Route path="/" element={<MainLayout />}>

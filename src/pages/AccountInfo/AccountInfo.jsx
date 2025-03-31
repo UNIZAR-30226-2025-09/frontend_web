@@ -1,4 +1,3 @@
-import React from "react";
 import "./AccountInfo.css";
 
 function AccountInfo() {
