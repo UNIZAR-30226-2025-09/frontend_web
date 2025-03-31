@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
@@ -15,15 +16,18 @@ function PlanCard({ title, features, price, color, onClick }) {
             <ul>
                 {features.map((f, idx) => <li key={idx}>{f}</li>)}
             </ul>
-            <button onClick={() => {
-                alert(`¡Has elegido el ${title.toLowerCase()}!`);
-                onClick();
-            }}
-                    style={{ backgroundColor: color }}
-                    className="plan-button">Seleccionar</button>
+            <button onClick={onClick} style={{ backgroundColor: color }} className="plan-button">Seleccionar</button>
         </div>
     );
 }
+
+PlanCard.propTypes = {
+    title: PropTypes.string.isRequired,
+    features: PropTypes.arrayOf(PropTypes.string).isRequired,
+    price: PropTypes.string.isRequired,
+    color: PropTypes.string.isRequired,
+    onClick: PropTypes.func.isRequired,
+};
 
 const PremiumCheckout = ({ clientSecret }) => {
     const stripe = useStripe();
@@ -43,7 +47,6 @@ const PremiumCheckout = ({ clientSecret }) => {
 
         if (error) {
             console.error("Error de pago:", error.message);
-            alert("Error en el pago: " + error.message);
         }
     };
 
@@ -55,8 +58,12 @@ const PremiumCheckout = ({ clientSecret }) => {
     );
 };
 
+PremiumCheckout.propTypes = {
+    clientSecret: PropTypes.string,
+};
+
 const Plans = () => {
-    const [isPremium, setIsPremium] = useState(false);
+    const [, setIsPremium] = useState(false);
     const [clientSecret, setClientSecret] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
@@ -66,10 +73,9 @@ const Plans = () => {
         const result = params.get("result");
         if (result === "success") {
             localStorage.setItem("is_premium", "true");
-            alert("¡Ahora eres Premium!");
             navigate("/account");
         }
-    }, [location]);
+    }, [location, navigate]);
 
     const cambiarAGratis = async () => {
         const response = await apiFetch("/user/premium", {
@@ -80,7 +86,7 @@ const Plans = () => {
         if (response) {
             localStorage.setItem("is_premium", "false");
             setIsPremium(false);
-            navigate(-1);
+            navigate("/account");
         } else {
             alert("Error al cambiar de plan");
         }
@@ -157,4 +163,3 @@ const Plans = () => {
 };
 
 export default Plans;
-
