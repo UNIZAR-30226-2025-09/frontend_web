@@ -37,7 +37,7 @@ function App() {
                     <Route path="/terminos-condiciones" element={<TerminosYCondiciones />} />
                     <Route path="/quienes-somos" element={<QuienesSomos />} />
                     <Route path="/subs" element={<Plans />} />
-                    <Route path="/account" element={<AccountInfo />} /> {/* <-- MUEVE AQUÍ */}
+                    <Route path="/account" element={<AccountInfo />} />
 
                     {/* Páginas con layout principal */}
                     <Route path="/" element={<MainLayout />}>
@@ -46,7 +46,6 @@ function App() {
                         <Route path="playlist/:playlistId" element={<Playlist />} />
                         <Route path="/songs/:songId" element={<Song />} />
                         <Route path="library" element={<Library />} />
-                        <Route path="artist" element={<Artist />} />
                         <Route path="artist/:artistId" element={<Artist />} />
 
                     </Route>
