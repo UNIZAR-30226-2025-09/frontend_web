@@ -1,9 +1,24 @@
-import React from "react";
+import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import "./AccountInfo.css";
 
 function AccountInfo() {
+    const location = useLocation();
+    const [mensaje, setMensaje] = useState("");
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get("plan") === "gratis") {
+            setMensaje("Has elegido el plan gratuito 🎧");
+            const timer = setTimeout(() => setMensaje(""), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [location]);
+
     return (
         <>
+            {mensaje && <div className="mensaje-plan">{mensaje}</div>}
+
             <div className="header">
                 <div className="logo-container">
                     <img
@@ -26,6 +41,11 @@ function AccountInfo() {
                 </div>
 
             </div>
+
+            {mensaje && (
+                <div className="mensaje-plan">{mensaje}</div>
+            )}
+
 
             <div className="account-info-page">
                 {/* Sección: Plan */}
