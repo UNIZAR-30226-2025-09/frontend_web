@@ -40,7 +40,7 @@ function Player() {
     useEffect(() => {
         console.log("🎵 Player detecta cambio de playing:", isPlaying);
     }, [isPlaying]);
-
+    const prevTime = useRef(0);
     // Crea o recarga el Howl cuando la songUrl cambia
     useEffect(() => {
         // Verifica que currentSong y songUrl estén disponibles
@@ -83,13 +83,27 @@ function Player() {
             onplay: () => {
                 intervalRef.current = setInterval(() => {
                     const sec = sound.seek();
-                    setSeconds(sec);
-                    setCurrTime({
-                        min: Math.floor(sec / 60),
-                        sec: Math.floor(sec % 60),
-                    });
-                },);
+                    // Solo actualiza si el tiempo ha cambiado
+                    if (sec !== prevTime.current) {
+                        setSeconds(sec);
+                        setCurrTime({
+                            min: Math.floor(sec / 60),
+                            sec: Math.floor(sec % 60),
+                        });
+                        prevTime.current = sec;  // Actualizamos prevTime con el nuevo tiempo
+                    }
+                }, 1000);  // Intervalo de actualización de tiempo
             },
+
+            onend: () => {
+                console.log("🔚 onend: pasando a la siguiente canción");
+                handleNext(); // Llamamos a la función
+                if (intervalRef.current) {
+                    clearInterval(intervalRef.current)
+                }
+            },
+
+
         });
 
         soundRef.current = sound;
@@ -202,6 +216,7 @@ function Player() {
         setCurrentIndex(nextIndex);
         setCurrentSong(songs[nextIndex]);
         setIsPlaying(true);
+        setSeconds(0);
         console.log("Reproduciendo desde flcecha siguiente");
     };
 

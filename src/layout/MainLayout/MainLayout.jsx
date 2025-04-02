@@ -130,6 +130,11 @@ const MainLayout = () => {
         // Eliminar los datos del usuario y token del localStorage
         localStorage.removeItem("user");
         localStorage.removeItem("token");
+        // Stop music playback and reset player state
+        setIsPlaying(false);
+        setCurrentSong(null);
+        setSongs([]);
+        setCurrentIndex(0);
 
         // Actualizar el estado de 'user' para reflejar que no hay un usuario logueado
         setUser(null);
