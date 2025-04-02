@@ -113,12 +113,12 @@
 
 /* Imagen de la canción y la portada de la playlist */
 .search-results .result-image, .playlist-images {
-    width: 45px ; /* Tamaño ajustado a 50px */
-    height: 45px ;
-    border-radius: 50% ;
-    object-fit: cover ;
-}
+    width: 45px; /* Tamaño ajustado a 50px */
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
 
+}
 //* Fuente común para títulos de canciones y playlists */
 .search-results .result-item p,
 .search-results .playlist-item .playlist-info p {
