@@ -163,6 +163,9 @@ const PlaylistContent = () => {
         setCurrentSong( song );
         setCurrentIndex( index );
         setSongs(songs);
+
+        console.log("Cambiando isplaying en playlist a traves de cancion");
+        setIsPlaying(true);
     };
 
     const handlePlaySongs = (songs, isPlaying) => {
@@ -292,7 +295,7 @@ const PlaylistContent = () => {
                         "Content-Type": "application/json"
                     },
                     body: { songId: song.id }
-                });
+                })
                 console.log("Canción eliminada de la playlist:", response);
                 window.location.reload();
             } catch (error) {
@@ -377,7 +380,7 @@ const PlaylistContent = () => {
             {/* Columna derecha: contenido de la playlist */}
             <div className="box">
                 <div className="play-cont">
-                    <div className="image" onClick={handleEditToggle} style={{cursor: "pointer"}}>
+                    <div className={`${playlist?.user_id && playlist.user_id === user_Id ? 'image' : 'imagenoedit'}`} onClick={handleEditToggle} style={{cursor: "pointer"}}>
                         <img
                             src={getImageUrl(playlist.front_page)}  // Usa getImageUrl aquí para generar la URL completa
                             width="275"
@@ -386,7 +389,7 @@ const PlaylistContent = () => {
                         />
                     </div>
                     <div className="playlist-info">
-                        {isEditing ? (
+                        {playlist?.user_id && playlist.user_id === user_Id && isEditing ? (
                             <div className="popup-overlay">
                                 <div className="popup-content">
                                     <label htmlFor="title">Título de la Playlist</label>
