@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { apiFetch } from "#utils/apiFetch";
 import "./EditAccountInfo.css";
 import Compressor from 'compressorjs';
+import {getImageUrl} from "#utils/getImageUrl";
 
 function EditAccountInfo() {
     const userId = JSON.parse(localStorage.getItem('user')).id;
 
     const [nickname, setNickname] = useState("");
     const [profileImage, setProfileImage] = useState(null);
+    const [profileImageShow, setProfileImageShow] = useState(null);
     const [userInfo, setUserInfo] = useState({});
 
     // Cargar información del usuario
@@ -19,7 +21,8 @@ function EditAccountInfo() {
                 });
                 setUserInfo(data);
                 setNickname(data.nickname);
-                setProfileImage(data.user_picture || "../profile-placeholder.png");
+                console.log("path: ", data.user_picture);
+                setProfileImageShow(data.user_picture || null);
             } catch (error) {
                 console.error("Error al obtener los datos del usuario:", error);
             }
@@ -35,25 +38,55 @@ function EditAccountInfo() {
 
     // Función para manejar la actualización del perfil
     const handleSaveChanges = async () => {
-        try {
-            const updatedUser = {
-                nickname,
-                user_picture: profileImage, 
+        const reader = new FileReader();
+
+        console.log(profileImage);
+
+        if(profileImage){
+            reader.onloadend = async () => {
+                const base64Image = reader.result;
+                console.log("base 64", base64Image);
+
+                const body = {
+                    nickname: nickname,
+                    profileImage: base64Image,
+                };
+
+                console.log("Cuerpo", body);
+
+                try {
+                    const response = await apiFetch(`/user/users/${userId}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: { nickname: body.nickname, profileImage: body.profileImage },
+                    });
+
+                    console.log("Perfil actualizado:", response);
+                    alert("Los cambios se han guardado correctamente.");
+                } catch (error) {
+                    console.error("Error al actualizar el perfil:", error);
+                    alert("Hubo un error al guardar los cambios.");
+                }
             };
 
+            reader.readAsDataURL(profileImage);
+        }
+        else{
             const response = await apiFetch(`/user/users/${userId}`, {
-                method: "PUT",
-                body: updatedUser
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: { nickname: nickname },
             });
 
             console.log("Perfil actualizado:", response);
             alert("Los cambios se han guardado correctamente.");
-        } catch (error) {
-            console.error("Error al actualizar el perfil:", error);
-            alert("Hubo un error al guardar los cambios.");
+            window.location.reload();
         }
     };
-
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
 
@@ -62,13 +95,9 @@ function EditAccountInfo() {
         new Compressor(file, {
             quality: 0.6,
             success(result) {
-                const reader = new FileReader();
-                reader.readAsDataURL(result);
 
-                reader.onloadend = () => {
-                    const base64Image = reader.result;
-                    setProfileImage(base64Image);
-                };
+                setProfileImage(result);
+                console.log("Imagen comprimida:", result);
             },
             error(err) {
                 console.error("Error al comprimir la imagen", err);
@@ -77,8 +106,9 @@ function EditAccountInfo() {
     };
 
 
+
     return (
-        <div className="account-info-page">
+        <div>
             <div className="header">
                 <div className="logo-container">
                     <img
@@ -93,45 +123,47 @@ function EditAccountInfo() {
                     <div className="profile-picture">
                         {/* Muestra la imagen del usuario */}
                         <img
-                            src={profileImage}
+                            src={getImageUrl(profileImageShow)}
                             alt="Foto de perfil"
                             className="profile-img"
                         />
                     </div>
                 </div>
             </div>
+            <div className="account-info-page">
 
-            <div className="edit-profile-container">
-                <h2>Editar Información de la Cuenta</h2>
+                <div className="edit-profile-container">
+                    <h2>Editar Información de la Cuenta</h2>
 
-                <div className="form-group">
-                    <label htmlFor="nickname">Correo electrónico:</label>
-                    {userInfo.mail}
+                    <div className="form-group">
+                        <label htmlFor="nickname">Correo electrónico:</label>
+                        {userInfo.mail}
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="nickname">Nombre de usuario:</label>
+                        <input
+                            type="text"
+                            id="nickname"
+                            value={nickname}
+                            onChange={handleNicknameChange}
+                            className="form-input"
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="profileImage">Foto de perfil:</label>
+                        <input
+                            type="file"
+                            id="profileImage"
+                            onChange={handleImageUpload}
+                            accept="image/*"
+                            className="form-input"
+                        />
+                    </div>
+
+                    <button onClick={handleSaveChanges} className="save-btn">Guardar cambios</button>
                 </div>
-
-                <div className="form-group">
-                    <label htmlFor="nickname">Nombre de usuario:</label>
-                    <input
-                        type="text"
-                        id="nickname"
-                        value={nickname}
-                        onChange={handleNicknameChange}
-                        className="form-input"
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="profileImage">Foto de perfil:</label>
-                    <input
-                        type="file"
-                        id="profileImage"
-                        onChange={handleImageUpload}
-                        accept="image/*"
-                        className="form-input"
-                    />
-                </div>
-
-                <button onClick={handleSaveChanges} className="save-btn">Guardar cambios</button>
             </div>
         </div>
     );
