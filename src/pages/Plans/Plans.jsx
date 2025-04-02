@@ -1,6 +1,6 @@
 
 import PropTypes from "prop-types";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { apiFetch } from "#utils/apiFetch";
 import "./Plans.css";
 
