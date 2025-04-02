@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+
 import PropTypes from "prop-types";
 import { useNavigate, useLocation } from "react-router-dom";
 import { apiFetch } from "#utils/apiFetch";
@@ -31,7 +31,7 @@ PlanCard.propTypes = {
 };
 
 const Plans = () => {
-    const location = useLocation();
+
     const navigate = useNavigate();
 
     const cambiarAGratis = () => {
