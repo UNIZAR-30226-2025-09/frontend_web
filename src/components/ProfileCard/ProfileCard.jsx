@@ -66,7 +66,7 @@ const ProfileCard = ({ user, onLogout }) => {
                     <div className="options-menu">
                         <button
                             className="options-item"
-                            onClick={() => navigate("/profile")}
+                            onClick={() => navigate("/account")}
                         >
                             Mi Cuenta
                         </button>
