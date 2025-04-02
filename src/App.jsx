@@ -18,6 +18,7 @@ import QuienesSomos from "./pages/Register/QuienesSomos";
 import Playlist from "./pages/Playlist/Playlist";
 import Library from "./pages/Library/Library";
 import AccountInfo from "./pages/AccountInfo/AccountInfo";
+import EditAccountInfo from "./pages/EditAccountInfo/EditAccountInfo";
 import Plans from "./pages/Plans/Plans";
 import Checkout from "./pages/Checkout/Checkout";
 import Song from "./pages/Song/Song.jsx";
@@ -40,6 +41,7 @@ function App() {
                     <Route path="/plans" element={<Plans />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/account" element={<AccountInfo />} /> {/* <-- MUEVE AQUÍ */}
+                    <Route path="/EditAccount" element={<EditAccountInfo />} />
 
                     {/* Páginas con layout principal */}
                     <Route path="/" element={<MainLayout />}>

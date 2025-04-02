@@ -5,7 +5,9 @@ import { apiFetch } from "#utils/apiFetch"; // Suponiendo que esta función exis
 import { getImageUrl } from "#utils/getImageUrl"; // Suponiendo que esta función existe
 import "./Song.css";
 import {PlayerProvider} from "../../components/Player/PlayerContext.jsx";
-import axios from "axios"; // Estilos para las canciones
+import axios from "axios";
+import OptionsPopup from "../../components/PopUpSelection/OptionsPopup.jsx";
+import CreatePlaylistModal from "../../components/PlaylistModal/PlaylistModal.jsx";
 
 "#utils/apiFetch.js"
 
@@ -21,9 +23,12 @@ const SongContent = () => {
     const { songId } = useParams();
     const [song, setSong] = useState(null);
     const [isLiked, setIsLiked] = useState(false);
-    const user_Id = JSON.parse(localStorage.getItem('user')).id; // Asegúrate de que la clave sea la correcta
+    const user_Id = JSON.parse(localStorage.getItem('user')).id;
+    const [selectedSong, setSelectedSong] = useState(null);
+    const [userPlaylists, setUserPlaylists] = useState([]);
     const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, isPlaying, 
-            setIsPlaying, setPlaylistActive, songActive, setSongActive, currentSong } = useOutletContext();
+            setIsPlaying, setPlaylistActive, songActive, setSongActive} = useOutletContext();
+    const [showCreateModal, setShowCreateModal] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -33,6 +38,32 @@ const SongContent = () => {
             setActiveSection("songs");
         }
     }, [setActiveSection, activeSection]);
+
+    const agregarAFavoritosSubmenu = [
+        { label: "Crear playlist" },
+        ...userPlaylists.map((pl) => ({
+            label: pl.name,
+            playlistId: pl.id,
+        })),
+    ];
+
+    useEffect(() => {
+        const fetchUserPlaylists = async () => {
+            try {
+                const data = await apiFetch(`/playlists/users/${user_Id}/playlists`, {
+                    method: "GET",
+                });
+                setUserPlaylists(data);
+                console.log("playlist del user: ", data);
+            } catch (error) {
+                console.error("Error al obtener las playlists del usuario:", error);
+            }
+        };
+
+        if (user_Id) {
+            fetchUserPlaylists();
+        }
+    }, [user_Id]);
 
     useEffect(() => {
         if (!songId) return;
@@ -91,17 +122,17 @@ const SongContent = () => {
     const handlePlaySong = () => {
         console.log(`Reproduciendo: ${song.name}`);
         setCurrentSong(song);
-        setCurrentIndex(0); // Suponiendo que sea la primera canción
-        setSongs([song]); // En este caso solo se reproduce esta canción
+        setCurrentIndex(0);
+        setSongs([song]);
     };
 
     const handlePlaySongs = (isPlaying) => {
         console.log("Reproduciendo canciones en modo aleatorio...");
 
         if(!isPlaying) {
-            setCurrentSong(song); // o la canción que desees
-            setCurrentIndex(0); // O el índice correspondiente
-            setSongs([song]); // Actualiza las canciones
+            setCurrentSong(song);
+            setCurrentIndex(0);
+            setSongs([song]);
 
             setSongActive(songId);
             setPlaylistActive(0);
@@ -110,8 +141,8 @@ const SongContent = () => {
         console.log("Cambiando isplaying en playlist");
         setIsPlaying(!isPlaying);
     };
-    // Asegúrate de que 'song' esté disponible antes de intentar acceder a 'song.type'
-    const isSingle = song?.type !== "album"; // Corregir la condición
+
+    const isSingle = song?.type !== "album";
     console.log("es single : ", isSingle);
 
     useEffect(() => {
@@ -124,6 +155,86 @@ const SongContent = () => {
     if (!song) {
         return <p>Cargando canción...</p>;
     }
+
+    const handleSongOptionSelect = async (option, idx, song) => {
+        console.log("Opción seleccionada:", option, idx, song);
+
+        if (option.label === "Crear playlist") {
+            setSelectedSong(song);
+            setShowCreateModal(true);
+        }
+        else if (option.label === "Ver detalles")
+        {
+            navigate(`/songs/${song.id}`);
+        }
+        else if (userPlaylists.some(pl => pl.id === option.playlistId)) {
+            // Si la opción tiene playlistId, es una playlist existente, por lo que se añade la canción a esa playlist.
+            try {
+                const response = await apiFetch(`/playlists/${option.playlistId}/addSong`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: { songId: song.id }
+                });
+                console.log("Canción agregada a la playlist existente:", response);
+            } catch (error) {
+                console.error("Error al añadir la canción a la playlist existente:", error);
+            }
+        }
+        else if (option.label === "Agregar a favoritos" || option.label === "Eliminar de favoritos")
+        {
+            const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/songliked', {
+                user_id: user_Id
+            });
+            console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.data.playlist);
+
+            const playlistId = likedPlaylistRes.data.playlist.id; // Obtener el ID de la playlist
+
+            // Luego agregar la canción a esa playlist
+
+            const response = await axios.post(`http://localhost:5001/api/song_like/${song.id}/likeUnlike`, {
+                user_id: user_Id,
+                playlist_id: playlistId // Pasar el ID de la playlist correcta
+            });
+
+            console.log("Respuesta del servidor:", response.data);
+            window.location.reload();
+        }
+        else
+        {
+            // Aquí manejas las demás opciones
+            console.log("Opción no manejada:", option);
+        }
+    };
+
+    const handleCreatePlaylist = async ({ title, description }) => {
+        try {
+            const newPlaylist = await apiFetch(`/playlists`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: {
+                    name: title,
+                    description: description,
+                    user_id: user_Id,
+                    type: "private",
+                },
+            });
+            console.log("Playlist creada:", newPlaylist);
+
+            // Añade la canción a la nueva playlist
+            const response = await apiFetch(`/playlists/${newPlaylist.id}/addSong`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: { songId: selectedSong.id },
+            });
+            console.log("Canción agregada a la nueva playlist:", response);
+        } catch (error) {
+            console.error("Error al crear la playlist y agregar la canción:", error);
+        } finally {
+            setShowCreateModal(false);
+        }
+    };
 
     return (
         <div className="song-layout">
@@ -153,13 +264,34 @@ const SongContent = () => {
                         >
                             {songActive === songId && isPlaying ? <FaPause/> : <FaPlay/>}
                         </button>
+                        <OptionsPopup
+                            trigger={<FaEllipsisH className="song-options-icon"/>}
+                            options={[
+                                {
+                                    label: "Agregar a playlist",
+                                    submenu: agregarAFavoritosSubmenu,
+                                },
+                                {
+                                    label: song.liked ?  "Eliminar de favoritos" : "Agregar a favoritos" ,
+                                },
+                                {label: "Ver detalles"},
+                            ].filter(option => option != null)}
+                            position="bottom-right"
+                            submenuPosition="right"
+                            onOptionSelect={(option, idx) => handleSongOptionSelect(option, idx, song)}
+                        />
+                        {showCreateModal && (
+                            <CreatePlaylistModal
+                                onSubmit={handleCreatePlaylist}
+                                onClose={() => setShowCreateModal(false)}
+                            />
+                        )}
                     </div>
 
                     <div className="actions-right">
                         <button className="like-btn" onClick={toggleLike}>
                             <FaHeart className={`icon heart-icon ${isLiked ? "liked" : ""}`}/>
                         </button>
-                        <FaEllipsisH className="icon"/>
                     </div>
                 </div>
                 {/* Cabecera: 6 columnas (#/Play, Portada, Título, Álbum, Fecha, Duración) */}
