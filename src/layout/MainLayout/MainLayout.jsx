@@ -134,6 +134,12 @@ const MainLayout = () => {
         // Actualizar el estado de 'user' para reflejar que no hay un usuario logueado
         setUser(null);
 
+        // Resetea el estado del reproductor
+        setCurrentSong(null);
+        setCurrentIndex(0);
+        setSongs([]);
+        setIsPlaying(false);
+
         // Redirigir a la página principal (o a cualquier ruta que prefieras)
         navigate("/"); // Redirigir al login
     };

@@ -78,8 +78,10 @@ const OptionsPopup = ({
                                 onMouseEnter={() => handleOptionMouseEnter(index)}
                                 onMouseLeave={() => handleOptionMouseLeave(index)}
                             >
-                                <span className="option-label">{option.label}</span>
-                                {option.submenu && <span className="submenu-arrow">▶</span>}
+                                <span className="option-label">
+                                    {option.label}
+                                    {option.submenu && <span className="submenu-arrow">▶</span>}
+                                </span>
                                 {option.submenu && openSubmenuIndex === index && (
                                     <div className={`nested-popup ${submenuPosition}`}>
                                         <ul>
