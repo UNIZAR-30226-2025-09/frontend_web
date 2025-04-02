@@ -1,25 +1,26 @@
+
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements, useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
+import { useNavigate } from "react-router-dom";
 import { apiFetch } from "#utils/apiFetch";
 import "./Plans.css";
 
-const stripePromise = loadStripe("pk_test_51R0pjqP1jnBE1veqsiXWTUll0H44mEoupgzDAnrFyjZ9pUPNHZ3aGViTzT49nYDchBr0F6UhI6V7kMA3DV2OFi3Z00XUhmPX1A");
+const PlanCard = ({ title, features, price, color, onClick }) => (
+    <div className="plan-card" style={{ borderColor: color }}>
+        <h2 className="plan-title" style={{ color }}>{title}</h2>
+        <p className="plan-price">{price}</p>
+        <ul>
+            {features.map((f, idx) => <li key={idx}>{f}</li>)}
+        </ul>
+        <button
+            className="plan-button"
+            style={{backgroundColor: color}}
+            onClick={onClick}
+        >
+            Seleccionar
+        </button>
 
-function PlanCard({ title, features, price, color, onClick }) {
-    return (
-        <div className="plan-card" style={{ borderColor: color }}>
-            <h2 className="plan-title" style={{ color }}>{title}</h2>
-            <p className="plan-price">{price}</p>
-            <ul>
-                {features.map((f, idx) => <li key={idx}>{f}</li>)}
-            </ul>
-            <button onClick={onClick} style={{ backgroundColor: color }} className="plan-button">Seleccionar</button>
-        </div>
-    );
-}
+    </div>
+);
 
 PlanCard.propTypes = {
     title: PropTypes.string.isRequired,
@@ -29,68 +30,15 @@ PlanCard.propTypes = {
     onClick: PropTypes.func.isRequired,
 };
 
-const PremiumCheckout = ({ clientSecret }) => {
-    const stripe = useStripe();
-    const elements = useElements();
-    const navigate = useNavigate();
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!stripe || !elements) return;
-
-        const { error } = await stripe.confirmPayment({
-            elements,
-            confirmParams: {
-                return_url: window.location.origin + "/subs?result=success",
-            },
-        });
-
-        if (error) {
-            console.error("Error de pago:", error.message);
-        }
-    };
-
-    return (
-        <form onSubmit={handleSubmit} className="checkout-form">
-            <PaymentElement />
-            <button className="btn-blue" disabled={!stripe}>Pagar</button>
-        </form>
-    );
-};
-
-PremiumCheckout.propTypes = {
-    clientSecret: PropTypes.string,
-};
-
 const Plans = () => {
-    const [, setIsPremium] = useState(false);
-    const [clientSecret, setClientSecret] = useState(null);
-    const location = useLocation();
+
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const result = params.get("result");
-        if (result === "success") {
-            localStorage.setItem("is_premium", "true");
-            navigate("/account");
-        }
-    }, [location, navigate]);
-
-    const cambiarAGratis = async () => {
-        const response = await apiFetch("/user/premium", {
-            method: "POST",
-            body: { is_premium: false }
-        });
-
-        if (response) {
-            localStorage.setItem("is_premium", "false");
-            setIsPremium(false);
-            navigate("/account");
-        } else {
-            alert("Error al cambiar de plan");
-        }
+    const cambiarAGratis = () => {
+        localStorage.setItem("is_premium", "false");
+        navigate("/account?plan=gratis");
     };
+
 
     const iniciarPago = async () => {
         const res = await apiFetch("/stripe/create-payment-intent", {
@@ -98,66 +46,77 @@ const Plans = () => {
             body: {}
         });
         const secret = res.clientSecret;
-        setClientSecret(secret);
+        navigate(`/checkout?clientSecret=${encodeURIComponent(secret)}`);
     };
 
     return (
         <div className="plans-wrapper">
             <img src="/vibrablanco.png" alt="Logo" className="plans-logo" />
-            {clientSecret ? (
-                <Elements
-                    stripe={stripePromise}
-                    options={{
-                        clientSecret,
-                        appearance: {
-                            theme: "night",
-                            variables: {
-                                colorPrimary: "#79e2ff",
-                                colorText: "#79e2ff",
-                                colorBackground: "#2a2a2a",
-                                fontFamily: "'Inter Tight', sans-serif",
-                                spacingUnit: "6px",
-                                borderRadius: "10px",
-                            },
-                            rules: {
-                                ".Input": {
-                                    color: "#79e2ff",
-                                },
-                                ".Label": {
-                                    color: "#79e2ff",
-                                },
-                            },
-                        }
-                    }}
-                >
-                    <PremiumCheckout clientSecret={clientSecret} />
-                </Elements>
-            ) : (
-                <div className="plans-container">
-                    <PlanCard
-                        title="Plan Gratuito"
-                        price="0€/mes"
-                        color="#FF6B6B"
-                        features={[
-                            "Reproducción con anuncios",
-                            "5 saltos por día",
-                            "Publicidad visual"
-                        ]}
-                        onClick={cambiarAGratis}
-                    />
-                    <PlanCard
-                        title="Plan Premium"
-                        price="4,99€/mes"
-                        color="#79e2ff"
-                        features={[
-                            "Sin anuncios",
-                            "Saltos ilimitados",
-                            "Cancela cuando quieras"
-                        ]}
-                        onClick={iniciarPago}
-                    />
+
+            <section className="plans-intro">
+                <h1 className="plans-title">Siente la diferencia</h1>
+                <p className="plans-subtitle">
+                    Pásate a Premium y disfruta del control total de lo que escuchas. Cancela cuando quieras.
+                </p>
+
+                <div className="comparison-table">
+                    <div className="table-header">
+                        <span>Qué incluye</span>
+                        <span>Plan Gratuito</span>
+                        <span>Plan Premium</span>
+                    </div>
+                    <div className="table-row">
+                        <span>Escucha tu música favorita sin anuncios</span>
+                        <span>—</span>
+                        <span>✅</span>
+                    </div>
+                    <div className="table-row">
+                        <span>Escucha la canción que quieras en el momento que quieras</span>
+                        <span>—</span>
+                        <span>✅</span>
+                    </div>
                 </div>
-            )}
+            </section>
+
+            <div className="plans-container">
+                <PlanCard
+                    title="Plan Gratuito"
+                    price="0€/mes"
+                    color="#FF6B6B"
+                    features={["Reproducción con anuncios", "5 saltos por día", "Publicidad visual"]}
+                    onClick={cambiarAGratis}
+                />
+                <PlanCard
+                    title="Plan Premium"
+                    price="4,99€/mes"
+                    color="#79e2ff"
+                    features={["Sin anuncios", "Saltos ilimitados", "Cancela cuando quieras"]}
+                    onClick={iniciarPago}
+                />
+            </div>
+
+            <section className="plans-faq">
+                <h2 className="faq-title">¿Tienes alguna pregunta?</h2>
+                {[
+                    {
+                        q: "¿Puedo cancelar mi suscripción premium cuando quiera?",
+                        a: "Sí, puedes cancelar tu suscripción Premium en cualquier momento desde tu cuenta."
+                    },
+                    {
+                        q: "¿Qué métodos de pago aceptan?",
+                        a: "Aceptamos tarjetas de crédito y débito."
+                    },
+                    {
+                        q: "¿Perderé mis playlists si cancelo la suscripción premium?",
+                        a: "No, tus playlists y canciones guardadas seguirán disponibles con el plan gratuito."
+                    }
+                ].map((faq, idx) => (
+                    <details key={idx} className="faq-item">
+                        <summary>{faq.q}</summary>
+                        <p>{faq.a}</p>
+                    </details>
+                ))}
+            </section>
         </div>
     );
 };

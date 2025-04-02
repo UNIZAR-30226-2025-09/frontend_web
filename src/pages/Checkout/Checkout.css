@@ -1,0 +1,51 @@
+.checkout-wrapper {
+    min-height: 100vh;
+    padding: 40px 20px;
+    background-color: #1e1e1e; /* color idéntico al de plans-wrapper */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.checkout-logo {
+    width: 120px; /* mismo tamaño que en Plans */
+    margin-bottom: 30px;
+    filter: drop-shadow(0 0 60px rgba(121, 226, 255, 0.6)); /* glow azul */
+}
+
+
+
+.checkout-form {
+    width: 100%;
+    max-width: 500px;
+    background-color: #2a2a2a;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+.checkout-form button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 6px;
+    background-color: #79e2ff;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.checkout-form button:hover {
+    background-color: #5dcde6;
+}
+
+.checkout-title {
+    color: #79e2ff;
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+

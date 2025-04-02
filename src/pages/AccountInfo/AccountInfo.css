@@ -223,3 +223,28 @@ body {
     object-fit: cover;
 }
 
+.mensaje-plan {
+    background-color: #79e2ff;
+    color: black;
+    font-weight: bold;
+    padding: 12px 20px;
+    border-radius: 12px;
+    text-align: center;
+    margin: 30px auto 10px;
+    width: fit-content;
+    max-width: 90%;
+    box-shadow: 0 0 20px rgba(121, 226, 255, 0.3);
+    animation: fadeInMsg 0.5s ease;
+}
+
+@keyframes fadeInMsg {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
