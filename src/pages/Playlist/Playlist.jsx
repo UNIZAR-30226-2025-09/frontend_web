@@ -9,6 +9,7 @@ import {apiFetch} from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 import CreatePlaylistModal from "../../components/PlaylistModal/PlaylistModal.jsx";
 import OptionsPopup from "../../components/PopUpSelection/OptionsPopup.jsx";
+import axios from "axios";
 
 "#utils/apiFetch.js"
 
@@ -110,9 +111,10 @@ const PlaylistContent = () => {
             try {
                 console.log(`Obteniendo playlist con ID: ${playlistId}`);
 
-                const data = await apiFetch(`/playlists/${playlistId}`, {
+                const data = await apiFetch(`/playlists/${playlistId}?userId=${user_Id}`, {
                     method: "GET"
                 });
+
 
                 console.log("Playlist cargada:", data);
                 console.log("Imagen de portada:", data.front_page); // Aquí verás la URL de la portada
@@ -316,6 +318,25 @@ const PlaylistContent = () => {
                 console.error("Error al añadir la canción a la playlist existente:", error);
             }
         }
+        else if (option.label === "Agregar a favoritos" || option.label === "Eliminar de favoritos")
+        {
+            const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/songliked', {
+                user_id: user_Id
+            });
+            console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.data.playlist);
+
+            const playlistId = likedPlaylistRes.data.playlist.id; // Obtener el ID de la playlist
+
+            // Luego agregar la canción a esa playlist
+
+            const response = await axios.post(`http://localhost:5001/api/song_like/${song.id}/likeUnlike`, {
+                user_id: user_Id,
+                playlist_id: playlistId // Pasar el ID de la playlist correcta
+            });
+
+            console.log("Respuesta del servidor:", response.data);
+            window.location.reload();
+        }
         else
         {
             // Aquí manejas las demás opciones
@@ -488,10 +509,13 @@ const PlaylistContent = () => {
                                         trigger={<FaEllipsisH className="song-options-icon"/>}
                                         options={[
                                             {
-                                                label: "Agregar a favoritos",
+                                                label: "Agregar a playlist",
                                                 submenu: agregarAFavoritosSubmenu,
                                             },
                                             playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
+                                            {
+                                                label: song.liked ?  "Eliminar de favoritos" : "Agregar a favoritos" ,
+                                            },
                                             {label: "Ver detalles"},
                                         ].filter(option => option != null)}
                                         position="bottom-right"
