@@ -92,7 +92,7 @@ function Player() {
                         });
                         prevTime.current = sec;  // Actualizamos prevTime con el nuevo tiempo
                     }
-                }, 1000);  // Intervalo de actualización de tiempo
+                });  // Intervalo de actualización de tiempo
             },
 
             onend: () => {

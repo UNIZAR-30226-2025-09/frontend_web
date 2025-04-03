@@ -188,10 +188,7 @@ const MainLayout = () => {
             <div className="main-content">
                 {/* Ahora la barra superior queda fija dentro de .main-content */}
                 <div className="top-bar">
-                    <div className="nav-arrows">
-                        <button className="arrow left" onClick={(e) => { scrollActiveSection("left"); handleAccessWithoutLogin(e); }}>{"<"}</button>
-                        <button className="arrow right" onClick={(e) => { scrollActiveSection("right"); handleAccessWithoutLogin(e); }}>{">"}</button>
-                    </div>
+
                     <SearchBar onClick={(e) => handleAccessWithoutLogin(e)} />
                     <img src={logo} alt="Logo" className="app-logo"/>
                 </div>

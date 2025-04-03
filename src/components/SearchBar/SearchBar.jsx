@@ -176,10 +176,10 @@ const SearchBar = ({ playerViewModel }) => {
                             {filteredSongs.map((song) => (
                                 <li key={song.id} className="result-item" onClick={() => playSong(song.id)}>
                                     <div className="result-image">
-                                        <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>
+                                        <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover" />
                                     </div>
                                     <div className="result-text">
-                                        <p className="playlist-title"> {song.name}</p>
+                                        <p className="playlist-title">{song.name}</p>  {/* Usar la clase correcta */}
                                     </div>
                                 </li>
                             ))}
@@ -202,37 +202,36 @@ const SearchBar = ({ playerViewModel }) => {
                                         <img
                                             src={getImageUrl(playlist.imageUrl) || "/playlist-placeholder.jpg"}
                                             alt={playlist.title}
-                                            className="playlist-images"
-
+                                            className="playlist-images" // Usar clase consistente para imagen
                                         />
                                     </div>
                                     <div className="playlist-info">
-                                        <p className="playlist-title">{playlist.title}</p>
+                                        <p className="playlist-title">{playlist.title}</p>  {/* Usar la clase correcta */}
                                     </div>
                                 </li>
                             ))}
                         </ul>
                     </div>
                 )}
-
 
                 {filteredArtists.length > 0 && (
                     <div className="result-section">
                         <h2 className="section-title">Artistas</h2>
                         <ul className="result-list">
                             {filteredArtists.map((artist) => (
-                                <li key={artist.id} className="artist-item">
-                                    <div className="artist-image">
-                                        <img src={artist.photo} alt={artist.name} />
+                                <li key={artist.id} className="result-item">
+                                    <div className="result-image">
+                                        <img src={getImageUrl(artist.photo)} alt={artist.name} className="playlist-images" /> {/* Usar la clase de imagen correcta */}
                                     </div>
-                                    <div className="artist-info">
-                                        <p className="artist-name">{artist.name}</p>
+                                    <div className="result-text">
+                                        <p className="playlist-title">{artist.name}</p> {/* Usar la clase correcta para el nombre */}
                                     </div>
                                 </li>
                             ))}
                         </ul>
                     </div>
                 )}
+
             </div>
         </div>
     );

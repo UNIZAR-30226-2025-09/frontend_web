@@ -79,7 +79,7 @@
     flex-direction: column;
     position: absolute;
     top: 50px;
-    width: 320px;
+    width: 370px;
     background-color: #333;
     border-radius: 10px;
     max-height: 300px;
@@ -111,21 +111,25 @@
     background-color: #444;
 }
 
-/* Imagen de la canción y la portada de la playlist */
-.search-results .result-image, .playlist-images {
-    width: 45px; /* Tamaño ajustado a 50px */
+/* Imagen de la canción, la portada de la playlist y los artistas */
+.search-results .result-image, .playlist-images, .artist-images {
+    width: 45px; /* Tamaño ajustado a 45px */
     height: 45px;
     border-radius: 50%;
     object-fit: cover;
-
 }
-//* Fuente común para títulos de canciones y playlists */
+
+/* Fuente común para títulos de canciones, playlists y artistas */
 .search-results .result-item p,
-.search-results .playlist-item .playlist-info p {
-    font-family: 'Roboto', sans-serif; /* Cambia a la fuente deseada */
+.search-results .playlist-item .playlist-info p,
+.search-results .artist-item .result-text p {
+    font-family: 'Roboto', sans-serif; /* Fuente común */
     font-size: 16px; /* Asegúrate de que el tamaño de fuente sea el mismo */
     color: white; /* Mantén el color del texto */
-    font-weight: bold; /* O la variante que prefieras */
+    font-weight: bold; /* Mantén el estilo en negrita */
+    margin-left: 10px; /* Separación entre el nombre y el título */
+    word-wrap: break-word; /* Asegura que el texto largo se baje a la siguiente línea si es necesario */
+    overflow-wrap: break-word; /* Opcional, también asegura que el texto largo se ajuste correctamente */
 }
 
 
@@ -140,5 +144,14 @@
     color: #fff;
     font-size: 16px;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 10px; /* Más separación para los títulos */
+}
+
+/* Estilo para los artistas y canciones que sean más largos que el contenedor */
+.search-results .playlist-info p,
+.search-results .result-text p,
+.search-results .result-item p {
+    text-overflow: ellipsis; /* Limitar el texto si es más largo de lo necesario */
+    overflow: hidden;
+    white-space: nowrap;
 }
