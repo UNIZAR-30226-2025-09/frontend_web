@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
-import { useOutletContext, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { apiFetch } from "#utils/apiFetch";
 import {getImageUrl} from "#utils/getImageUrl";
 import "./Library.css";
 
 const Library = () => {
     const navigate = useNavigate();
-    const { setActive, handleMouseDown, handleMouseMove, handleMouseUp } = useOutletContext();
     const [user, setUser] = useState(null);
     const [likedSongPlaylist, setLikedSongPlaylist] = useState(null); // Playlist "Me Gusta"
-    const [userPlaylists, setUserPlaylists] = useState([]);
     const [likedPlaylists, setLikedPlaylists] = useState([]);
-    const [sortUserPlaylists, setSortUserPlaylists] = useState("recent");
-    const [sortLikedPlaylists, setSortLikedPlaylists] = useState("recent");
+    const [setSortUserPlaylists] = useState("recent");
+    const [ setSortLikedPlaylists] = useState("recent");
+    const [userPlaylists, setUserPlaylists] = useState([]);
+    const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
+
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -21,31 +22,22 @@ const Library = () => {
         }
     }, []);
 
-    /*
     useEffect(() => {
-        const getLikedSongs = async () => {
+        const fetchUserPlaylists = async () => {
             try {
-                const data = await apiFetch("/songs/liked");
-                setLikedSongs(data);
-            } catch (error) {
-                console.error("Error al obtener canciones con like:", error);
-            }
-        };
-        getLikedSongs();
-    }, []);
-
-    useEffect(() => {
-        const getUserPlaylists = async () => {
-            try {
-                const data = await apiFetch("/playlists/user");
+                const data = await apiFetch(`/playlists/users/${user_Id}/playlists`, {
+                    method: "GET",
+                });
                 setUserPlaylists(data);
             } catch (error) {
-                console.error("Error al obtener playlists del usuario:", error);
+                console.error("Error al obtener las playlists del usuario:", error);
             }
         };
-        getUserPlaylists();
-    }, []);
-     */
+
+        if (user_Id) {
+            fetchUserPlaylists();
+        }
+    }, [user_Id]);
 
     // Fetch de las playlists que te han gustado
     useEffect(() => {
@@ -156,8 +148,8 @@ const Library = () => {
             <div className="scroll-container">
                 <div className="library-playlists">
                     {userPlaylists.length > 0 ? userPlaylists.map(playlist => (
-                        <div key={playlist.id} className="library-playlist-card">
-                            <img src={playlist.front_page || "/default-playlist.jpg"} alt={playlist.name}
+                        <div key={playlist.id} className="library-playlist-card"  onClick={() => handlePlaylistClick(playlist.id)}>
+                            <img src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"} alt={playlist.name}
                                  className="library-playlist-image"/>
                             <p className="library-playlist-title">{playlist.name}</p>
                         </div>

@@ -18,7 +18,9 @@ import QuienesSomos from "./pages/Register/QuienesSomos";
 import Playlist from "./pages/Playlist/Playlist";
 import Library from "./pages/Library/Library";
 import AccountInfo from "./pages/AccountInfo/AccountInfo";
+import EditAccountInfo from "./pages/EditAccountInfo/EditAccountInfo";
 import Plans from "./pages/Plans/Plans";
+import Checkout from "./pages/Checkout/Checkout";
 import Song from "./pages/Song/Song.jsx";
 
 function App() {
@@ -36,8 +38,10 @@ function App() {
                     <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
                     <Route path="/terminos-condiciones" element={<TerminosYCondiciones />} />
                     <Route path="/quienes-somos" element={<QuienesSomos />} />
-                    <Route path="/subs" element={<Plans />} />
-                    <Route path="/account" element={<AccountInfo />} />
+                    <Route path="/plans" element={<Plans />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/account" element={<AccountInfo />} /> {/* <-- MUEVE AQUÍ */}
+                    <Route path="/EditAccount" element={<EditAccountInfo />} />
 
                     {/* Páginas con layout principal */}
                     <Route path="/" element={<MainLayout />}>
@@ -46,6 +50,7 @@ function App() {
                         <Route path="playlist/:playlistId" element={<Playlist />} />
                         <Route path="/songs/:songId" element={<Song />} />
                         <Route path="library" element={<Library />} />
+                        <Route path="artist" element={<Artist />} />
                         <Route path="artist/:artistId" element={<Artist />} />
 
                     </Route>

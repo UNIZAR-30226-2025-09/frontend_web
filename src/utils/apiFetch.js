@@ -27,3 +27,5 @@ export const apiFetch = async (endpoint, options = {}) => {
     // Devolvemos la respuesta parseada como JSON
     return response.json();
 };
+
+
