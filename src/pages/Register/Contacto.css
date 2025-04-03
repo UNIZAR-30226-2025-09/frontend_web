@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
+
+body {
+    background-color: #1e1e1e;
+    font-family: 'Inter Tight', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.contacto-container {
+    padding: 40px 10% 40px;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    line-height: 1.6;
+}
+
+.contacto-container .logo {
+    display: block;
+    margin: 0 auto 30px;
+    width: 100px !important;
+    height: 100px !important;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+    object-fit: contain;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.contacto-title {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 40px;
+    color: white;
+}
+
+.contacto-text {
+    max-width: 900px;
+    margin: 0 auto;
+    font-size: 15px;
+    color: #cccccc;
+    text-align: center;
+}
+
+.contacto-text p {
+    margin-bottom: 30px;
+}
+
+.contacto-text a {
+    color: #79e2ff;
+    text-decoration: none;
+}
+
+.contacto-text a:hover {
+    text-decoration: underline;
+}
+
+.contacto-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.contacto-form input,
+.contacto-form textarea {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-size: 15px;
+}
+
+.contacto-form textarea {
+    resize: vertical;
+}
+
+.contacto-form button {
+    background-color: #79e2ff;
+    color: black;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.contacto-form button:hover {
+    background-color: #5ac2e0;
+}
+
+.btn-close {
+    display: block;
+    background-color: #79e2ff;
+    color: black;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 200px;
+    margin: 40px auto 0;
+    transition: background-color 0.3s ease;
+}
+
+.btn-close:hover {
+    background-color: #5ac2e0;
+}
