@@ -18,7 +18,7 @@ const Footer = () => {
                         <li><a href="/quienes-somos" target="_blank" rel="noopener noreferrer">Quiénes Somos</a></li>
                         <li><a href="/contacto" target="_blank" rel="noopener noreferrer">Contacto</a></li>
                         <li><a href="/terminos-condiciones" target="_blank" rel="noopener noreferrer">Términos y Condiciones</a></li>
-                        <li><a href="/politica-de-privacidad" target="_blank" rel="noopener noreferrer">Política de Privacidad</a></li>
+                        <li><a href="/politica-privacidad" target="_blank" rel="noopener noreferrer">Política de Privacidad</a></li>
                     </ul>
                 </div>
                 <div className="footer-section">
