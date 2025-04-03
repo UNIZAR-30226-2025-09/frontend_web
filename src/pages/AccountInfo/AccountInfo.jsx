@@ -1,8 +1,18 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./AccountInfo.css";
+import {useNavigate} from "react-router-dom";
+
+
 
 function AccountInfo() {
+
+    const navigate = useNavigate();
+
+    function handleEditUser() {
+        navigate(`/EditAccount`);
+    }
+
     const location = useLocation();
     const [mensaje, setMensaje] = useState("");
 
@@ -14,6 +24,7 @@ function AccountInfo() {
             return () => clearTimeout(timer);
         }
     }, [location]);
+
 
     return (
         <>
@@ -60,7 +71,7 @@ function AccountInfo() {
 
                 {/* Botones de acción */}
                 <div className="account-actions">
-                    <button className="action-button">Editar perfil</button>
+                    <button className="action-button">Editar perfil onClick={() => handleEditUser()}</button>
                     <button className="action-button">Administrar suscripción</button>
                     <button className="action-button">Cancelar suscripción</button>
                     <button className="action-button logout">Cerrar sesión</button>

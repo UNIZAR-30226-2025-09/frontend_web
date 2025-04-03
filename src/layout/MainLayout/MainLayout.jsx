@@ -86,23 +86,6 @@ const MainLayout = () => {
     //  Cambia la sección activa cuando el mouse entra
     const setActive = (section) => setActiveSection(section);
 
-    //  Desplazamiento con botones
-    const scrollActiveSection = (direction) => {
-        let ref;
-        if (activeSection === "playlists") ref = playlistsRef;
-        else if (activeSection === "recommendations") ref = recommendationsRef;
-        else if (activeSection === "albums") ref = albumsRef;
-        else ref = artistsRef;
-
-        if (ref?.current) {
-            const scrollAmount = 300;
-            ref.current.scrollBy({
-                left: direction === "left" ? -scrollAmount : scrollAmount,
-                behavior: "smooth",
-            });
-        }
-    };
-
     //  Eventos de arrastre horizontal
     const handleMouseDown = (e, ref) => {
         if (!ref.current) return;
