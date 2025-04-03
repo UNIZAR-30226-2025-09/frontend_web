@@ -86,23 +86,6 @@ const MainLayout = () => {
     //  Cambia la sección activa cuando el mouse entra
     const setActive = (section) => setActiveSection(section);
 
-    //  Desplazamiento con botones
-    const scrollActiveSection = (direction) => {
-        let ref;
-        if (activeSection === "playlists") ref = playlistsRef;
-        else if (activeSection === "recommendations") ref = recommendationsRef;
-        else if (activeSection === "albums") ref = albumsRef;
-        else ref = artistsRef;
-
-        if (ref?.current) {
-            const scrollAmount = 300;
-            ref.current.scrollBy({
-                left: direction === "left" ? -scrollAmount : scrollAmount,
-                behavior: "smooth",
-            });
-        }
-    };
-
     //  Eventos de arrastre horizontal
     const handleMouseDown = (e, ref) => {
         if (!ref.current) return;
@@ -184,8 +167,7 @@ const MainLayout = () => {
                 {/* Ahora la barra superior queda fija dentro de .main-content */}
                 <div className="top-bar">
                     <div className="nav-arrows">
-                        <button className="arrow left" onClick={(e) => { scrollActiveSection("left"); handleAccessWithoutLogin(e); }}>{"<"}</button>
-                        <button className="arrow right" onClick={(e) => { scrollActiveSection("right"); handleAccessWithoutLogin(e); }}>{">"}</button>
+                        <button className="arrow">Explorar Premium</button>
                     </div>
                     <SearchBar onClick={(e) => handleAccessWithoutLogin(e)} />
                     <img src={logo} alt="Logo" className="app-logo"/>

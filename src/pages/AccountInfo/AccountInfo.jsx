@@ -1,6 +1,15 @@
 import "./AccountInfo.css";
+import {useNavigate} from "react-router-dom";
+
+
 
 function AccountInfo() {
+    const navigate = useNavigate();
+
+    function handleEditUser() {
+        navigate(`/EditAccount`);
+    }
+
     return (
         <>
             <div className="header">
@@ -39,7 +48,7 @@ function AccountInfo() {
 
                 {/* Botones de acción */}
                 <div className="account-actions">
-                    <button className="action-button">Editar perfil</button>
+                    <button className="action-button">Editar perfil onClick={() => handleEditUser()}</button>
                     <button className="action-button">Administrar suscripción</button>
                     <button className="action-button">Cancelar suscripción</button>
                     <button className="action-button logout">Cerrar sesión</button>

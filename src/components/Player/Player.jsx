@@ -7,7 +7,7 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";  // Iconos de cora
 import { IconContext } from "react-icons";
 import { getImageUrl } from "#utils/getImageUrl";
 import styles from "./PlayerStyles.module.css";
-import axios from 'axios';
+
 
 function Player() {
     const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs, isPlaying, setIsPlaying } = usePlayer();
