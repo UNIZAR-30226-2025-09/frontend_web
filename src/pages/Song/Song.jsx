@@ -9,8 +9,6 @@ import axios from "axios";
 import OptionsPopup from "../../components/PopUpSelection/OptionsPopup.jsx";
 import CreatePlaylistModal from "../../components/PlaylistModal/PlaylistModal.jsx";
 
-"#utils/apiFetch.js"
-
 // Convierte segundos a m:ss
 function formatDuration(seconds) {
     if (!seconds) return "0:00";

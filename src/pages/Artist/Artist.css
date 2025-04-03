@@ -1,84 +1,335 @@
-.artist-container {
-    padding: 2rem;
-    color: white;
-    background-color: #1e1e1e;
-    min-height: 100vh;
-}
-
-.artist-header {
+.layout {
     display: flex;
-    align-items: center;
-    gap: 2rem;
-    margin-bottom: 3rem;
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
-.artist-image {
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+/* Columna derecha (contenido principal) */
+.box {
+    flex: 1;
+    width: 100%;
+    background: linear-gradient(to bottom, #0399b6, #121212);
+    color: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-sizing: border-box;
+    height: auto;
+    display: flex;
+    flex-direction: column;
 }
 
+/* Encabezado con la foto y el nombre del artista */
+.play-cont {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    height: auto;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 20px;
+    margin-bottom: 2rem;
+}
+
+/* Imagen del artista */
+.image:hover {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Información del artista (nombre, biografía, etc.) */
 .artist-info {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-end;
+    gap: 10px;
+    color: #fff;
 }
 
-.artist-name {
-    font-size: 36px;
+.artist-info h1 {
+    font-size: 80px;
     font-weight: bold;
-    margin-bottom: 0.5rem;
-}
-
-.artist-subtext {
-    font-size: 16px;
-    color: #bbbbbb;
-}
-
-.artist-songs-section {
-    margin-top: 2rem;
-}
-
-.songs-title {
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-}
-
-.song-list {
-    list-style: none;
-    padding: 0;
     margin: 0;
 }
 
-.song-item {
+.artist-info p {
+    font-size: 18px;
+    color: #b3b3b3;
+    margin: 0;
+}
+
+/* Acciones del reproductor (botón play, iconos) */
+.playlist-actions {
     display: flex;
     align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.song-index {
-    width: 30px;
-    font-size: 16px;
-    color: #999;
-}
-
-.song-details {
-    display: flex;
-    justify-content: space-between;
+    gap: 15px;
     width: 100%;
+    border-bottom: 2px solid #282828;
+    padding-bottom: 10px;
+    margin-bottom: 2rem;
+    justify-content: space-between;
+}
+
+/* Contenedor botones principales izquierda */
+.rep-cont {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+    padding: 10px;
+}
+
+/* Botón principal de play */
+.play-btn {
+    background-color: #0399b6;
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55px;
+    height: 55px;
+    transition: background 0.2s;
+}
+
+.play-btn:hover {
+    background-color: #0399b6;
+}
+
+/* Icono shuffle */
+.shuffle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shuffle-icon {
+    font-size: 30px;
+    color: #ffffff;
+    transition: color 0.2s;
+}
+
+.shuffle-icon.active {
+    color: #ff9900;
+}
+
+/* Iconos de la derecha (sin MG) */
+.actions-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.icon {
+    font-size: 22px;
+    cursor: pointer;
+    color: white;
+    transition: color 0.2s;
+}
+
+.icon:hover {
+    color: #0399b6;
+}
+
+/* Estilos de la lista de canciones */
+.song-header {
+    display: grid;
+    grid-template-columns: 50px 60px 1fr 1fr 150px 100px;
+    gap: 15px;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.song-cont {
+    display: flex;
+    flex-direction: column;
+}
+
+.song-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Modificado para mostrar las canciones de forma correcta */
+.song-item {
+    display: flex;
+    flex-direction: column; /* Se cambia para que todo esté en una columna */
+    align-items: flex-start;
+    gap: 15px;
+    border-bottom: 1px solid #333;
+    padding: 10px 0;
+}
+
+.song-action {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.song-cover {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 5px;
 }
 
 .song-title {
-    font-size: 16px;
-    font-weight: 500;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-.song-duration {
+.song-title:hover {
+    color: #0399b6;
+}
+
+.song-artist, .song-duration, .song-date {
+    color: #b3b3b3;
     font-size: 14px;
-    color: #aaa;
+}
+
+/* Estilo para las opciones de cada canción */
+.song-options {
+    display: flex;
+    align-items: center;
+}
+
+.song-options-icon {
+    font-size: 22px;
+    cursor: pointer;
+    color: #b3b3b3;
+}
+
+.song-options-icon:hover {
+    color: #0399b6;
+}
+
+/* Pop-up de opciones */
+.popup-wrapper {
+    position: relative;
+    overflow: visible;
+    display: inline-block;
+}
+
+/* Modificado para los álbumes */
+.album-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+}
+
+.album-cover {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.album-title {
+    color: #fff;
+    font-size: 18px;
+}
+
+/* Botones para cambiar entre canciones, álbumes y sencillos */
+.view-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.view-switcher button {
+    background-color: #0399b6;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    opacity: 0.8;
+}
+
+.view-switcher button:hover {
+    background-color: #027a8e;
+    opacity: 1;
+}
+
+.view-switcher button.active {
+    background-color: #027a8e;
+    opacity: 1;
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilo para los sencillos (con los mismos detalles) */
+.singles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.single-item {
+    display: flex;
+    flex-direction: column; /* Se cambia para que esté en una sola columna */
+    align-items: flex-start;
+    gap: 15px;
+    border-bottom: 1px solid #333;
+    padding: 10px 0;
+}
+
+.single-action {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.single-cover {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.single-title {
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.single-title:hover {
+    color: #0399b6;
+}
+
+.single-artist, .single-duration {
+    color: #b3b3b3;
+    font-size: 14px;
+}
+
+.single-options {
+    display: flex;
+    align-items: center;
+}
+
+.single-options-icon {
+    font-size: 22px;
+    cursor: pointer;
+    color: #b3b3b3;
+}
+
+.single-options-icon:hover {
+    color: #0399b6;
 }

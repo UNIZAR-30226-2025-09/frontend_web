@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ProfileCard.css";
+import {getImageUrl} from "#utils/getImageUrl";
 
 // Función para generar un color aleatorio para el fondo
 const generateRandomColor = () => {
@@ -37,7 +38,7 @@ const ProfileCard = ({ user, onLogout }) => {
             <div className="profile-pic-container">
                 {user.user_picture ? (
                     <img
-                        src={user.profilePicture}
+                        src={getImageUrl(user.user_picture)}
                         alt="Profile"
                         className="profile-pic"
                     />
@@ -66,7 +67,7 @@ const ProfileCard = ({ user, onLogout }) => {
                     <div className="options-menu">
                         <button
                             className="options-item"
-                            onClick={() => navigate("/profile")}
+                            onClick={() => navigate("/account")}
                         >
                             Mi Cuenta
                         </button>
