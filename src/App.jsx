@@ -37,7 +37,7 @@ function App() {
                     <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
                     <Route path="/terminos-condiciones" element={<TerminosYCondiciones />} />
                     <Route path="/quienes-somos" element={<QuienesSomos />} />
-                      
+
                     <Route path="/account" element={<AccountInfo />} />
                     <Route path="/EditAccount" element={<EditAccountInfo />} />
                     <Route path="/subs" element={<Plans />} />

@@ -1,4 +1,4 @@
-import {FaHeart, FaEllipsisH, FaPlay, FaPause} from "react-icons/fa";
+import {FaHeart, FaEllipsisH, FaPlay, FaPause, FaRandom} from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {useOutletContext, useParams, useNavigate} from "react-router-dom";
 import { PlayerProvider} from "../../components/Player/PlayerContext.jsx";
@@ -506,7 +506,7 @@ const PlaylistContent = () => {
                         </button>
 
                         <button className="shuffle-btn" onClick={toggleShuffle}>
-                            <SlPlaylist className={`shuffle-icon ${isShuffling ? "active" : ""}`}/>
+                            <FaRandom className={`shuffle-icon ${isShuffling ? "active" : ""}`}/>
                         </button>
                         <div className="popup-wrapper ">
                             <OptionsPopup

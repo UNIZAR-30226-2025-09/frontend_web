@@ -12,13 +12,13 @@
 .search-box {
     display: flex;
     align-items: center;
-    background-color: #3a3a3a !important; /* 🔥 Fondo gris asegurado 🔥 */
-    border-radius: 20px; /* 🔥 Ajustado para verse más compacto 🔥 */
+    background-color: #3a3a3a !important;
+    border-radius: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     width: 320px;
-    height: 32px; /* 🔥 MÁS ESTRECHO 🔥 */
+    height: 32px;
     padding: 3px;
-    border: 3px solid #1eaddc; /* 🔥 Borde azul más grueso 🔥 */
+    border: 3px solid #1eaddc;
 }
 
 /* Formulario */
@@ -31,37 +31,31 @@
 /* Input */
 .search-input {
     flex-grow: 1;
-    font-size: 15px; /* 🔥 Texto más grande 🔥 */
-    font-weight: bold; /* 🔥 Hace que se vea mejor 🔥 */
+    font-size: 15px;
+    font-weight: bold;
     border: none;
     outline: none;
     width: 100%;
-    background-color: transparent !important; /* 🔥 Evita que el input sea blanco 🔥 */
+    background-color: transparent !important;
     color: #f0f0f0;
     text-align: center;
     height: 100%;
-    line-height: 32px; /* 🔥 Centra el texto verticalmente 🔥 */
+    line-height: 32px;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* 🔥 🔥 🔥 ELIMINA EL BORDE AZUL CUANDO SE HACE CLIC 🔥 🔥 🔥 */
 .search-input:focus {
     outline: none !important;
     box-shadow: none !important;
     border: none !important;
 }
 
-/* 🔥 🔥 🔥 ELIMINA EL BORDE AZUL EN NAVEGADORES WEBKIT 🔥 🔥 🔥 */
-.search-input::-webkit-focus-ring-color {
-    outline: none !important;
-}
-
 /* Botón de búsqueda */
 .search-button {
-    width: 32px; /* 🔥 Botón más pequeño 🔥 */
+    width: 32px;
     height: 32px;
     display: flex;
     align-items: center;
@@ -79,7 +73,85 @@
     background-color: #007bb5;
 }
 
-/* Ícono */
-.search-button svg {
-    font-size: 14px; /* 🔥 Ícono más pequeño para que encaje 🔥 */
+/* Contenedor de los resultados de búsqueda */
+.search-results {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 50px;
+    width: 370px;
+    background-color: #333;
+    border-radius: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    padding: 10px;
+}
+
+/* Título de cada sección */
+.result-section {
+    margin-bottom: 10px;
+}
+
+/* Cada ítem en los resultados */
+.result-item, .playlist-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+}
+
+/* Efecto hover para cada ítem */
+.result-item:hover, .playlist-item:hover {
+    background-color: #444;
+}
+
+/* Imagen de la canción, la portada de la playlist y los artistas */
+.search-results .result-image, .playlist-images, .artist-images {
+    width: 45px; /* Tamaño ajustado a 45px */
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Fuente común para títulos de canciones, playlists y artistas */
+.search-results .result-item p,
+.search-results .playlist-item .playlist-info p,
+.search-results .artist-item .result-text p {
+    font-family: 'Roboto', sans-serif; /* Fuente común */
+    font-size: 16px; /* Asegúrate de que el tamaño de fuente sea el mismo */
+    color: white; /* Mantén el color del texto */
+    font-weight: bold; /* Mantén el estilo en negrita */
+    margin-left: 10px; /* Separación entre el nombre y el título */
+    word-wrap: break-word; /* Asegura que el texto largo se baje a la siguiente línea si es necesario */
+    overflow-wrap: break-word; /* Opcional, también asegura que el texto largo se ajuste correctamente */
+}
+
+
+/* Lista de resultados y la lista de playlists */
+.result-list, .playlist-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+/* Títulos de cada sección (canciones, artistas, playlists) */
+.section-title {
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px; /* Más separación para los títulos */
+}
+
+/* Estilo para los artistas y canciones que sean más largos que el contenedor */
+.search-results .playlist-info p,
+.search-results .result-text p,
+.search-results .result-item p {
+    text-overflow: ellipsis; /* Limitar el texto si es más largo de lo necesario */
+    overflow: hidden;
+    white-space: nowrap;
 }
