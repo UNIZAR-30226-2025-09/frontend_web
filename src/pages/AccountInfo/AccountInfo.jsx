@@ -170,7 +170,7 @@ function AccountInfo() {
                     {user?.is_premium && (
                         <button className="action-button">Cancelar suscripción</button>
                     )}
-                    <button className="action-button logout">Cerrar sesión</button>
+                    <button className="action-button logout" onClick={() => onLogout()}>Cerrar sesión</button>
                 </div>
             </div>
         </>
