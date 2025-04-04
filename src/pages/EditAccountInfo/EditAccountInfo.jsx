@@ -3,15 +3,16 @@ import { apiFetch } from "#utils/apiFetch";
 import "./EditAccountInfo.css";
 import Compressor from 'compressorjs';
 import {getImageUrl} from "#utils/getImageUrl";
+import {useNavigate} from "react-router-dom";
 
 function EditAccountInfo() {
     const userId = JSON.parse(localStorage.getItem('user')).id;
-
     const [nickname, setNickname] = useState("");
     const [profileImage, setProfileImage] = useState(null);
     const [profileImageShow, setProfileImageShow] = useState(null);
     const [userInfo, setUserInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     // Cargar información del usuario
     useEffect(() => {
@@ -113,7 +114,7 @@ function EditAccountInfo() {
                         src="../vibrablanco.png"
                         alt="Vibra Logo"
                         className="logo"
-                        onClick={() => window.location.reload()}
+                        onClick={() => {navigate(`/`)}}
                     />
                     <span className="logo-text">Vibra</span>
                 </div>
@@ -142,10 +143,10 @@ function EditAccountInfo() {
 
                     <div className="form-group">
                         <label htmlFor="nickname">Nombre de usuario:</label>
+                        <label htmlFor="nickname">{ nickname}</label>
                         <input
                             type="text"
                             id="nickname"
-                            value={nickname}
                             onChange={handleNicknameChange}
                             className="form-input"
                         />

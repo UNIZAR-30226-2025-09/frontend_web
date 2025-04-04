@@ -38,6 +38,7 @@ function App() {
                     <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
                     <Route path="/terminos-condiciones" element={<TerminosYCondiciones />} />
                     <Route path="/quienes-somos" element={<QuienesSomos />} />
+
                     <Route path="/plans" element={<Plans />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/account" element={<AccountInfo />} />
