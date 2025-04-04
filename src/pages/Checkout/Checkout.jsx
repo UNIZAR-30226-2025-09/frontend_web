@@ -1,12 +1,10 @@
 // src/pages/Checkout.jsx
-
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
 import "./Checkout.css";
 import PropTypes from "prop-types";
-
 
 const stripePromise = loadStripe("pk_test_51R0pjqP1jnBE1veqsiXWTUll0H44mEoupgzDAnrFyjZ9pUPNHZ3aGViTzT49nYDchBr0F6UhI6V7kMA3DV2OFi3Z00XUhmPX1A");
 
@@ -21,7 +19,7 @@ const PremiumCheckout = () => {
         const { error } = await stripe.confirmPayment({
             elements,
             confirmParams: {
-                return_url: window.location.origin + "/plans?result=success",
+                return_url: window.location.origin + "/account?payment=success", // 🔄 Cambio aquí
             },
         });
 
@@ -79,7 +77,6 @@ const Checkout = () => {
             ) : (
                 <p style={{ color: "white" }}>Cargando...</p>
             )}
-
         </div>
     );
 };

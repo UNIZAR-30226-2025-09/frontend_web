@@ -47,6 +47,16 @@ const Home = () => {
         }
     };
 
+    // Función para redirigir a la página de detalles de la playlist
+    const handleArtistClick = (artistId, e) => {
+        if (!localStorage.getItem("token")) {
+            e.preventDefault();  // Prevenir la redirección si el usuario no está logueado
+            handleAccessWithoutLogin(e); // Mostrar el popup
+        } else {
+            navigate(`/artist/${artistId}`);  // Navegar si el usuario está logueado
+        }
+    };
+
     return (
         <div className="home-content">
             {/* Sección de playlists creadas por Vibra */}
@@ -142,7 +152,7 @@ const Home = () => {
 
                             return (
                                 <div key={artist.id} className="artist-wrapper" onClick={(e) => handleAccessWithoutLogin(e)}>
-                                    <div className="home-artist-card">
+                                    <div className="home-artist-card" onClick={(e) => handleArtistClick(artist.id, e)}>
                                         <img
                                             src={artistImage}
                                             alt={artist.name}
@@ -150,7 +160,9 @@ const Home = () => {
                                             onError={(e) => e.target.src = "/default-artist.jpg"}
                                         />
                                     </div>
-                                    <p className="artist-title">{artist.name}</p>
+                                    <div onClick={(e) => handleArtistClick(artist.id, e)}>
+                                        <p className="artist-title">{artist.name}</p>
+                                    </div>
                                 </div>
                             );
                         })

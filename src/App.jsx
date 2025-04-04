@@ -40,7 +40,7 @@ function App() {
                     <Route path="/quienes-somos" element={<QuienesSomos />} />
                     <Route path="/plans" element={<Plans />} />
                     <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/account" element={<AccountInfo />} /> {/* <-- MUEVE AQUÍ */}
+                    <Route path="/account" element={<AccountInfo />} />
                     <Route path="/EditAccount" element={<EditAccountInfo />} />
 
                     {/* Páginas con layout principal */}

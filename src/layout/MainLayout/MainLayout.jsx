@@ -223,10 +223,27 @@ const MainLayout = () => {
             {/* Popup de inicio de sesión */}
             {showLoginPopup && (
                 <div className="login-popup">
-                    <div className="popup-content">
-                        <p>Para acceder a esta sección, por favor inicie sesión.</p>
-                        <button onClick={() => navigate("/login")}>Ir a Iniciar Sesión</button>
-                        <button onClick={closeLoginPopup}>Cerrar</button>
+                    <div className="popup-glass">
+                        <img src="/vibrablanco.png" alt="Vibra logo" className="popup-logo" />
+                        <h2 className="popup-title">Empieza a disfrutar de todo lo que Vibra tiene para ti</h2>
+                        <p className="popup-subtitle">
+                            Crea una cuenta gratuita o inicia sesión para acceder a todas las funciones.
+                        </p>
+
+                        <button className="popup-button primary" onClick={() => navigate("/register")}>
+                            Registrarse gratis
+                        </button>
+
+                        <button className="popup-button secondary" onClick={closeLoginPopup}>
+                            Cerrar
+                        </button>
+
+                        <div className="popup-login-link">
+                            ¿Ya tienes una cuenta?{" "}
+                            <span onClick={() => navigate("/login")} className="popup-link">
+                    Iniciar sesión
+                </span>
+                        </div>
                     </div>
                 </div>
             )}
