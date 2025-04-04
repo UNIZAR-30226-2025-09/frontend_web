@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ProfileCard.css";
 import {getImageUrl} from "#utils/getImageUrl";
+import PropTypes from 'prop-types';
 
 // Función para generar un color aleatorio para el fondo
 const generateRandomColor = () => {
@@ -15,6 +16,7 @@ const generateRandomColor = () => {
 
 const ProfileCard = ({ user, onLogout }) => {
     const navigate = useNavigate();
+
     const [showOptions, setShowOptions] = useState(false); // Estado para manejar la visibilidad de las opciones
 
     // Función que obtiene la inicial del nickname
@@ -67,7 +69,7 @@ const ProfileCard = ({ user, onLogout }) => {
                     <div className="options-menu">
                         <button
                             className="options-item"
-                            onClick={() => navigate("/account")}
+                            onClick={() => navigate("/account", { state: { user } })}
                         >
                             Mi Cuenta
                         </button>
@@ -82,6 +84,11 @@ const ProfileCard = ({ user, onLogout }) => {
             </div>
         </div>
     );
+};
+
+ProfileCard.propTypes = {
+    user: PropTypes.object.isRequired,
+    onLogout: PropTypes.func.isRequired,
 };
 
 export default ProfileCard;

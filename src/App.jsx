@@ -38,7 +38,8 @@ function App() {
                     <Route path="/terminos-condiciones" element={<TerminosYCondiciones />} />
                     <Route path="/quienes-somos" element={<QuienesSomos />} />
 
-                    <Route path="/account" element={<AccountInfo />} />
+                    <Route path="/account" element={<AccountInfo setUser={MainLayout.setUser} />} />
+
                     <Route path="/EditAccount" element={<EditAccountInfo />} />
                     <Route path="/subs" element={<Plans />} />
 

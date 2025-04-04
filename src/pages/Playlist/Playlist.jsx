@@ -35,7 +35,7 @@ const PlaylistContent = () => {
     const [user, setUser] = useState(null);
     const [adds, setAdds] = useState([]);
     const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
-    const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying,
+    const { currentSong, setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying,
             isPlaying, setPlaylistActive, playlistActive, setSongActive } = useOutletContext();
     const navigate = useNavigate();
 
@@ -174,11 +174,28 @@ const PlaylistContent = () => {
     }
 
     const handlePlaySong = (song, index, songs) => {
+        let result = ([]);
         console.log(`Reproduciendo: ${song.name}`);
         console.log("Guardando canción en el estado:", song);
-        setCurrentSong( song );
-        setCurrentIndex( index );
-        setSongs(songs);
+
+        if(isShuffling){setIsShuffling(prev => !prev);}
+
+        if(!user.is_premium){
+            console.log("USUARIO es premium metiendo anuncios", user.is_premium);
+            result = addsSong(songs);
+
+            setCurrentSong(song);
+            setCurrentIndex(0);
+            setSongs(result);
+        }
+        else{
+            setCurrentSong(song);
+            setCurrentIndex(0);
+            setSongs(songs);
+        }
+
+        setPlaylistActive(playlistId);
+        setSongActive(0);
 
         console.log("Cambiando isplaying en playlist a traves de cancion");
         setIsPlaying(true);
@@ -217,7 +234,7 @@ const PlaylistContent = () => {
     const handlePlaySongs = (songs, isPlaying) => {
         console.log("Reproduciendo canciones en modo aleatorio...");
         let result = ([]);
-
+        if(!isPlaying){
             if(isShuffling){
                 // Shuffle array of songs
                 const shuffledSongs = shuffleArray(songs);
@@ -256,6 +273,7 @@ const PlaylistContent = () => {
 
             setPlaylistActive(playlistId);
             setSongActive(0);
+        }
 
         console.log("Cambiando isplaying en playlist");
         setIsPlaying(!isPlaying);
@@ -500,9 +518,9 @@ const PlaylistContent = () => {
                     <div className="rep-cont">
                         <button
                             className="play-btn"
-                            onClick={() => handlePlaySongs(playlist.songs, isPlaying)}
+                            onClick={() => currentSong?.type !== "anuncio" && handlePlaySongs(playlist.songs, isPlaying)}
                         >
-                            {playlistActive === playlistId && isPlaying ? <FaPause/> : <FaPlay/>}
+                            {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ? <FaPause/> : <FaPlay/>}
                         </button>
 
                         <button className="shuffle-btn" onClick={toggleShuffle}>

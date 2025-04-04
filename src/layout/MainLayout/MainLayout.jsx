@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import {useRef, useState, useEffect, createContext} from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import Navbar from "../../components/Navbar/Navbar";
@@ -12,7 +12,6 @@ import { apiFetch } from "#utils/apiFetch";
 
 const MainLayout = () => {
     const navigate = useNavigate();
-
     const [user, setUser] = useState(null);
     const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs, setSongs, isPlaying,
             setIsPlaying, playlistActive, setPlaylistActive, songActive, setSongActive } = usePlayer();
@@ -113,11 +112,6 @@ const MainLayout = () => {
         // Eliminar los datos del usuario y token del localStorage
         localStorage.removeItem("user");
         localStorage.removeItem("token");
-        // Stop music playback and reset player state
-        setIsPlaying(false);
-        setCurrentSong(null);
-        setSongs([]);
-        setCurrentIndex(0);
 
         // Actualizar el estado de 'user' para reflejar que no hay un usuario logueado
         setUser(null);
@@ -171,7 +165,6 @@ const MainLayout = () => {
             <div className="main-content">
                 {/* Ahora la barra superior queda fija dentro de .main-content */}
                 <div className="top-bar">
-
                     <SearchBar onClick={(e) => handleAccessWithoutLogin(e)} />
                     <img src={logo} alt="Logo" className="app-logo"/>
                 </div>
@@ -194,12 +187,13 @@ const MainLayout = () => {
                     setCurrentSong: setCurrentSongWrapper,
                     setCurrentIndex: setCurrentIndexWrapper,
                     setSongs: setCurrentSongsWrapper,
-                    handleAccessWithoutLogin,  // Pasar la función al Outlet
+                    handleAccessWithoutLogin,
                     setIsPlaying,
                     setPlaylistActive,
                     playlistActive,
                     songActive,
                     setSongActive,
+                    setUser
                 }}/>
 
                 <Footer />
