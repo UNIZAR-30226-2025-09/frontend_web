@@ -300,7 +300,7 @@ function Player() {
                     {/* Flecha anterior */}
                     <button
                         className={styles.controlButton}
-                        onClick={handlePrevious}
+                        onClick={() => currentSong?.type !== "anuncio" && handlePrevious()}
                         disabled={noSongSelected}
                     >
                         <IconContext.Provider value={{size: "3em", color: "#21a1f1"}}>
@@ -322,7 +322,7 @@ function Player() {
                     {/* Flecha siguiente */}
                     <button
                         className={styles.controlButton}
-                        onClick={handleNext}
+                        onClick={() => currentSong?.type !== "anuncio" && handleNext()}
                         disabled={noSongSelected}
                     >
                         <IconContext.Provider value={{size: "3em", color: "#21a1f1"}}>
@@ -333,15 +333,17 @@ function Player() {
             </div>
 
             {/* Botón "Me Gusta" en un contenedor aparte */}
-            <div className={styles.likeButtonContainer}>
-                <button
-                    className={styles.likeButton}
-                    onClick={toggleLike}
-                    disabled={noSongSelected}
-                >
-                    {isLiked ? <AiFillHeart color="#E74C3C"/> : <AiOutlineHeart color="#E74C3C"/>}
-                </button>
-            </div>
+            {currentSong?.type !== "anuncio" && (
+                <div className={styles.likeButtonContainer}>
+                    <button
+                        className={styles.likeButton}
+                        onClick={toggleLike}
+                        disabled={noSongSelected}
+                    >
+                        {isLiked ? <AiFillHeart color="#E74C3C" /> : <AiOutlineHeart color="#E74C3C" />}
+                    </button>
+                </div>
+            )}
 
             {/* Barra de progreso siempre presente, pero deshabilitada si no hay canción */}
             <div className={styles.timelineContainer}>

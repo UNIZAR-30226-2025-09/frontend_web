@@ -1,13 +1,33 @@
-import { useLocation } from "react-router-dom";
+import {useLocation} from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./AccountInfo.css";
 import {useNavigate} from "react-router-dom";
+import {getImageUrl} from "#utils/getImageUrl";
+import {apiFetch} from "#utils/apiFetch";
+import {usePlayer} from "../../components/Player/PlayerContext.jsx";
 
 
 
 function AccountInfo() {
-
+    const userId = JSON.parse(localStorage.getItem('user')).id;
     const navigate = useNavigate();
+    const [profileImageShow, setProfileImageShow] = useState(null);
+    const {setCurrentSong, setCurrentIndex, setSongs, setIsPlaying} = usePlayer();
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const data = await apiFetch(`/user/${userId}`, {
+                    method: "GET",
+                });
+                setProfileImageShow(data.user_picture || null);
+            } catch (error) {
+                console.error("Error al obtener los datos del usuario:", error);
+            }
+        };
+
+        fetchUserInfo();
+    }, [userId]);
 
     function handleEditUser() {
         navigate(`/EditAccount`);
@@ -25,6 +45,20 @@ function AccountInfo() {
         }
     }, [location]);
 
+    const onLogout = () => {
+        // Eliminar los datos del usuario y token del localStorage
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+
+        // Resetea el estado del reproductor
+        setCurrentSong(null);
+        setCurrentIndex(0);
+        setSongs([]);
+        setIsPlaying(false);
+
+        // Redirigir a la página principal (o a cualquier ruta que prefieras)
+        navigate("/"); // Redirigir al login
+    };
 
     return (
         <>
@@ -36,7 +70,9 @@ function AccountInfo() {
                         src="../vibrablanco.png"
                         alt="Vibra Logo"
                         className="logo"
-                        onClick={() => window.location.reload()}
+                        onClick={() => {
+                            navigate(`/`)
+                        }}
                     />
                     <span className="logo-text">Vibra</span>
                 </div>
@@ -44,7 +80,9 @@ function AccountInfo() {
                     <div className="profile-picture">
                         {/* Aquí puedes poner la foto si el usuario tiene una */}
                         <img
-                            src="../profile-placeholder.png"
+                            src={profileImageShow ?
+                                (profileImageShow.startsWith('data:') ? profileImageShow : getImageUrl(profileImageShow))
+                                : '../default-profile.png'}
                             alt="Foto de perfil"
                             className="profile-img"
                         />
@@ -71,14 +109,15 @@ function AccountInfo() {
 
                 {/* Botones de acción */}
                 <div className="account-actions">
-                    <button className="action-button">Editar perfil onClick={() => handleEditUser()}</button>
+                    <button className="action-button" onClick={() => handleEditUser()}> Editar perfil </button>
                     <button className="action-button">Administrar suscripción</button>
                     <button className="action-button">Cancelar suscripción</button>
-                    <button className="action-button logout">Cerrar sesión</button>
+                    <button className="action-button logout" onClick={() => onLogout()}>Cerrar sesión</button>
                 </div>
             </div>
         </>
     );
 }
+
 
 export default AccountInfo;
