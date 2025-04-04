@@ -11,6 +11,7 @@ function EditAccountInfo() {
     const [profileImage, setProfileImage] = useState(null);
     const [profileImageShow, setProfileImageShow] = useState(null);
     const [userInfo, setUserInfo] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     // Cargar información del usuario
     useEffect(() => {
@@ -21,7 +22,6 @@ function EditAccountInfo() {
                 });
                 setUserInfo(data);
                 setNickname(data.nickname);
-                console.log("path: ", data.user_picture);
                 setProfileImageShow(data.user_picture || null);
             } catch (error) {
                 console.error("Error al obtener los datos del usuario:", error);
@@ -38,55 +38,53 @@ function EditAccountInfo() {
 
     // Función para manejar la actualización del perfil
     const handleSaveChanges = async () => {
-        const reader = new FileReader();
+        setIsLoading(true);
 
-        console.log(profileImage);
+        try {
+            let body = { nickname };
 
-        if(profileImage){
-            reader.onloadend = async () => {
-                const base64Image = reader.result;
-                console.log("base 64", base64Image);
+            // Si hay una nueva imagen de perfil, convertirla a base64
+            if (profileImage) {
+                const base64Image = await convertFileToBase64(profileImage);
+                body.profileImage = base64Image;
+            }
 
-                const body = {
-                    nickname: nickname,
-                    profileImage: base64Image,
-                };
-
-                console.log("Cuerpo", body);
-
-                try {
-                    const response = await apiFetch(`/user/users/${userId}`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: { nickname: body.nickname, profileImage: body.profileImage },
-                    });
-
-                    console.log("Perfil actualizado:", response);
-                    alert("Los cambios se han guardado correctamente.");
-                } catch (error) {
-                    console.error("Error al actualizar el perfil:", error);
-                    alert("Hubo un error al guardar los cambios.");
-                }
-            };
-
-            reader.readAsDataURL(profileImage);
-        }
-        else{
+            // Enviar la solicitud de actualización
             const response = await apiFetch(`/user/users/${userId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: { nickname: nickname },
+                body: body,
             });
 
             console.log("Perfil actualizado:", response);
-            alert("Los cambios se han guardado correctamente.");
+
+            // Si la respuesta contiene la nueva imagen, actualizarla en la UI
+            if (response.user_picture) {
+                setProfileImageShow(response.user_picture);
+            }
+
+            // Recargar la página para reflejar los cambios
             window.location.reload();
+        } catch (error) {
+            console.error("Error al actualizar el perfil:", error);
+            alert("Hubo un error al guardar los cambios.");
+        } finally {
+            setIsLoading(false);
         }
     };
+
+    // Función para convertir el archivo a base64
+    const convertFileToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
+
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
 
@@ -95,17 +93,17 @@ function EditAccountInfo() {
         new Compressor(file, {
             quality: 0.6,
             success(result) {
-
                 setProfileImage(result);
-                console.log("Imagen comprimida:", result);
+
+                // Mostrar una vista previa de la imagen seleccionada
+                const previewUrl = URL.createObjectURL(result);
+                setProfileImageShow(previewUrl);
             },
             error(err) {
                 console.error("Error al comprimir la imagen", err);
             }
         });
     };
-
-
 
     return (
         <div>
@@ -123,7 +121,9 @@ function EditAccountInfo() {
                     <div className="profile-picture">
                         {/* Muestra la imagen del usuario */}
                         <img
-                            src={getImageUrl(profileImageShow)}
+                            src={profileImageShow ?
+                                (profileImageShow.startsWith('data:') ? profileImageShow : getImageUrl(profileImageShow))
+                                : '../default-profile.png'}
                             alt="Foto de perfil"
                             className="profile-img"
                         />
@@ -162,7 +162,13 @@ function EditAccountInfo() {
                         />
                     </div>
 
-                    <button onClick={handleSaveChanges} className="save-btn">Guardar cambios</button>
+                    <button
+                        onClick={handleSaveChanges}
+                        className="save-btn"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? "Guardando..." : "Guardar cambios"}
+                    </button>
                 </div>
             </div>
         </div>
