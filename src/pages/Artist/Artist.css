@@ -35,7 +35,7 @@
 }
 
 /* Imagen del artista */
-.image:hover {
+.image1:hover {
     opacity: 1;
     transform: scale(1);
 }
@@ -333,3 +333,39 @@
 .single-options-icon:hover {
     color: #0399b6;
 }
+
+.empty-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 250px;
+    text-align: center;
+    font-size: 1.25rem;
+    color: #b0b0b0;
+    font-weight: 500;
+    padding: 1rem;
+}
+
+.verified-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #4ade80;
+    margin-bottom: 0.5rem;
+}
+
+.verified-icon {
+    color: #4ade80;
+    font-size: 1rem;
+}
+
+.verified-text {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+

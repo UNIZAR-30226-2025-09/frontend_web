@@ -20,6 +20,7 @@ import Library from "./pages/Library/Library";
 import AccountInfo from "./pages/AccountInfo/AccountInfo";
 import EditAccountInfo from "./pages/EditAccountInfo/EditAccountInfo";
 import Plans from "./pages/Plans/Plans";
+import Checkout from "./pages/Checkout/Checkout";
 import Song from "./pages/Song/Song.jsx";
 
 function App() {
@@ -38,11 +39,10 @@ function App() {
                     <Route path="/terminos-condiciones" element={<TerminosYCondiciones />} />
                     <Route path="/quienes-somos" element={<QuienesSomos />} />
 
-                    <Route path="/account" element={<AccountInfo setUser={MainLayout.setUser} />} />
-
+                    <Route path="/plans" element={<Plans />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/account" element={<AccountInfo />} />
                     <Route path="/EditAccount" element={<EditAccountInfo />} />
-                    <Route path="/subs" element={<Plans />} />
-
 
                     {/* Páginas con layout principal */}
                     <Route path="/" element={<MainLayout />}>

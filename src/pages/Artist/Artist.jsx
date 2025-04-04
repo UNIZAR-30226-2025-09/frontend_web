@@ -1,4 +1,4 @@
-import { FaEllipsisH, FaPlay, FaPause, FaRandom } from "react-icons/fa";
+import { FaEllipsisH, FaPlay, FaPause, FaRandom, FaCheckCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useOutletContext, useParams, useNavigate } from "react-router-dom";
 import { PlayerProvider } from "../../components/Player/PlayerContext.jsx";
@@ -19,12 +19,13 @@ const ArtistContent = () => {
     const { artistId } = useParams();
     const [artist, setArtist] = useState(null);
     const [isShuffling, setIsShuffling] = useState(false);
-    const [songs, setSongs] = useState([]);
+    const [songs, setSongs1] = useState([]);
     const [albums, setAlbums] = useState([]);
     const [singles, setSingles] = useState([]);
-    const [view, setView] = useState("songs");  // Nuevo estado para manejar la vista activa (songs, albums, singles)
+    const [view, setView] = useState("songs");
     const user_Id = JSON.parse(localStorage.getItem('user')).id;
-    const { setCurrentSong, setCurrentIndex, setSongs: setPlayerSongs, setIsPlaying, isPlaying, setPlaylistActive, setSongActive } = useOutletContext();
+    const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying,
+        isPlaying, setPlaylistActive, playlistActive, setSongActive, currentSong} = useOutletContext();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -32,9 +33,16 @@ const ArtistContent = () => {
             try {
                 const data = await apiFetch(`/artist/${artistId}`, { method: "GET" });
                 setArtist(data.artist);
-                setSongs(data.songs);
-                setAlbums(data.albums);  // Set the albums for the artist
-                setSingles(data.singles);  // Set the singles for the artist
+                setAlbums(Array.isArray(data.albums) ? data.albums : []);
+                setSingles(Array.isArray(data.singles) ? data.singles : []);
+
+
+                // Si no hay canciones, inicializa el estado
+                if (data.songs && data.songs.length > 0) {
+                    setSongs1(data.songs);  // Set the songs if they exist
+                } else {
+                    setSongs1([]);  // Si no hay canciones, setea a un array vacío
+                }
             } catch (error) {
                 console.error("Error al obtener los detalles del artista:", error);
             }
@@ -44,6 +52,16 @@ const ArtistContent = () => {
             fetchArtist();
         }
     }, [artistId, user_Id]);
+
+    useEffect(() => {
+        if (view && currentSong) {
+            // Si estamos en la vista de "álbumes", no cambiamos la lista de canciones
+            if (view !== "albums" && isPlaying) {
+                setSongs(view === "songs" ? songs : singles);  // Cambiamos la lista entre populares y sencillos
+            }
+        }
+    }, [view, currentSong, isPlaying]);  // Dependencias del efecto
+
 
     const toggleShuffle = () => {
         setIsShuffling(prev => !prev);
@@ -58,23 +76,44 @@ const ArtistContent = () => {
         return shuffled;
     };
 
-    const handlePlaySongs = (songs, isPlaying) => {
-        if (!isPlaying) {
-            if (isShuffling) {
-                const shuffledSongs = shuffleArray(songs);
-                setCurrentSong(shuffledSongs[0]);
-                setCurrentIndex(0);
-                setPlayerSongs(shuffledSongs);
-            } else {
-                setCurrentSong(songs[0]);
-                setCurrentIndex(0);
-                setPlayerSongs(songs);
-            }
-            //setPlaylistActive(songs);
-            //setSongActive(0);
-        }
-        setIsPlaying(!isPlaying);
+    console.log("Canciones disponibles:", songs);  // Asegúrate de que aquí están las canciones correctas
+
+    const handlePlaySong = (song, index, songs) => {
+        console.log(`Reproduciendo: ${song.name}`);
+        console.log("Guardando canción en el estado:", song);
+        setCurrentSong( song );
+        setCurrentIndex( index );
+        setSongs(songs);
     };
+
+    const handlePlaySongs = () => {
+        // Usamos la vista actual, pero si estamos en "álbumes", mantenemos la lista actual
+        const currentSongs = view === "albums" ? songs : view === "songs" ? songs : singles;
+
+        if (!isPlaying) {
+            if (currentSongs.length > 0) {
+                if (isShuffling) {
+                    const shuffledSongs = shuffleArray(currentSongs);
+                    setCurrentSong(shuffledSongs[0]);
+                    setCurrentIndex(0);
+                    setSongs(shuffledSongs);
+                } else {
+                    // Si estamos en la vista de álbumes, solo reanudamos la canción activa sin cambiar la lista
+                    if (view === "albums") {
+                        setIsPlaying(true);
+                    } else {
+                        setCurrentSong(currentSongs[0]);  // Solo actualizar la canción activa si no estamos en álbumes
+                        setCurrentIndex(0);  // El índice de la canción que se está reproduciendo
+                        setSongs(currentSongs);  // Mantener la lista actual de canciones
+                        setIsPlaying(true);  // Reanudar la reproducción
+                    }
+                }
+            }
+        } else {
+            setIsPlaying(false);  // Si está reproduciendo, pausamos la canción
+        }
+    };
+
 
     const redirectToSong = (songId) => {
         navigate(`/songs/${songId}`);
@@ -84,7 +123,8 @@ const ArtistContent = () => {
         navigate(`/playlist/${albumId}`);
     };
 
-    if (!artist || !songs) {
+    // Aquí cambiamos la lógica para mostrar siempre los detalles del artista, incluso si no tiene canciones
+    if (!artist) {
         return <p>Cargando artista...</p>;
     }
 
@@ -92,7 +132,7 @@ const ArtistContent = () => {
         <div className="layout">
             <div className="box">
                 <div className="play-cont">
-                    <div className="image">
+                    <div className="image1">
                         <img
                             src={getImageUrl(artist.photo)}
                             width="275"
@@ -101,41 +141,47 @@ const ArtistContent = () => {
                         />
                     </div>
                     <div className="artist-info">
-                        <p className="text-gray-300 text-sm uppercase">Artista</p>
+                        <p className="verified-badge">
+                            <FaCheckCircle className="verified-icon"/>
+                            <span className="verified-text">Artista verificado</span>
+                        </p>
                         <h1>{artist.name}</h1>
                         <p>{artist.bio}</p>
                     </div>
                 </div>
 
-                <div className="playlist-actions">
-                    <div className="rep-cont">
-                        <button
-                            className="play-btn"
-                            onClick={() => handlePlaySongs(songs, isPlaying)}
-                        >
-                            {isPlaying ? <FaPause /> : <FaPlay />}
-                        </button>
+                {/* Si hay canciones, mostramos el reproductor y las listas */}
+                {songs.length > 0 && (
+                    <div className="playlist-actions">
+                        <div className="rep-cont">
+                            <button
+                                className="play-btn"
+                                onClick={() => handlePlaySongs()}
+                            >
+                                {isPlaying ? <FaPause /> : <FaPlay />}
+                            </button>
 
-                        <button className="shuffle-btn" onClick={toggleShuffle}>
-                            <FaRandom className={`shuffle-icon ${isShuffling ? "active" : ""}`} />
-                        </button>
+                            <button className="shuffle-btn" onClick={toggleShuffle}>
+                                <FaRandom className={`shuffle-icon ${isShuffling ? "active" : ""}`} />
+                            </button>
 
-                        <div className="popup-wrapper">
-                            <OptionsPopup
-                                trigger={<FaEllipsisH className="icon" />}
-                                options={[{
-                                    label: "Compartir",
-                                    submenu: [
-                                        { label: "Copiar enlace" },
-                                        { label: "Compartir con amigos" },
-                                    ],
-                                }]}
-                                position="bottom-right"
-                                submenuPosition="right"
-                            />
+                            <div className="popup-wrapper">
+                                <OptionsPopup
+                                    trigger={<FaEllipsisH className="icon" />}
+                                    options={[{
+                                        label: "Compartir",
+                                        submenu: [
+                                            { label: "Copiar enlace" },
+                                            { label: "Compartir con amigos" },
+                                        ],
+                                    }]}
+                                    position="bottom-right"
+                                    submenuPosition="right"
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
 
                 {/* Botones para cambiar entre canciones, álbumes y sencillos */}
                 <div className="view-switcher">
@@ -159,8 +205,15 @@ const ArtistContent = () => {
                     </button>
                 </div>
 
-                {/* Mostrar según la vista seleccionada */}
-                {view === "songs" && (
+                {/* Mostrar las canciones*/}
+                {view === "songs" && songs.length === 0 && (
+                    <div className="empty-message">
+                        Este artista aún no tiene canciones disponibles para reproducir.
+                    </div>
+                )}
+
+                {/* Mostrar las canciones si existen */}
+                {view === "songs" && songs.length > 0 && (
                     <>
                         <div className="song-header">
                             <span># / Play</span>
@@ -179,7 +232,7 @@ const ArtistContent = () => {
                                             <span className="song-index">{index + 1}</span>
                                             <button
                                                 className="play-icon"
-                                                onClick={() => handlePlaySongs(songs, isPlaying)}
+                                                onClick={() => handlePlaySong(song, index, songs)}
                                             >
                                                 <FaPlay />
                                             </button>
@@ -224,7 +277,13 @@ const ArtistContent = () => {
                 )}
 
                 {/* Mostrar los álbumes */}
-                {view === "albums" && (
+                {view === "albums" && albums.length === 0 && (
+                    <div className="empty-message">
+                        Actualmente, este artista no tiene álbumes publicados.
+                    </div>
+                )}
+
+                {view === "albums" && albums.length > 0 && (
                     <div className="albums-list">
                         {albums.map((album) => (
                             <div key={album.id} className="album-item" onClick={() => redirectToAlbum(album.id)}>
@@ -236,7 +295,13 @@ const ArtistContent = () => {
                 )}
 
                 {/* Mostrar los sencillos */}
-                {view === "singles" && (
+                {view === "singles" && singles.length === 0 && (
+                    <div className="empty-message">
+                        Este artista aún no ha lanzado sencillos.
+                    </div>
+                )}
+
+                {view === "singles" && singles.length > 0 && (
                     <>
                         <div className="song-header">
                             <span># / Play</span>
@@ -255,13 +320,14 @@ const ArtistContent = () => {
                                             <span className="song-index">{index + 1}</span>
                                             <button
                                                 className="play-icon"
-                                                onClick={() => handlePlaySongs(singles, isPlaying)}
+                                                onClick={() => handlePlaySong(song, index, singles)} // Asegúrate de pasar "singles"
                                             >
-                                                <FaPlay />
+                                                <FaPlay/>
                                             </button>
                                         </div>
 
-                                        <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover" />
+                                        <img src={getImageUrl(song.photo_video)} alt={song.name}
+                                             className="song-cover"/>
 
                                         <span className="song-title" onClick={() => redirectToSong(song.id)}>
                                             {song.name}
@@ -269,13 +335,17 @@ const ArtistContent = () => {
 
                                         <span className="song-artist">Sin Álbum</span>
 
+                                        <span className="song-date">
+                                            {song.date || "Fecha desconocida"}
+                                        </span>
+
                                         <span className="song-duration">{formatDuration(song.duration)}</span>
 
                                         <div className="song-options">
                                             <OptionsPopup
-                                                trigger={<FaEllipsisH className="song-options-icon" />}
+                                                trigger={<FaEllipsisH className="song-options-icon"/>}
                                                 options={[
-                                                    { label: "Agregar a favoritos" },
+                                                    {label: "Agregar a favoritos"},
                                                     {
                                                         label: "Ver detalles",
                                                         onClick: (e) => {

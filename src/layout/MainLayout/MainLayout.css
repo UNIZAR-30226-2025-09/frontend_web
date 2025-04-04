@@ -162,39 +162,128 @@ html, body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    backdrop-filter: blur(6px);
 }
 
-.popup-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
+.popup-glass {
+    background: linear-gradient(135deg, #2196f3, #0d47a1); /* degradado más contrastado */
+    border-radius: 25px;
+    padding: 3.5rem 2rem;
     text-align: center;
+    color: white;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    width: 90%;
+    max-width: 460px;
+    animation: fadeIn 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.popup-content p {
-    font-size: 18px;
-    margin-bottom: 15px;
+.popup-logo {
+    width: 100px;         /* más grande */
+    height: 100px;        /* altura fija para proporción perfecta */
+    margin-bottom: 2rem;
+    user-select: none;
+    pointer-events: none;
+    border-radius: 50%;   /* opcional si quieres un efecto de "badge" redondo */
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2); /* un sutil glow */
+    object-fit: contain;
 }
 
-.popup-content button {
-    margin: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
+.popup-title {
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    white-space: normal;
+    text-align: center;
+    user-select: none;
+}
+
+.popup-title:hover {
+    color: white; /* evita que se vuelva azul al hacer hover */
+}
+
+.popup-subtitle {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    line-height: 1.5;
+}
+
+.popup-button {
+    width: 100%;
+    padding: 13px;
+    font-size: 1rem;
+    font-weight: 600;
     border: none;
-    border-radius: 4px;
-    background-color: #21a1f1;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.popup-button.primary {
+    background-color: white;
+    color: #1b82c3;
+}
+
+.popup-button.primary:hover {
+    background-color: #f1f5f9;
+    transform: scale(1.03);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.popup-button.secondary {
+    background-color: transparent;
+    border: 2px solid white;
     color: white;
 }
 
-.popup-content button:hover {
-    background-color: #1d90d0;
+.popup-button.secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.03);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
 }
+
+.popup-login-link {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: white;
+}
+
+.popup-link {
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    margin-left: 5px;
+    transition: color 0.2s;
+}
+
+.popup-link:hover {
+    color: #d1eaff;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+
 
