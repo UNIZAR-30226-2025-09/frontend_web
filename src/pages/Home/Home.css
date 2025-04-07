@@ -123,7 +123,64 @@
     cursor: pointer;
     flex-shrink: 0;
 }
+.carousel-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
 
+.carousel {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    gap: 10px;
+    padding: 20px;
+}
+
+.playlist-wrapper {
+    flex: 0 0 auto;
+    width: 200px;  /* Ajusta el tamaño según lo necesites */
+    scroll-snap-align: center;
+}
+
+/* Estilos para el carrusel - agrégalos a tu archivo Home.css */
+.carousel-container {
+    margin: 20px 0;
+    width: 100%;
+    position: relative;
+}
+
+.carousel-item {
+    padding: 0 10px;
+}
+
+.react-multi-carousel-list {
+    display: flex !important;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.custom-dot-list-style {
+    display: flex !important;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.react-multi-carousel-dot {
+    margin-right: 8px;
+}
+
+.react-multi-carousel-dot--active button {
+    background: #1db954 !important; /* Color verde de Spotify/Vibra */
+}
+
+.react-multi-carousel-dot button {
+    border-color: #1db954;
+    width: 10px;
+    height: 10px;
+}
 /* 🔹 Imagen de los Artistas (Circular) */
 .artist-image {
     width: 100%;
