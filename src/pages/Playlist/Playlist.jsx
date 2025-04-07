@@ -52,6 +52,36 @@ const PlaylistContent = () => {
         },
     ].filter(option => option != null);
 
+    // Función para actualizar el estilo favorito del usuario
+    const updateUserFavoriteStyle = async () => {
+        try {
+            const token = localStorage.getItem("token");  // Asumimos que el token JWT está en el localStorage
+
+            if (!token) {
+                console.error("Token no proporcionado");
+                return;
+            }
+
+            const response = await apiFetch("/user/updateStyle", {
+                method: "POST",  // Utilizamos POST para enviar los datos
+                headers: {
+                    "Authorization": `Bearer ${token}`,  // Enviamos el token en los encabezados
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log("Estilo favorito actualizado:", data.style_fav);
+            } else {
+                console.error("Error al actualizar el estilo favorito:", data.error);
+            }
+        } catch (error) {
+            console.error("Error en la actualización del estilo favorito:", error);
+        }
+    };
+
     const agregarAFavoritosSubmenu = [
         { label: "Crear playlist" },
         ...userPlaylists.map((pl) => ({
@@ -59,7 +89,6 @@ const PlaylistContent = () => {
             playlistId: pl.id,
         })),
     ];
-
 
     const redirectToSong = (songId) => {
         console.log("Redirigiendo a la canción...", songId);
@@ -164,6 +193,7 @@ const PlaylistContent = () => {
             console.log(" Respuesta del servidor:", responseData);
 
             setIsLiked(responseData.liked);
+            updateUserFavoriteStyle();
         } catch (error) {
             console.error("Error al dar/quitar like:", error);
         }
@@ -421,6 +451,9 @@ const PlaylistContent = () => {
                 user_id: user_Id,
                 playlist_id: playlistId // Pasar el ID de la playlist correcta
             });
+
+            // Actualizar estilo favorito después de dar like a la canción
+            updateUserFavoriteStyle();
 
             console.log("Respuesta del servidor:", response.data);
             window.location.reload();
