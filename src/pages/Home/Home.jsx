@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import "./Home.css";
+const logo = "/vibrablanco.png";
 import { apiFetch } from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 
@@ -125,7 +126,6 @@ const Home = () => {
             </div>
 
             {/* Sección de recomendaciones */}
-            {/* Sección de playlists recomendadas */}
             <h1 onClick={() => setActive("recommendations")}>Tus recomendaciones</h1>
             <div
                 className="scroll-container"
@@ -136,27 +136,43 @@ const Home = () => {
                 onMouseLeave={() => handleMouseUp(recommendationsRef)}
             >
                 <div className="home-recommendations">
-                    {recommendedPlaylists.length > 0 ? (
-                        recommendedPlaylists.map((playlist) => {
-                            const playlistImage = getImageUrl(playlist.front_page, "/default-playlist.jpg");
-                            return (
-                                <div key={playlist.id} className="playlist-wrapper" onClick={(e) => handleAccessWithoutLogin(e)}>
-                                    <div className="home-playlist-card" onClick={(e) => handlePlaylistClick(playlist.id, e)}>
-                                        <img
-                                            src={playlistImage}
-                                            alt={playlist.name}
-                                            className="playlist-image"
-                                            onError={(e) => e.target.src = "/default-playlist.jpg"} // Si la imagen falla, usa una por defecto
-                                        />
+                    {localStorage.getItem("token") ? (
+                        recommendedPlaylists.length > 0 ? (
+                            recommendedPlaylists.map((playlist) => {
+                                const playlistImage = getImageUrl(playlist.front_page, "/default-playlist.jpg");
+                                return (
+                                    <div key={playlist.id} className="playlist-wrapper" onClick={(e) => handleAccessWithoutLogin(e)}>
+                                        <div className="home-playlist-card" onClick={(e) => handlePlaylistClick(playlist.id, e)}>
+                                            <img
+                                                src={playlistImage}
+                                                alt={playlist.name}
+                                                className="playlist-image"
+                                                onError={(e) => e.target.src = "/default-playlist.jpg"}
+                                            />
+                                        </div>
+                                        <div onClick={(e) => handlePlaylistClick(playlist.id, e)}>
+                                            <p className="playlist-title">{playlist.name}</p>
+                                        </div>
                                     </div>
-                                    <div onClick={(e) => handlePlaylistClick(playlist.id, e)}>
-                                        <p className="playlist-title">{playlist.name} </p>
-                                    </div>
-                                </div>
-                            );
-                        })
+                                );
+                            })
+                        ) : (
+                            <p>Cargando recomendaciones...</p>
+                        )
                     ) : (
-                        <p>Cargando recomendaciones...</p>
+                        <div className="login-banner">
+                            <div className="login-banner-icon">
+                                    <img src={logo} alt="Vibra Logo" />
+                            </div>                            
+                            <div className="login-banner-text">
+                                <h3>¡Personaliza tu experiencia musical!</h3>
+                                <p>Inicia sesión para ver recomendaciones</p>
+                            </div>
+                            <div className="login-banner-buttons">
+                                <button className="login-button" onClick={() => navigate("/login")}>Iniciar sesión</button>
+                                <button className="register-button" onClick={() => navigate("/register")}>Registrarse</button>
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>
