@@ -7,6 +7,7 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";  // Iconos de cora
 import { IconContext } from "react-icons";
 import { getImageUrl } from "#utils/getImageUrl";
 import styles from "./PlayerStyles.module.css";
+import {apiFetch} from "#utils/apiFetch";
 
 
 function Player() {
@@ -32,6 +33,36 @@ function Player() {
             ? currentSong.url_mp3
             : `http://localhost:5001/${currentSong.url_mp3.replace(/^\/?/, "")}`
         : null;
+
+    // Función para actualizar el estilo favorito del usuario
+    const updateUserFavoriteStyle = async () => {
+        try {
+            const token = localStorage.getItem("token");  // Asumimos que el token JWT está en el localStorage
+
+            if (!token) {
+                console.error("Token no proporcionado");
+                return;
+            }
+
+            const response = await apiFetch("/user/updateStyle", {
+                method: "POST",  // Utilizamos POST para enviar los datos
+                headers: {
+                    "Authorization": `Bearer ${token}`,  // Enviamos el token en los encabezados
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log("Estilo favorito actualizado:", data.style_fav);
+            } else {
+                console.error("Error al actualizar el estilo favorito:", data.error);
+            }
+        } catch (error) {
+            console.error("Error en la actualización del estilo favorito:", error);
+        }
+    };
 
     useEffect(() => {
         console.log("🎵 Player detecta cambio de canción:", currentSong);
@@ -148,6 +179,7 @@ function Player() {
                 console.log("useEffect - Respuesta del endpoint checkIfLiked:", data);
 
                 setIsLiked(data.isLiked);  // Actualizamos el estado con la respuesta
+
             } catch (error) {
                 console.error("useEffect - Error al verificar los favoritos:", error);
             }
@@ -262,12 +294,13 @@ function Player() {
             const likeResponse = await responseLike.json();
             console.log("Respuesta del servidor:", likeResponse);
             setIsLiked(likeResponse.liked);
+
+            // Actualizar estilo favorito después de dar like a la canción
+            updateUserFavoriteStyle();
         } catch (error) {
             console.error("Error al agregar/eliminar el like", error);
         }
     };
-
-
 
     return (
         <div className={styles.playerContainer}>

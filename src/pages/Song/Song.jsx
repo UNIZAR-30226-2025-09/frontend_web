@@ -29,6 +29,36 @@ const SongContent = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const navigate = useNavigate();
 
+    // Función para actualizar el estilo favorito del usuario
+    const updateUserFavoriteStyle = async () => {
+        try {
+            const token = localStorage.getItem("token");  // Asumimos que el token JWT está en el localStorage
+
+            if (!token) {
+                console.error("Token no proporcionado");
+                return;
+            }
+
+            const response = await apiFetch("/user/updateStyle", {
+                method: "POST",  // Utilizamos POST para enviar los datos
+                headers: {
+                    "Authorization": `Bearer ${token}`,  // Enviamos el token en los encabezados
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log("Estilo favorito actualizado:", data.style_fav);
+            } else {
+                console.error("Error al actualizar el estilo favorito:", data.error);
+            }
+        } catch (error) {
+            console.error("Error en la actualización del estilo favorito:", error);
+        }
+    };
+
     useEffect(() => {
         console.log("Entrando a Song, activando sección...");
 
@@ -112,6 +142,9 @@ const SongContent = () => {
 
             console.log("Respuesta del servidor:", response.data);
             setIsLiked(response.data.liked);
+
+            // Actualizar estilo favorito después de dar like a la canción
+            updateUserFavoriteStyle();
         } catch (error) {
             console.error("Error al agregar/eliminar el like", error);
         }
@@ -195,6 +228,9 @@ const SongContent = () => {
                 user_id: user_Id,
                 playlist_id: playlistId // Pasar el ID de la playlist correcta
             });
+
+            // Actualizar estilo favorito después de dar like a la canción
+            updateUserFavoriteStyle();
 
             console.log("Respuesta del servidor:", response.data);
             window.location.reload();

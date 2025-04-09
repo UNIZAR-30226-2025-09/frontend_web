@@ -83,7 +83,7 @@ function Register2() {
         }
 
 
-// Validar año específico
+        // Validar año específico
         if (isNaN(anioNum)) {
             anioInput.setCustomValidity("Por favor, introduce un año.");
             anioInput.reportValidity();
@@ -100,7 +100,7 @@ function Register2() {
             return;
         }
 
-// Validar día
+        // Validar día
         if (isNaN(diaNum) || diaNum < 1 || diaNum > 31) {
             diaInput.setCustomValidity("Día inválido");
             diaInput.reportValidity();
@@ -127,7 +127,7 @@ function Register2() {
         userData.dob = { day, month, year };
         userData.gender = gender;
         localStorage.setItem("userData", JSON.stringify(userData));
-        navigate("/register3");
+        navigate("/register-style");
     };
 
 
@@ -145,7 +145,7 @@ function Register2() {
                     <div className="register2-progress" style={{width: "66%"}}></div>
                 </div>
 
-                <h2 style={{textAlign: "center", width: "100%", marginBottom: "10px", marginLeft: "50px"}}>Paso 2 de 3</h2>
+                <h2 style={{textAlign: "center", width: "100%", marginBottom: "10px", marginLeft: "50px"}}>Paso 2 de 4</h2>
                 <h1 className="register2-main-title">Háblanos de ti</h1>
                 <hr className="register2-line"/>
 

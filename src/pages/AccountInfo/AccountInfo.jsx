@@ -1,14 +1,9 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { apiFetch } from "#utils/apiFetch";
 import "./AccountInfo.css";
-import {useNavigate} from "react-router-dom";
 import {getImageUrl} from "#utils/getImageUrl";
 import {apiFetch} from "#utils/apiFetch";
 import {usePlayer} from "../../components/Player/PlayerContext.jsx";
-
-
 
 function AccountInfo() {
     const userId = JSON.parse(localStorage.getItem('user')).id;
@@ -36,7 +31,6 @@ function AccountInfo() {
     }
 
     const location = useLocation();
-    const navigate = useNavigate(); // 👈 para limpiar la URL
     const [mensaje, setMensaje] = useState("");
     const [user, setUser] = useState(null);
 

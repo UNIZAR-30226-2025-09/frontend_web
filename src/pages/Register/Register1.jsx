@@ -68,7 +68,7 @@ function Register1() {
                     <div style={{width: "33%", height: "100%", backgroundColor: "#79e2ff", borderRadius: "2px"}}></div>
                 </div>
 
-                <h2 style={{textAlign: "center", width: "100%", marginBottom: "10px", marginLeft: "50px"}}>Paso 1 de 3</h2>
+                <h2 style={{textAlign: "center", width: "100%", marginBottom: "10px", marginLeft: "50px"}}>Paso 1 de 4</h2>
 
 
                 <h1 className="login-txt" style={{fontSize: "22px"}}>Crea una contraseña</h1>

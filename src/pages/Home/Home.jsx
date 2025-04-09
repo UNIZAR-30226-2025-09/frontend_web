@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import "./Home.css";
+const logo = "/vibrablanco.png";
 import { apiFetch } from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 
@@ -10,6 +11,7 @@ const Home = () => {
 
     const [vibraPlaylists, setVibraPlaylists] = useState([]);
     const [popularArtists, setPopularArtists] = useState([]);
+    const [recommendedPlaylists, setRecommendedPlaylists] = useState([]);
 
     useEffect(() => {
         const fetchVibraPlaylists = async () => {
@@ -36,6 +38,34 @@ const Home = () => {
 
         fetchArtists();
     }, []);
+
+    useEffect(() => {
+        const fetchRecommendedPlaylists = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    console.error("Token no encontrado");
+                    return;
+                }
+
+                // Llamamos a la nueva ruta que devuelve las playlists recomendadas
+                const data = await apiFetch("/user/recommended-playlists", {
+                    method: "GET",  // Hacemos un GET
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                setRecommendedPlaylists(data.recommendedPlaylists);  // Actualizamos las playlists recomendadas
+            } catch (error) {
+                console.error("Error al obtener las playlists recomendadas:", error);
+            }
+        };
+
+        fetchRecommendedPlaylists();
+    }, []);  // Llamar solo una vez cuando el componente se monta
+
 
     // Función para redirigir a la página de detalles de la playlist
     const handlePlaylistClick = (playlistId, e) => {
@@ -106,12 +136,44 @@ const Home = () => {
                 onMouseLeave={() => handleMouseUp(recommendationsRef)}
             >
                 <div className="home-recommendations">
-                    <div className="home-recommendation-card" onClick={(e) => handleAccessWithoutLogin(e)}>Canción 1</div>
-                    <div className="home-recommendation-card" onClick={(e) => handleAccessWithoutLogin(e)}>Canción 2</div>
-                    <div className="home-recommendation-card" onClick={(e) => handleAccessWithoutLogin(e)}>Canción 3</div>
-                    <div className="home-recommendation-card" onClick={(e) => handleAccessWithoutLogin(e)}>Canción 4</div>
-                    <div className="home-recommendation-card" onClick={(e) => handleAccessWithoutLogin(e)}>Canción 5</div>
-                    <div className="home-recommendation-card" onClick={(e) => handleAccessWithoutLogin(e)}>Canción 6</div>
+                    {localStorage.getItem("token") ? (
+                        recommendedPlaylists.length > 0 ? (
+                            recommendedPlaylists.map((playlist) => {
+                                const playlistImage = getImageUrl(playlist.front_page, "/default-playlist.jpg");
+                                return (
+                                    <div key={playlist.id} className="playlist-wrapper" onClick={(e) => handleAccessWithoutLogin(e)}>
+                                        <div className="home-playlist-card" onClick={(e) => handlePlaylistClick(playlist.id, e)}>
+                                            <img
+                                                src={playlistImage}
+                                                alt={playlist.name}
+                                                className="playlist-image"
+                                                onError={(e) => e.target.src = "/default-playlist.jpg"}
+                                            />
+                                        </div>
+                                        <div onClick={(e) => handlePlaylistClick(playlist.id, e)}>
+                                            <p className="playlist-title">{playlist.name}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <p>Cargando recomendaciones...</p>
+                        )
+                    ) : (
+                        <div className="login-banner">
+                            <div className="login-banner-icon">
+                                    <img src={logo} alt="Vibra Logo" />
+                            </div>                            
+                            <div className="login-banner-text">
+                                <h3>¡Personaliza tu experiencia musical!</h3>
+                                <p>Inicia sesión para ver recomendaciones</p>
+                            </div>
+                            <div className="login-banner-buttons">
+                                <button className="login-button" onClick={() => navigate("/login")}>Iniciar sesión</button>
+                                <button className="register-button" onClick={() => navigate("/register")}>Registrarse</button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
