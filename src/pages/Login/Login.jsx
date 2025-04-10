@@ -116,6 +116,10 @@ function Login() {
                     </button>
                 </form>
 
+                <p className="forgot-password-link" onClick={() => navigate("/forgot-password")}>
+                    ¿Has olvidado tu contraseña?
+                </p>
+
                 <div className="divider">o</div>
 
                 <p className="footer-text">

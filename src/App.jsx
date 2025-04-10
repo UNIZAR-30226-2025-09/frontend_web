@@ -23,6 +23,8 @@ import EditAccountInfo from "./pages/EditAccountInfo/EditAccountInfo";
 import Plans from "./pages/Plans/Plans";
 import Checkout from "./pages/Checkout/Checkout";
 import Song from "./pages/Song/Song.jsx";
+import ForgotPassword from "./pages/Password/ForgotPassword.jsx";
+import ResetPassword from "./pages/Password/ResetPassword.jsx";
 
 function App() {
 
@@ -40,6 +42,8 @@ function App() {
                     <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
                     <Route path="/terminos-condiciones" element={<TerminosYCondiciones />} />
                     <Route path="/quienes-somos" element={<QuienesSomos />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
 
                     <Route path="/plans" element={<Plans />} />
                     <Route path="/checkout" element={<Checkout />} />
