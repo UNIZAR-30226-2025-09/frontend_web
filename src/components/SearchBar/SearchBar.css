@@ -1,157 +1,59 @@
-/* Contenedor principal */
-.search-bar-container {
+/* 1) Contenedor que centra la búsqueda */
+.search-container {
     display: flex;
-    align-items: center;
     justify-content: center;
-    margin-top: 10px;
-    position: relative;
-    top: -10px;
+    align-items: center;
+    margin: 0; /* Asegurar que no haya márgenes extra */
 }
 
-/* Caja de búsqueda */
+/* 2) Caja de búsqueda (tus estilos existentes) */
 .search-box {
     display: flex;
     align-items: center;
-    background-color: #3a3a3a !important;
+    background-color: #3a3a3a; /* color de fondo */
     border-radius: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    width: 320px;
-    height: 32px;
+    width: 320px;          /* Ancho fijo (puedes usar % si quieres) */
+    height: 32px;          /* Alto total */
     padding: 3px;
-    border: 3px solid #1eaddc;
+    border: 3px solid #1eaddc; /* color base */
+    transition: box-shadow 0.2s;
+    position: relative;    /* Para ubicar íconos en la misma línea */
 }
 
-/* Formulario */
-.search-form {
-    display: flex;
-    align-items: center;
-    width: 100%;
+/* Al hacer clic o foco dentro, resaltamos borde y sombra */
+.search-box:focus-within {
+    border: 3px solid #1eaddc;
+    box-shadow: 0 0 0 3px rgba(30, 173, 220, 0.3);
 }
 
 /* Input */
 .search-input {
-    flex-grow: 1;
-    font-size: 15px;
-    font-weight: bold;
+    flex: 1;                    /* Ocupar todo el espacio sobrante */
+    background-color: transparent;
     border: none;
     outline: none;
-    width: 100%;
-    background-color: transparent !important;
     color: #f0f0f0;
     text-align: center;
     height: 100%;
+    font-size: 15px;
+    font-weight: bold;
     line-height: 32px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.search-input:focus {
-    outline: none !important;
-    box-shadow: none !important;
-    border: none !important;
-}
-
-/* Botón de búsqueda */
-.search-button {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #1eaddc;
-    border: none;
-    border-radius: 50%;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-    margin-left: 5px;
-}
-
-.search-button:hover {
-    background-color: #007bb5;
-}
-
-/* Contenedor de los resultados de búsqueda */
-.search-results {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 50px;
-    width: 370px;
-    background-color: #333;
-    border-radius: 10px;
-    max-height: 300px;
-    overflow-y: auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-    z-index: 1000;
-    padding: 10px;
-}
-
-/* Título de cada sección */
-.result-section {
-    margin-bottom: 10px;
-}
-
-/* Cada ítem en los resultados */
-.result-item, .playlist-item {
-    display: flex;
-    align-items: center;
-    padding: 8px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-    font-size: 16px;
-}
-
-/* Efecto hover para cada ítem */
-.result-item:hover, .playlist-item:hover {
-    background-color: #444;
-}
-
-/* Imagen de la canción, la portada de la playlist y los artistas */
-.search-results .result-image, .playlist-images, .artist-images {
-    width: 45px; /* Tamaño ajustado a 45px */
-    height: 45px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-/* Fuente común para títulos de canciones, playlists y artistas */
-.search-results .result-item p,
-.search-results .playlist-item .playlist-info p,
-.search-results .artist-item .result-text p {
-    font-family: 'Roboto', sans-serif; /* Fuente común */
-    font-size: 16px; /* Asegúrate de que el tamaño de fuente sea el mismo */
-    color: white; /* Mantén el color del texto */
-    font-weight: bold; /* Mantén el estilo en negrita */
-    margin-left: 10px; /* Separación entre el nombre y el título */
-    word-wrap: break-word; /* Asegura que el texto largo se baje a la siguiente línea si es necesario */
-    overflow-wrap: break-word; /* Opcional, también asegura que el texto largo se ajuste correctamente */
-}
-
-
-/* Lista de resultados y la lista de playlists */
-.result-list, .playlist-list {
-    list-style-type: none;
-    padding: 0;
-}
-
-/* Títulos de cada sección (canciones, artistas, playlists) */
-.section-title {
+/* Icono de la lupa */
+.search-icon {
+    margin-left: 8px;
+    margin-right: 5px;
     color: #fff;
     font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 10px; /* Más separación para los títulos */
 }
 
-/* Estilo para los artistas y canciones que sean más largos que el contenedor */
-.search-results .playlist-info p,
-.search-results .result-text p,
-.search-results .result-item p {
-    text-overflow: ellipsis; /* Limitar el texto si es más largo de lo necesario */
-    overflow: hidden;
-    white-space: nowrap;
+/* Icono de la “X” */
+.clear-icon {
+    margin-left: 5px;
+    margin-right: 8px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
 }

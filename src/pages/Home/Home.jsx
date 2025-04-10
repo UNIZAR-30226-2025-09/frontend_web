@@ -1,9 +1,20 @@
 import { useState, useEffect } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
 import "./Home.css";
-const logo = "/vibrablanco.png";
 import { apiFetch } from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
+
+function CustomDot({ onClick, active }) {
+    return (
+        <button
+            className={`custom-dot ${active ? "active-dot" : ""}`}
+            onClick={onClick}
+            aria-label="Punto de navegación de carrusel"
+        />
+    );
+}
 
 const Home = () => {
     const navigate = useNavigate();
@@ -12,14 +23,39 @@ const Home = () => {
     const [vibraPlaylists, setVibraPlaylists] = useState([]);
     const [popularArtists, setPopularArtists] = useState([]);
     const [recommendedPlaylists, setRecommendedPlaylists] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // Configuración responsive para el carrusel
+    const responsive = {
+        desktop: {
+            breakpoint: { max: 3000, min: 1024 },
+            items: 5,
+            slidesToSlide: 1 // Reducido para mejor usabilidad
+        },
+        tablet: {
+            breakpoint: { max: 1024, min: 768 },
+            items: 3,
+            slidesToSlide: 1
+        },
+        mobile: {
+            breakpoint: { max: 767, min: 464 },
+            items: 2,
+            slidesToSlide: 1
+        }
+    };
 
     useEffect(() => {
         const fetchVibraPlaylists = async () => {
             try {
                 const data = await apiFetch("/playlists/vibra");
-                setVibraPlaylists(data);
+                console.log("Playlists Vibra:", data); // Debug
+                if (data && Array.isArray(data) && data.length > 0) {
+                    setVibraPlaylists(data);
+                }
             } catch (error) {
                 console.error("Error al obtener las playlists de Vibra:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -30,7 +66,9 @@ const Home = () => {
         const fetchArtists = async () => {
             try {
                 const data = await apiFetch("/artist/artists");
-                setPopularArtists(data);
+                if (data && Array.isArray(data)) {
+                    setPopularArtists(data);
+                }
             } catch (error) {
                 console.error("Error al obtener los artistas:", error);
             }
@@ -87,43 +125,57 @@ const Home = () => {
         }
     };
 
+
+
     return (
         <div className="home-content">
             {/* Sección de playlists creadas por Vibra */}
             <h1 onClick={() => setActive("playlists")}>Descubre lo mejor de Vibra</h1>
-            <div
-                className="scroll-container"
-                ref={playlistsRef}
-                onMouseDown={(e) => handleMouseDown(e, playlistsRef)}
-                onMouseMove={(e) => handleMouseMove(e, playlistsRef)}
-                onMouseUp={() => handleMouseUp(playlistsRef)}
-                onMouseLeave={() => handleMouseUp(playlistsRef)}
-            >
-                <div className="home-playlists">
-                    {vibraPlaylists.length > 0 ? (
-                        vibraPlaylists.map((playlist) => {
+
+            {loading ? (
+                <p>Cargando playlists...</p>
+            ) : vibraPlaylists.length > 0 ? (
+                <div className="carousel-container">
+                    <Carousel
+                        responsive={responsive}
+                        autoPlay={false}
+                        swipeable={true}
+                        draggable={true}
+                        showDots={true}
+                        infinite={true}
+                        partialVisible={false}
+                        customDot={<CustomDot />}
+                        beforeChange={(previousSlide, nextSlide) => setCurrentSlide(nextSlide)}
+                            containerClass="carousel-container"
+                        itemClass="carousel-item"
+                    >
+                        {vibraPlaylists.map((playlist) => {
                             const playlistImage = getImageUrl(playlist.front_page, "/default-playlist.jpg");
                             return (
-                                <div key={playlist.id} className="playlist-wrapper" onClick={(e) => handleAccessWithoutLogin(e)}>
-                                    <div className="home-playlist-card" onClick={(e) => handlePlaylistClick(playlist.id, e)}>
+                                <div key={playlist.id} className="playlist-wrapper">
+                                    <div
+                                        className="home-playlist-card"
+                                        onClick={(e) => handlePlaylistClick(playlist.id, e)}
+                                    >
                                         <img
                                             src={playlistImage}
                                             alt={playlist.name}
                                             className="playlist-image"
-                                            onError={(e) => e.target.src = "/default-playlist.jpg"} // Si la imagen falla, usa una por defecto
+                                            onError={(e) => {e.target.src = "/default-playlist.jpg"}}
                                         />
                                     </div>
                                     <div onClick={(e) => handlePlaylistClick(playlist.id, e)}>
-                                        <p className="playlist-title">{playlist.name} </p>
+                                        <p className="playlist-title">{playlist.name}</p>
                                     </div>
                                 </div>
                             );
-                        })
-                    ) : (
-                        <p>Cargando playlists...</p>
-                    )}
+                        })}
+                    </Carousel>
                 </div>
-            </div>
+            ) : (
+                <p>No hay playlists disponibles</p>
+            )}
+
 
             {/* Sección de recomendaciones */}
             <h1 onClick={() => setActive("recommendations")}>Tus recomendaciones</h1>
@@ -163,7 +215,7 @@ const Home = () => {
                         <div className="login-banner">
                             <div className="login-banner-icon">
                                     <img src={logo} alt="Vibra Logo" />
-                            </div>                            
+                            </div>
                             <div className="login-banner-text">
                                 <h3>¡Personaliza tu experiencia musical!</h3>
                                 <p>Inicia sesión para ver recomendaciones</p>
@@ -197,6 +249,7 @@ const Home = () => {
                 </div>
             </div>
 
+
             {/* Nueva Sección de Artistas */}
             <h1 onClick={() => setActive("artists")}>Artistas Populares</h1>
             <div
@@ -214,7 +267,7 @@ const Home = () => {
 
                             return (
                                 <div key={artist.id} className="artist-wrapper" onClick={(e) => handleAccessWithoutLogin(e)}>
-                                    <div className="home-artist-card" onClick={(e) => handleArtistClick(artist.id, e)}>
+                                    <div className="home-artist-card">
                                         <img
                                             src={artistImage}
                                             alt={artist.name}
@@ -222,9 +275,7 @@ const Home = () => {
                                             onError={(e) => e.target.src = "/default-artist.jpg"}
                                         />
                                     </div>
-                                    <div onClick={(e) => handleArtistClick(artist.id, e)}>
-                                        <p className="artist-title">{artist.name}</p>
-                                    </div>
+                                    <p className="artist-title">{artist.name}</p>
                                 </div>
                             );
                         })
