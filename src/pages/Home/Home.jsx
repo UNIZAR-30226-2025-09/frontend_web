@@ -6,6 +6,16 @@ import "./Home.css";
 import { apiFetch } from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 
+function CustomDot({ onClick, active }) {
+    return (
+        <button
+            className={`custom-dot ${active ? "active-dot" : ""}`}
+            onClick={onClick}
+            aria-label="Punto de navegación de carrusel"
+        />
+    );
+}
+
 const Home = () => {
     const navigate = useNavigate();
     const { playlistsRef, recommendationsRef, albumsRef, artistsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp, handleAccessWithoutLogin } = useOutletContext(); // Obtener la función del Outlet
@@ -257,7 +267,7 @@ const Home = () => {
 
                             return (
                                 <div key={artist.id} className="artist-wrapper" onClick={(e) => handleAccessWithoutLogin(e)}>
-                                    <div className="home-artist-card" onClick={(e) => handleArtistClick(artist.id, e)}>
+                                    <div className="home-artist-card">
                                         <img
                                             src={artistImage}
                                             alt={artist.name}
@@ -265,9 +275,7 @@ const Home = () => {
                                             onError={(e) => e.target.src = "/default-artist.jpg"}
                                         />
                                     </div>
-                                    <div onClick={(e) => handleArtistClick(artist.id, e)}>
-                                        <p className="artist-title">{artist.name}</p>
-                                    </div>
+                                    <p className="artist-title">{artist.name}</p>
                                 </div>
                             );
                         })
