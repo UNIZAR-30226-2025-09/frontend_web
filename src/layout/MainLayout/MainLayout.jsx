@@ -12,7 +12,6 @@ import { apiFetch } from "#utils/apiFetch";
 
 const MainLayout = () => {
     const navigate = useNavigate();
-
     const [user, setUser] = useState(null);
     const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs, setSongs, isPlaying,
             setIsPlaying, playlistActive, setPlaylistActive, songActive, setSongActive } = usePlayer();
@@ -85,23 +84,6 @@ const MainLayout = () => {
 
     //  Cambia la sección activa cuando el mouse entra
     const setActive = (section) => setActiveSection(section);
-
-    //  Desplazamiento con botones
-    const scrollActiveSection = (direction) => {
-        let ref;
-        if (activeSection === "playlists") ref = playlistsRef;
-        else if (activeSection === "recommendations") ref = recommendationsRef;
-        else if (activeSection === "albums") ref = albumsRef;
-        else ref = artistsRef;
-
-        if (ref?.current) {
-            const scrollAmount = 300;
-            ref.current.scrollBy({
-                left: direction === "left" ? -scrollAmount : scrollAmount,
-                behavior: "smooth",
-            });
-        }
-    };
 
     //  Eventos de arrastre horizontal
     const handleMouseDown = (e, ref) => {
@@ -227,12 +209,13 @@ const MainLayout = () => {
                     setCurrentSong: setCurrentSongWrapper,
                     setCurrentIndex: setCurrentIndexWrapper,
                     setSongs: setCurrentSongsWrapper,
-                    handleAccessWithoutLogin,  // Pasar la función al Outlet
+                    handleAccessWithoutLogin,
                     setIsPlaying,
                     setPlaylistActive,
                     playlistActive,
                     songActive,
                     setSongActive,
+                    setUser
                 }}/>
 
                 <Footer />
@@ -241,10 +224,27 @@ const MainLayout = () => {
             {/* Popup de inicio de sesión */}
             {showLoginPopup && (
                 <div className="login-popup">
-                    <div className="popup-content">
-                        <p>Para acceder a esta sección, por favor inicie sesión.</p>
-                        <button onClick={() => navigate("/login")}>Ir a Iniciar Sesión</button>
-                        <button onClick={closeLoginPopup}>Cerrar</button>
+                    <div className="popup-glass">
+                        <img src="/vibrablanco.png" alt="Vibra logo" className="popup-logo" />
+                        <h2 className="popup-title">Empieza a disfrutar de todo lo que Vibra tiene para ti</h2>
+                        <p className="popup-subtitle">
+                            Crea una cuenta gratuita o inicia sesión para acceder a todas las funciones.
+                        </p>
+
+                        <button className="popup-button primary" onClick={() => navigate("/register")}>
+                            Registrarse gratis
+                        </button>
+
+                        <button className="popup-button secondary" onClick={closeLoginPopup}>
+                            Cerrar
+                        </button>
+
+                        <div className="popup-login-link">
+                            ¿Ya tienes una cuenta?{" "}
+                            <span onClick={() => navigate("/login")} className="popup-link">
+                    Iniciar sesión
+                </span>
+                        </div>
                     </div>
                 </div>
             )}

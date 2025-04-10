@@ -32,8 +32,10 @@ const PlaylistContent = () => {
     const [userPlaylists, setUserPlaylists] = useState([]);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedSong, setSelectedSong] = useState(null);
+    const [user, setUser] = useState(null);
+    const [adds, setAdds] = useState([]);
     const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
-    const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying,
+    const { currentSong, setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying,
             isPlaying, setPlaylistActive, playlistActive, setSongActive } = useOutletContext();
     const navigate = useNavigate();
 
@@ -50,6 +52,36 @@ const PlaylistContent = () => {
         },
     ].filter(option => option != null);
 
+    // Función para actualizar el estilo favorito del usuario
+    const updateUserFavoriteStyle = async () => {
+        try {
+            const token = localStorage.getItem("token");  // Asumimos que el token JWT está en el localStorage
+
+            if (!token) {
+                console.error("Token no proporcionado");
+                return;
+            }
+
+            const response = await apiFetch("/user/updateStyle", {
+                method: "POST",  // Utilizamos POST para enviar los datos
+                headers: {
+                    "Authorization": `Bearer ${token}`,  // Enviamos el token en los encabezados
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log("Estilo favorito actualizado:", data.style_fav);
+            } else {
+                console.error("Error al actualizar el estilo favorito:", data.error);
+            }
+        } catch (error) {
+            console.error("Error en la actualización del estilo favorito:", error);
+        }
+    };
+
     const agregarAFavoritosSubmenu = [
         { label: "Crear playlist" },
         ...userPlaylists.map((pl) => ({
@@ -57,7 +89,6 @@ const PlaylistContent = () => {
             playlistId: pl.id,
         })),
     ];
-
 
     const redirectToSong = (songId) => {
         console.log("Redirigiendo a la canción...", songId);
@@ -71,6 +102,12 @@ const PlaylistContent = () => {
                     method: "GET",
                 });
                 setUserPlaylists(data);
+
+                const userData = await apiFetch(`/user/${user_Id}`, {
+                   method: "GET",
+                });
+
+                setUser(userData);
             } catch (error) {
                 console.error("Error al obtener las playlists del usuario:", error);
             }
@@ -125,6 +162,14 @@ const PlaylistContent = () => {
                     method: "GET"
                 });
 
+                const adds = await apiFetch(`/songs/adds`, {
+                    method: "GET"
+                });
+
+                console.log("Anuncios ", adds);
+
+                setAdds(adds);
+
                 setIsLiked(likeData.isLiked);
             } catch (error) {
                 console.error("Error al obtener la playlist:", error);
@@ -148,6 +193,7 @@ const PlaylistContent = () => {
             console.log(" Respuesta del servidor:", responseData);
 
             setIsLiked(responseData.liked);
+            updateUserFavoriteStyle();
         } catch (error) {
             console.error("Error al dar/quitar like:", error);
         }
@@ -158,32 +204,101 @@ const PlaylistContent = () => {
     }
 
     const handlePlaySong = (song, index, songs) => {
+        let result = ([]);
         console.log(`Reproduciendo: ${song.name}`);
         console.log("Guardando canción en el estado:", song);
-        setCurrentSong( song );
-        setCurrentIndex( index );
-        setSongs(songs);
+
+        if(isShuffling){setIsShuffling(prev => !prev);}
+
+        if(!user.is_premium){
+            console.log("USUARIO es premium metiendo anuncios", user.is_premium);
+            result = addsSong(songs);
+
+            setCurrentSong(song);
+            setCurrentIndex(0);
+            setSongs(result);
+        }
+        else{
+            setCurrentSong(song);
+            setCurrentIndex(0);
+            setSongs(songs);
+        }
+
+        setPlaylistActive(playlistId);
+        setSongActive(0);
 
         console.log("Cambiando isplaying en playlist a traves de cancion");
         setIsPlaying(true);
     };
 
+    function addsSong(songs) {
+        let result = [];
+        let songIndex = 0;
+        let adIndex = 0;
+        const songsLength = songs.length;
+        const adsLength = adds.length;
+
+        while (songIndex < songsLength) {
+            // Añadir hasta 5 canciones al resultado
+            for (let i = 0; i < 5 && songIndex < songsLength; i++) {
+                result.push(songs[songIndex]);
+                songIndex++;
+            }
+
+            // Añadir un anuncio (si hay anuncios disponibles)
+            if (adIndex < adsLength) {
+                result.push(adds[adIndex]); // Añadir anuncio con una propiedad 'isAd'
+                if(adsLength > 1){
+                    adIndex++;
+                }
+            }
+            else{
+                result.push(adds[adIndex]);
+            }
+        }
+
+        console.log("RESULTADOS CANCIONES juntadas",result);
+        return result;
+    }
+
     const handlePlaySongs = (songs, isPlaying) => {
         console.log("Reproduciendo canciones en modo aleatorio...");
-
-        if(!isPlaying) {
+        let result = ([]);
+        if(!isPlaying){
             if(isShuffling){
                 // Shuffle array of songs
                 const shuffledSongs = shuffleArray(songs);
                 // Reproducir la primera canción del array mezclado
-                setCurrentSong(shuffledSongs[0]);
-                setCurrentIndex(0);
-                setSongs(shuffledSongs);
+                console.log("PREMIUM USER: ",user.is_premium);
+
+                if(!user.is_premium){
+                    console.log("USUARIO es premium metiendo anuncios", user.is_premium);
+                    result = addsSong(shuffledSongs);
+
+                    setCurrentSong(result[0]);
+                    setCurrentIndex(0);
+                    setSongs(result);
+                }
+                else{
+                    setCurrentSong(shuffledSongs[0]);
+                    setCurrentIndex(0);
+                    setSongs(shuffledSongs);
+                }
             }
             else{
-                setCurrentSong(songs[0]);
-                setCurrentIndex(0);
-                setSongs(songs);
+                console.log("PREMIUM USER: is nt shuffling",user.is_premium);
+                if(!user.is_premium){
+                    result = addsSong(songs);
+
+                    setCurrentSong(result[0]);
+                    setCurrentIndex(0);
+                    setSongs(result);
+                }
+                else{
+                    setCurrentSong(songs[0]);
+                    setCurrentIndex(0);
+                    setSongs(songs);
+                }
             }
 
             setPlaylistActive(playlistId);
@@ -337,6 +452,9 @@ const PlaylistContent = () => {
                 playlist_id: playlistId // Pasar el ID de la playlist correcta
             });
 
+            // Actualizar estilo favorito después de dar like a la canción
+            updateUserFavoriteStyle();
+
             console.log("Respuesta del servidor:", response.data);
             window.location.reload();
         }
@@ -433,9 +551,9 @@ const PlaylistContent = () => {
                     <div className="rep-cont">
                         <button
                             className="play-btn"
-                            onClick={() => handlePlaySongs(playlist.songs, isPlaying)}
+                            onClick={() => currentSong?.type !== "anuncio" && handlePlaySongs(playlist.songs, isPlaying)}
                         >
-                            {playlistActive === playlistId && isPlaying ? <FaPause/> : <FaPlay/>}
+                            {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ? <FaPause/> : <FaPlay/>}
                         </button>
 
                         <button className="shuffle-btn" onClick={toggleShuffle}>

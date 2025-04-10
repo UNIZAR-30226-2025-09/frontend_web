@@ -9,6 +9,8 @@ const Register3 = () => {
     const navigate = useNavigate();
 
     const userData = JSON.parse(localStorage.getItem("userData"));
+    console.log("Datos del usuario en Register3:", userData); // Verifica qué datos hay
+
 
     const handleRegister = async () => {
         if (!checked1 || !checked2) {
@@ -26,7 +28,7 @@ const Register3 = () => {
                     name: userData.name,
                     dob: userData.dob,
                     gender: userData.gender,
-                    style_fav: userData.style_fav || "ninguno",
+                    style_fav: userData.style_fav,
                 },
             });
 
@@ -47,8 +49,8 @@ const Register3 = () => {
                 <div className="progress-bar">
                     <div className="progress" style={{width: "100%"}}></div>
                 </div>
-                <h2 style={{textAlign: "center", width: "100%", marginBottom: "10px", marginLeft: "50px"}}>Paso 3 de
-                    3</h2>
+                <h2 style={{textAlign: "center", width: "100%", marginBottom: "10px", marginLeft: "50px"}}>Paso 4 de
+                    4</h2>
                 <h1 className="title">Términos y Condiciones</h1>
                 <div className="terms-container">
                     <div className="checkbox-container">
