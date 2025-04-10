@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./AccountInfo.css";
 import {useNavigate} from "react-router-dom";
@@ -32,7 +32,6 @@ function AccountInfo() {
     }
 
     const location = useLocation();
-    const navigate = useNavigate(); // 👈 para limpiar la URL
     const [mensaje, setMensaje] = useState("");
     const [user, setUser] = useState(null);
 
