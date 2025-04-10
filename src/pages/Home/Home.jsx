@@ -5,11 +5,21 @@ import "react-multi-carousel/lib/styles.css";
 import "./Home.css";
 import { apiFetch } from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
+import {populatePreviousSlides} from "react-multi-carousel/lib/utils/index.js";
 
+const CustomDot = ({ onClick, active, index }) => {
+    return (
+        <button
+            className={`custom-dot ${active ? "active" : ""}`}
+            onClick={onClick}
+            aria-label={`Ir a diapositiva ${index + 1}`}
+        />
+    );
+};
 const Home = () => {
     const navigate = useNavigate();
     const { recommendationsRef, albumsRef, artistsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp, handleAccessWithoutLogin } = useOutletContext();
-
+    const [currentSlide, setCurrentSlide] = useState(0);
     const [vibraPlaylists, setVibraPlaylists] = useState([]);
     const [popularArtists, setPopularArtists] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -18,7 +28,7 @@ const Home = () => {
     const responsive = {
         desktop: {
             breakpoint: { max: 3000, min: 1024 },
-            items: 4,
+            items: 5,
             slidesToSlide: 1 // Reducido para mejor usabilidad
         },
         tablet: {
@@ -77,6 +87,8 @@ const Home = () => {
         }
     };
 
+
+
     return (
         <div className="home-content">
             {/* Sección de playlists creadas por Vibra */}
@@ -94,8 +106,9 @@ const Home = () => {
                         showDots={true}
                         infinite={true}
                         partialVisible={false}
-                        dotListClass="custom-dot-list-style"
-                        containerClass="carousel-container"
+                        customDot={<CustomDot />}
+                        beforeChange={(previousSlide, nextSlide) => setCurrentSlide(nextSlide)}
+                            containerClass="carousel-container"
                         itemClass="carousel-item"
                     >
                         {vibraPlaylists.map((playlist) => {

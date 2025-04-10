@@ -25,22 +25,6 @@
 }
 
 /* 🔹 Contenedor con scroll horizontal */
-.scroll-container {
-    overflow-x: auto;
-    white-space: nowrap;
-    cursor: grab;
-    padding: 5px 0;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-/* 🔹 Oculta la barra de desplazamiento en Chrome y Safari */
-.scroll-container::-webkit-scrollbar {
-    display: none;
-}
 
 /* 🔹 Contenedor de listas de playlists, álbumes, etc */
 .home-playlists, .home-recommendations, .home-albums, .home-artists {
@@ -123,19 +107,13 @@
     cursor: pointer;
     flex-shrink: 0;
 }
+/* Contenedor principal del carrusel */
 .carousel-container {
-    display: flex;
-    align-items: center;
-    position: relative;
+    position: relative; /* Asegúrate de que este contenedor sea el referente para posicionar los puntos */
+    width: 100%;
+    overflow: hidden;
 }
 
-.carousel {
-    display: flex;
-    overflow-x: scroll;
-    scroll-snap-type: x mandatory;
-    gap: 10px;
-    padding: 20px;
-}
 
 .playlist-wrapper {
     flex: 0 0 auto;
@@ -143,43 +121,94 @@
     scroll-snap-align: center;
 }
 
-/* Estilos para el carrusel - agrégalos a tu archivo Home.css */
+/* 🔹 Contenedor principal del carrusel */
 .carousel-container {
+    display: flex;
+    align-items: center;
+    position: relative; /* Necesario para posicionar elementos absolutos como dots */
     margin: 20px 0;
     width: 100%;
-    position: relative;
+    overflow: hidden; /* Evita que el contenido desborde */
+    padding-bottom: 30px;
 }
 
-.carousel-item {
-    padding: 0 10px;
+/* 🔹 Carrusel de elementos */
+.carousel {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    gap: 10px;
+    padding: 20px;
+    scroll-behavior: smooth; /* Para un desplazamiento suave */
 }
 
-.react-multi-carousel-list {
-    display: flex !important;
-    align-items: center;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
+/* 🔹 Cada elemento del carrusel */
+.playlist-wrapper {
+    flex: 0 0 auto;
+    width: 200px; /* Ajusta el ancho de cada elemento */
+    scroll-snap-align: center; /* Alinea cada elemento en el centro al detenerse */
 }
-
-.custom-dot-list-style {
-    display: flex !important;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.react-multi-carousel-dot {
-    margin-right: 8px;
-}
-
-.react-multi-carousel-dot--active button {
-    background: #1db954 !important; /* Color verde de Spotify/Vibra */
-}
-
-.react-multi-carousel-dot button {
-    border-color: #1db954;
+/* Estilos para los dots personalizados */
+.custom-dot {
     width: 10px;
     height: 10px;
+    border-radius: 50%;
+    background-color: #a7a7a7;
+    border: none;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+    display: inline-block;
+}
+
+.custom-dot.active {
+    background-color: #1db954;
+    transform: scale(1.2);
+}
+
+.custom-dot:hover {
+    background-color: #1db954;
+    opacity: 0.7;
+}
+
+/* 🔹 Lista de dots para navegación */
+.react-multi-carousel-dot-list {
+    position: absolute;
+    bottom: 10px; /* Ajusta la distancia desde la parte inferior */
+    left: 50%; /* Centra horizontalmente */
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    z-index: 10; /* Asegura que los dots estén sobre el contenido */
+}
+
+/* 🔹 Cada dot individual */
+.react-multi-carousel-dot {
+    width: 10px;
+    height: 10px;
+    margin: 0 5px;
+    background-color: #a7a7a7; /* Color por defecto */
+    border-radius: 50%;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+}
+
+/* 🔹 Dot activo */
+.react-multi-carousel-dot--active button {
+    background-color: #1db954; /* Color verde para el punto activo */
+    transform: scale(1.2); /* Hace el punto activo más grande */
+}
+
+/* 🔹 Estilo de los botones de los dots */
+.react-multi-carousel-dot button {
+    width: 10px;
+    height: 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
 }
 /* 🔹 Imagen de los Artistas (Circular) */
 .artist-image {
@@ -189,7 +218,7 @@
     border-radius: 50%;  /* 🔥 Hacer circular solo para las imágenes de artistas */
 }
 
-/* 🔹 Títulos de los Artistas */
+
 .artist-title {
     font-size: 16px;
     font-weight: bold;

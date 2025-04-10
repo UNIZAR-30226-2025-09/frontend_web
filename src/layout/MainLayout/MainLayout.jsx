@@ -160,6 +160,22 @@ const MainLayout = () => {
     const closeLoginPopup = () => {
         setShowLoginPopup(false);  // Cerrar el popup
     };
+    const handleSearch = (query) => {
+        if (!user) {
+            // Mostrar popup
+            setShowLoginPopup(true)
+        } else {
+            if (!query.trim()) {
+                // Navegamos a "/" (Home) o "/home" según tu configuración:
+                navigate("/");
+                return;
+            }
+
+            // Si no está vacía, vamos a /search
+            navigate(`/search?query=${encodeURIComponent(query)}`);
+
+        }
+    };
 
     return (
         <div className="main-layout">
@@ -189,7 +205,7 @@ const MainLayout = () => {
                 {/* Ahora la barra superior queda fija dentro de .main-content */}
                 <div className="top-bar">
 
-                    <SearchBar onClick={(e) => handleAccessWithoutLogin(e)} />
+                    <SearchBar onSearch={handleSearch} />
                     <img src={logo} alt="Logo" className="app-logo"/>
                 </div>
 
