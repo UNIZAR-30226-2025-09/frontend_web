@@ -93,7 +93,7 @@ function Register1() {
                                     borderRadius: "5px",
                                     boxSizing: "border-box",
                                     textAlign: "left",
-                                    borderColor: isSubmitted && (!validations.hasLetter || !validations.hasSpecialCharOrNumber || !validations.hasMinLength) ? "red" : "transparent" // Borde rojo si no se cumple
+                                    borderColor: isSubmitted && (!validations.hasLetter || !validations.hasSpecialCharOrNumber || !validations.hasMinLength) ? "red" : "transparent"
                                 }}
                             />
                             <span
@@ -114,26 +114,27 @@ function Register1() {
                     </div>
 
                     <p style={{fontSize: "14px", color: "#fff", textAlign: "left", marginLeft: "20%"}}>
-                        La contraseña debe contener al menos:
+                        La contraseña debe cumplir las siguientes condiciones:
                     </p>
-                    <ul className="password-validation"
-                        style={{textAlign: "left", fontSize: "14px", color: "#fff", marginLeft: "20%"}}>
-                        <li style={{color: validations.hasLetter ? "green" : (isSubmitted ? "red" : "white")}}>
-                            <input type="checkbox" checked={validations.hasLetter} readOnly/> 1 letra
-                        </li>
-                        <li style={{color: validations.hasSpecialCharOrNumber ? "green" : (isSubmitted ? "red" : "white")}}>
-                            <input type="checkbox" checked={validations.hasSpecialCharOrNumber} readOnly/> 1 número o
-                            carácter especial
-                        </li>
-                        <li style={{color: validations.hasMinLength ? "green" : (isSubmitted ? "red" : "white")}}>
-                            <input type="checkbox" checked={validations.hasMinLength} readOnly/> 10 caracteres
-                        </li>
-                    </ul>
+
+                    <div style={{paddingLeft: 0, marginLeft: 0}}>
+                        <div style={{display: "flex", alignItems: "center", margin: "8px 0", paddingLeft: "20%"}}>
+                            <input type="checkbox" checked={validations.hasLetter} readOnly/>
+                            <span style={{marginLeft: "10px"}}> Contiene al menos una letra</span>
+                        </div>
+                        <div style={{display: "flex", alignItems: "center", margin: "8px 0", paddingLeft: "20%"}}>
+                            <input type="checkbox" checked={validations.hasSpecialCharOrNumber} readOnly/>
+                            <span style={{marginLeft: "10px"}}> Contiene un número o carácter especial</span>
+                        </div>
+                        <div style={{display: "flex", alignItems: "center", margin: "8px 0", paddingLeft: "20%"}}>
+                            <input type="checkbox" checked={validations.hasMinLength} readOnly/>
+                            <span style={{marginLeft: "10px"}}> Tiene al menos 10 caracteres</span>
+                        </div>
+                    </div>
 
                     <button type="submit" className="btn-blue">
                         Siguiente
                     </button>
-
                 </form>
             </div>
         </div>
