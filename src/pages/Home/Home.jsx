@@ -5,7 +5,7 @@ import "react-multi-carousel/lib/styles.css";
 import "./Home.css";
 import { apiFetch } from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
-
+const logo = "/vibrablanco.png";
 function CustomDot({ onClick, active }) {
     return (
         <button
@@ -19,7 +19,7 @@ function CustomDot({ onClick, active }) {
 const Home = () => {
     const navigate = useNavigate();
     const { playlistsRef, recommendationsRef, albumsRef, artistsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp, handleAccessWithoutLogin } = useOutletContext(); // Obtener la función del Outlet
-
+    const [currentSlide, setCurrentSlide] = useState(0);
     const [vibraPlaylists, setVibraPlaylists] = useState([]);
     const [popularArtists, setPopularArtists] = useState([]);
     const [recommendedPlaylists, setRecommendedPlaylists] = useState([]);
