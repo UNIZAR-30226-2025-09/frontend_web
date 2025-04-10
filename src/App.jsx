@@ -25,6 +25,8 @@ import Checkout from "./pages/Checkout/Checkout";
 import Song from "./pages/Song/Song.jsx";
 import ForgotPassword from "./pages/Password/ForgotPassword.jsx";
 import ResetPassword from "./pages/Password/ResetPassword.jsx";
+import SearchPage from './pages/SearchPage/SearchPage';
+
 
 function App() {
 
@@ -59,7 +61,7 @@ function App() {
                         <Route path="library" element={<Library />} />
                         <Route path="artist" element={<Artist />} />
                         <Route path="artist/:artistId" element={<Artist />} />
-
+                        <Route path="/search" element={<SearchPage />} />
                     </Route>
                 </Routes>
 
