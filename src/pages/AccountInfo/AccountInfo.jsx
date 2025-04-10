@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./AccountInfo.css";
+import {useNavigate} from "react-router-dom";
 import {getImageUrl} from "#utils/getImageUrl";
 import {apiFetch} from "#utils/apiFetch";
 import {usePlayer} from "../../components/Player/PlayerContext.jsx";
@@ -31,6 +32,7 @@ function AccountInfo() {
     }
 
     const location = useLocation();
+    const navigate = useNavigate(); // 👈 para limpiar la URL
     const [mensaje, setMensaje] = useState("");
     const [user, setUser] = useState(null);
 
@@ -41,7 +43,7 @@ function AccountInfo() {
                 if (!token) return;
 
                 const params = new URLSearchParams(location.search);
-                const paymentSuccess = params.get("redirect_status") === "succeeded"; // ✅ Detectar correctamente
+                const paymentSuccess = params.get("redirect_status") === "succeeded";
 
                 // Si el pago fue exitoso, actualiza is_premium
                 if (paymentSuccess) {
@@ -105,8 +107,11 @@ function AccountInfo() {
         setSongs([]);
         setIsPlaying(false);
 
-        // Redirigir a la página principal (o a cualquier ruta que prefieras)
-        navigate("/"); // Redirigir al login
+        navigate("/");
+    };
+
+    const handleUpgradeToPremium = () => {
+        navigate("/premium");
     };
 
     return (
@@ -138,34 +143,67 @@ function AccountInfo() {
                 </div>
             </div>
 
-            <div className="account-info-page">
-                <div className="plan-box">
-                    <div className="plan-header">
-                        <span className="plan-label">Tu plan</span>
-                        <h2 className="plan-title">
-                            {user?.is_premium ? "Premium Individual" : "Plan Gratuito"}
-                        </h2>
+            <div className="account-info-container">
+                <div className="account-info-column">
+                    <div className="account-plan-box">
+                        <div className="plan-header">
+                            <span className="plan-label">TU PLAN</span>
+                            <h2 className="plan-title">
+                                {user?.is_premium ? "Premium Individual" : "Plan Gratuito"}
+                            </h2>
+                            {user?.is_premium && (
+                                <>
+                                    <p className="plan-details">Tu próxima factura es de $6.99 y se emite el 8/3/25.</p>
+                                    <p className="plan-details">Visa terminada en 2258</p>
+                                </>
+                            )}
+                            {!user?.is_premium && (
+                                <p className="plan-details">Disfruta de Vibra con anuncios y funciones limitadas.</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="account-actions">
+                        <button className="account-button" onClick={handleEditUser}>Editar perfil</button>
+                        <button className="account-button">Administrar suscripción</button>
                         {user?.is_premium && (
-                            <>
-                                <p className="plan-details">Tu próxima factura es de $6.99 y se emite el 8/3/25.</p>
-                                <p className="plan-details">Visa terminada en 2258</p>
-                            </>
+                            <button className="account-button">Cancelar suscripción</button>
                         )}
-                        {!user?.is_premium && (
-                            <p className="plan-details">Disfruta de Vibra con anuncios y funciones limitadas.</p>
-                        )}
+                        <button className="account-button logout" onClick={onLogout}>Cerrar sesión</button>
                     </div>
                 </div>
 
-                <div className="account-actions">
-                    <button className="action-button" onClick={() => handleEditUser()}> Editar perfil </button>
-                    <button className="action-button">Administrar suscripción</button>
+                {!user?.is_premium && (
+                    <div className="premium-promo-box">
+                        <div className="premium-icon">
+                            <svg viewBox="0 0 24 24" width="32" height="32">
+                                <circle cx="12" cy="12" r="11" fill="#FFFFFF"/>
+                                <path fill="#7B3FFB" d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M11,16.5L18,9.5L16.59,8.09L11,13.67L7.91,10.59L6.5,12L11,16.5Z" />
+                            </svg>
+                        </div>
+                        <h2 className="premium-title">Únete a Vibra Premium</h2>
+                        <p className="premium-description">Disfruta de música sin anuncios, escucha la canción que quieras.</p>
 
-                    {user?.is_premium && (
-                        <button className="action-button">Cancelar suscripción</button>
-                    )}
-                    <button className="action-button logout" onClick={() => onLogout()}>Cerrar sesión</button>
-                </div>
+                        <div className="premium-benefits">
+                            <div className="benefit">
+                                <span className="check">✓</span>
+                                <span>Música sin anuncios</span>
+                            </div>
+                            <div className="benefit">
+                                <span className="check">✓</span>
+                                <span>Reproducción sin conexión</span>
+                            </div>
+                            <div className="benefit">
+                                <span className="check">✓</span>
+                                <span>Sonido de alta calidad</span>
+                            </div>
+                        </div>
+
+                        <button className="premium-button" onClick={handleUpgradeToPremium}>
+                            Descubre Premium
+                        </button>
+                    </div>
+                )}
             </div>
         </>
     );

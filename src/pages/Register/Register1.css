@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
+
 /* Estilos para el contenedor */
 .login-container {
     display: flex;
@@ -166,20 +168,6 @@ label {
     color: gray;
 }
 
-/* Estilos para la lista de validaciones de la contraseña */
-.password-validation {
-    width: 60%;
-    margin: 0;
-    padding-left: 20px;
-    text-align: left;
-    list-style: disc;
-    font-size: 13px;
-    color: #fff; /* Texto blanco para claridad */
-}
-
-.password-validation li {
-    margin-bottom: 5px;
-}
 
 .step-indicator {
     text-align: center;
@@ -187,4 +175,59 @@ label {
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 10px;
+}
+
+.password-checklist {
+    width: 60%;
+    margin: 10px auto 20px;
+    text-align: left;
+    font-size: 14px;
+    list-style: none;
+    padding-left: 0;
+}
+
+.password-checklist li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.password-checklist li.valid {
+    color: #4CAF50; /* verde */
+}
+
+.password-checklist li.invalid {
+    color: #FF5252; /* rojo */
+}
+
+.password-checklist li::before {
+    content: "✔️";
+    font-size: 16px;
+    opacity: 0.6;
+}
+
+.password-checklist li.invalid::before {
+    content: "❌";
+    color: #FF5252;
+}
+
+
+/* Corrección para eliminar los puntos de la lista */
+.password-validation-list {
+    list-style-type: none !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+}
+
+.password-validation-list li {
+    list-style-type: none !important;
+    margin-left: 0;
+    padding-left: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: white;
 }
