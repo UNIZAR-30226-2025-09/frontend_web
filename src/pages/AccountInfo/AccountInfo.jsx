@@ -192,7 +192,6 @@ function AccountInfo() {
                     )}
                 </div>
 
-
                 {/* Cuenta (debajo de ambos planes) */}
                 <div className="account-section">
                     <h2 className="section-title">Cuenta</h2>
@@ -214,11 +213,6 @@ function AccountInfo() {
                             </div>
                             <span>Administrar suscripción</span>
                         </button>
-
-                <div className="account-actions">
-                    <button className="action-button" onClick={() => handleEditUser()}> Editar perfil </button>
-                    <button className="action-button" onClick={() => navigate(`/plans`)}>Administrar suscripción</button>
-
 
                         {user?.is_premium && (
                             <button className="account-option">
