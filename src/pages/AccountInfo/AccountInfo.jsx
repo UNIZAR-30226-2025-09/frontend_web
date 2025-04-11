@@ -159,7 +159,7 @@ function AccountInfo() {
 
                 <div className="account-actions">
                     <button className="action-button" onClick={() => handleEditUser()}> Editar perfil </button>
-                    <button className="action-button">Administrar suscripción</button>
+                    <button className="action-button" onClick={() => navigate(`/plans`)}>Administrar suscripción</button>
 
                     {user?.is_premium && (
                         <button className="action-button">Cancelar suscripción</button>

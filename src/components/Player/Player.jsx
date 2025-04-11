@@ -9,14 +9,14 @@ import { getImageUrl } from "#utils/getImageUrl";
 import styles from "./PlayerStyles.module.css";
 import {apiFetch} from "#utils/apiFetch";
 
-
 function Player() {
-    const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs, isPlaying, setIsPlaying } = usePlayer();
-
+    const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs,
+            isPlaying, setIsPlaying, setSongs, playlistActive, setPlaylistActive, setSongActive } = usePlayer();
     const [currTime, setCurrTime] = useState({ min: 0, sec: 0 });
     const [totalTime, setTotalTime] = useState({ min: 0, sec: 0 });
     const [seconds, setSeconds] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [loadingFromSavedState, setLoadingFromSavedState] = useState(false); // New state to track if we're loading from saved state
     const [isLiked, setIsLiked] = useState(false); // Estado para saber si la canción está en favoritos
     const soundRef = useRef(null);
     const intervalRef = useRef(null);
@@ -72,10 +72,61 @@ function Player() {
         console.log("🎵 Player detecta cambio de playing:", isPlaying);
     }, [isPlaying]);
     const prevTime = useRef(0);
+
+    const getLastPlaybackState = async () => {
+        try {
+            const response = await apiFetch(`/lastPlaybackState/${userId}`, {
+                method: "GET",
+            });
+
+            // Verificar el tipo de respuesta
+            console.log('Response:', response);
+
+            const result = response;
+            console.log("🎧 Última canción reproducida:", result);
+
+            if (result && result.song) {
+                const songs = result.playlist && result.playlist.songs ? result.playlist.songs : [];
+                const songIndex = songs.findIndex(song => song.id === result.song.id);
+
+                if(result.playlist_id === null){
+                    setSongActive(result.songId);
+                }
+                else{
+                    setPlaylistActive(result.playlistId);
+                }
+
+                // Aquí puedes guardar la playlist en tu contexto si lo necesitas
+                setCurrentSong(result.song);
+                setCurrentIndex(songIndex !== -1 ? songIndex : 0);
+                setCurrTime({ min: result.positionMinutes, sec: result.positionSeconds });
+                // Si usas contexto global para las canciones de la playlist:
+                if(songs.length > 0)
+                {
+                    setSongs(songs);
+                }
+                else
+                {
+                    setSongs(result.song);
+                }
+                setLoadingFromSavedState(true);
+                setIsPlaying(false);  // true si quieres autoplay
+            } else {
+                console.warn("No se obtuvo una canción válida o una playlist con canciones");
+            }
+        } catch (error) {
+            console.error("❌ Error al recuperar la última posición de reproducción:", error);
+        }
+    };
+
+
     // Crea o recarga el Howl cuando la songUrl cambia
     useEffect(() => {
         // Verifica que currentSong y songUrl estén disponibles
-        if (!currentSong || !songUrl) return;
+        if (!currentSong || !songUrl) {
+            getLastPlaybackState();
+            return;
+        }
 
         console.log("🎶 Cargando nueva canción en el reproductor:", currentSong.name);
 
@@ -109,33 +160,48 @@ function Player() {
                     min: Math.floor(sec / 60),
                     sec: Math.floor(sec % 60),
                 });
-                console.log("Reproduciendo: ", currentSong.name);
-            },
-            onplay: () => {
-                intervalRef.current = setInterval(() => {
-                    const sec = sound.seek();
-                    // Solo actualiza si el tiempo ha cambiado
-                    if (sec !== prevTime.current) {
-                        setSeconds(sec);
-                        setCurrTime({
-                            min: Math.floor(sec / 60),
-                            sec: Math.floor(sec % 60),
-                        });
-                        prevTime.current = sec;  // Actualizamos prevTime con el nuevo tiempo
-                    }
-                });  // Intervalo de actualización de tiempo
-            },
 
-            onend: () => {
-                console.log("🔚 onend: pasando a la siguiente canción");
-                handleNext(); // Llamamos a la función
-                if (intervalRef.current) {
-                    clearInterval(intervalRef.current)
+                if (loadingFromSavedState) {
+                    const startTime = currTime.min * 60 + currTime.sec;  // convertir a segundos
+                    sound.seek(startTime);
+                    console.log("Cargando canción desde posición guardada:", startTime, "segundos");
+                    setLoadingFromSavedState(false); // Reset the flag after use
+                } else {
+                    // Start from beginning otherwise
+                    sound.seek(0);
+                    setCurrTime({ min: 0, sec: 0 });
+                    setSeconds(0);
+                    console.log("Cargando canción desde el principio");
                 }
-            },
+
+                console.log("Reproduciendo: ", currentSong.name);
+                },
+                onplay: () => {
+                    intervalRef.current = setInterval(() => {
+                        const sec = sound.seek();
+                        // Solo actualiza si el tiempo ha cambiado
+                        if (sec !== prevTime.current) {
+                            setSeconds(sec);
+                            setCurrTime({
+                                min: Math.floor(sec / 60),
+                                sec: Math.floor(sec % 60),
+                            });
+                            prevTime.current = sec;  // Actualizamos prevTime con el nuevo tiempo
+                        }
+                    });  // Intervalo de actualización de tiempo
+                },
+
+                onend: () => {
+                    console.log("🔚 onend: pasando a la siguiente canción");
+                    handleNext(); // Llamamos a la función
+                    if (intervalRef.current) {
+                        clearInterval(intervalRef.current)
+                    }
+                },
 
 
-        });
+            });
+
 
         soundRef.current = sound;
 
@@ -196,7 +262,57 @@ function Player() {
             return;
         }
         console.log("Cambiando isplaying en el player");
+        if(isPlaying) {
+            // Si la canción se va a pausar, actualizar el tiempo
+            const state = false;
+            updateLastPlaybackState(state);
+        }
         setIsPlaying(!isPlaying);
+    };
+
+    const updateLastPlaybackState = async (value, songId = null) => {
+        if (!userId) return;
+
+        const songToUse = songId || (currentSong ? currentSong.id : null);
+        if (!songToUse) return;
+
+        const timeInSeconds = soundRef.current ? soundRef.current.seek() : 0;
+        const positionMinutes = Math.floor(timeInSeconds / 60);
+        const positionSeconds = Math.floor(timeInSeconds % 60);
+
+        let playlist = null;
+        if(playlistActive !== 0) { playlist = playlistActive; }
+
+        try {
+            let response;
+            if(value){
+                response = await apiFetch(`/lastPlaybackState/${userId}`, {
+                    method: "POST",
+                    body: {
+                        positionMinutes: 0,
+                        positionSeconds: 0,
+                        songId: songToUse,
+                        playlistId: playlist,
+                    },
+                });
+            }
+            else{
+                response = await apiFetch(`/lastPlaybackState/${userId}`, {
+                    method: "POST",
+                    body: {
+                        positionMinutes: positionMinutes,
+                        positionSeconds: positionSeconds,
+                        songId: songToUse,
+                        playlistId: playlist,
+                    },
+                });
+            }
+
+            const result = response;
+            console.log("Última posición de reproducción actualizada:", result);
+        } catch (error) {
+            console.error("Error al actualizar la última posición de reproducción:", error);
+        }
     };
 
     useEffect(() => {
@@ -235,21 +351,32 @@ function Player() {
     const handlePrevious = () => {
         if (!songs.length) return;
         const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
+        const prevSong = songs[prevIndex];
+
         setCurrentIndex(prevIndex);
-        setCurrentSong(songs[prevIndex]);
+        setCurrentSong(prevSong);
         setIsPlaying(true);
-        console.log("Reproduciendo desde flcecha anterior");
+        setSeconds(0);
+
+        // Pass the new song ID directly
+        updateLastPlaybackState(true, prevSong.id);
+        console.log("Reproduciendo desde flecha anterior");
     };
 
     // Ir a la canción siguiente
     const handleNext = () => {
         if (!songs.length) return;
         const nextIndex = (currentIndex + 1) % songs.length;
+        const nextSong = songs[nextIndex];
+
         setCurrentIndex(nextIndex);
-        setCurrentSong(songs[nextIndex]);
+        setCurrentSong(nextSong);
         setIsPlaying(true);
         setSeconds(0);
-        console.log("Reproduciendo desde flcecha siguiente");
+
+        // Pass the new song ID directly
+        updateLastPlaybackState(true, nextSong.id);
+        console.log("Reproduciendo desde flecha siguiente");
     };
 
     const toggleLike = async () => {

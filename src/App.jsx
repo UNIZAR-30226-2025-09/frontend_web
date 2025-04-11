@@ -61,7 +61,9 @@ function App() {
                         <Route path="library" element={<Library />} />
                         <Route path="artist" element={<Artist />} />
                         <Route path="artist/:artistId" element={<Artist />} />
+
                         <Route path="/search" element={<SearchPage />} />
+
                     </Route>
                 </Routes>
 
