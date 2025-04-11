@@ -11,8 +11,8 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Register1 from "./pages/Register/Register1";
 import Register2 from "./pages/Register/Register2";
-import Register3 from "./pages/Register/Register3";
-import RegisterStyle from "./pages/Register/RegisterStyle"
+import Register4 from "./pages/Register/Register4.jsx";
+import Register3 from "./pages/Register/Register3.jsx"
 import TerminosYCondiciones from "./pages/Register/TerminosYCondiciones";
 import PoliticaPrivacidad from "./pages/Register/PoliticaPrivacidad";
 import QuienesSomos from "./pages/Register/QuienesSomos";
@@ -23,6 +23,8 @@ import EditAccountInfo from "./pages/EditAccountInfo/EditAccountInfo";
 import Plans from "./pages/Plans/Plans";
 import Checkout from "./pages/Checkout/Checkout";
 import Song from "./pages/Song/Song.jsx";
+
+import Contacto from "./pages/Register/Contacto.jsx";
 import ForgotPassword from "./pages/Password/ForgotPassword.jsx";
 import ResetPassword from "./pages/Password/ResetPassword.jsx";
 import SearchPage from './pages/SearchPage/SearchPage';
@@ -39,11 +41,13 @@ function App() {
                     <Route path="/register" element={<Register />} />
                     <Route path="/register1" element={<Register1 />} />
                     <Route path="/register2" element={<Register2 />} />
-                    <Route path="/register-style" element={<RegisterStyle />} />
                     <Route path="/register3" element={<Register3 />} />
+                    <Route path="/register4" element={<Register4 />} />
                     <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
                     <Route path="/terminos-condiciones" element={<TerminosYCondiciones />} />
                     <Route path="/quienes-somos" element={<QuienesSomos />} />
+
+                    <Route path="/contacto" element={<Contacto />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
 

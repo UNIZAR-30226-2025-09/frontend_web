@@ -14,7 +14,7 @@ function Register2() {
 
 
     const navigate = useNavigate();
-
+    // eslint-disable-next-line no-unused-vars
     function esFechaValida(dia, mes, anio) {
         const diaNum = parseInt(dia, 10);
         const mesNum = parseInt(mes, 10);
@@ -127,7 +127,7 @@ function Register2() {
         userData.dob = { day, month, year };
         userData.gender = gender;
         localStorage.setItem("userData", JSON.stringify(userData));
-        navigate("/register-style");
+        navigate("/register3");
     };
 
 
@@ -142,7 +142,7 @@ function Register2() {
                     onClick={() => window.location.reload()}
                 />
                 <div className="register2-progress-bar">
-                    <div className="register2-progress" style={{width: "66%"}}></div>
+                    <div className="register2-progress" style={{width: "50%"}}></div>
                 </div>
 
                 <h2 style={{textAlign: "center", width: "100%", marginBottom: "10px", marginLeft: "50px"}}>Paso 2 de 4</h2>

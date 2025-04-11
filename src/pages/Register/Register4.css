@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
+
+.register3-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #1e1e1e;
+}
+
+.register3-box {
+    background-color: #1e1e1e;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.692);
+    text-align: center;
+    color: white;
+    width: 550px;
+}
+
+
+.login-box .logo {
+    display: block;
+    margin: 0 auto 30px;
+    width: 120px !important;
+    height: 120px !important;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+    object-fit: contain;
+}
+
+
+
+.progress-bar {
+    width: 100%;
+    height: 5px;
+    background-color: #333;
+    border-radius: 2px;
+    margin: 15px 0;
+}
+
+.progress {
+    height: 100%;
+    background-color: #79e2ff; /* Azul */
+    border-radius: 2px;
+}
+
+.title {
+    font-size: 22px;
+    margin: 10px 0;
+}
+
+.terms-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 20px 0;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;             /* centra verticalmente */
+    justify-content: flex-start;     /* empieza por el checkbox */
+    gap: 10px;
+    background-color: #232323;
+    padding: 15px;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.checkbox-container input {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;                  /* evita que el checkbox se reduzca */
+}
+
+.checkbox-container label {
+    font-size: 14px;
+    line-height: 1.4;
+    flex: 1;                         /* ocupa el resto del espacio */
+    display: block;
+    max-width: 100%;
+}
+
+
+
+
+
+
+.terms-text {
+    font-size: 12px;
+    color: #b3b3b3;
+    margin: 10px 0;
+}
+
+.terms-text a {
+    color: #79e2ff; /* Azul */
+    text-decoration: none;
+}
+
+.terms-text a:hover {
+    text-decoration: underline;
+}
+
+.btn-blue {
+    width: 65%;
+    background-color: #79e2ff;
+    color: black;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.btn-blue:hover {
+    background-color: #79e2ffc2;
+}
+
+.register2-gender-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.register2-gender-row label {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: white;
+}
+
+.register2-box .register2-logo {
+    display: block;
+    margin: 0 auto 30px;
+    width: 120px !important;
+    height: 120px !important;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+    object-fit: contain;
+}
+
+.register2-logo:hover {
+    transform: scale(1.05);
+}
+
+.register3-box .register3-logo {
+    display: block;
+    margin: 0 auto 30px;
+    width: 140px !important;
+    height: 140px !important;
+    padding: 0;
+    object-fit: cover;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+}
+
+
+
+.register3-logo:hover {
+    transform: scale(1.05);
+}
+
+.logo-vibra {
+    display: block;
+    margin: 0 auto 30px;
+    width: 120px !important;
+    height: 120px !important;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    object-fit: contain;
+    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.15));
+}

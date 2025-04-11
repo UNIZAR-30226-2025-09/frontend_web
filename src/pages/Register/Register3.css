@@ -2,6 +2,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
+
 .register3-container {
     display: flex;
     justify-content: center;
@@ -14,179 +18,106 @@
     background-color: #1e1e1e;
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.692);
     text-align: center;
-    color: white;
     width: 550px;
+    color: white;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.692);
 }
 
-
-.login-box .logo {
+.register3-logo {
     display: block;
     margin: 0 auto 30px;
-    width: 120px !important;
-    height: 120px !important;
+    width: 120px;
+    height: 120px;
     padding: 10px;
     background-color: rgba(255, 255, 255, 0.03);
     border-radius: 50%;
-    transition: transform 0.3s ease-in-out;
     filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
     object-fit: contain;
 }
-
-
 
 .progress-bar {
     width: 100%;
     height: 5px;
     background-color: #333;
     border-radius: 2px;
-    margin: 15px 0;
+    margin-bottom: 15px;
+    position: relative;
 }
 
 .progress {
     height: 100%;
-    background-color: #79e2ff; /* Azul */
+    background-color: #79e2ff;
     border-radius: 2px;
+}
+
+/* Nuevo contenedor específico para el texto del paso */
+.step-text-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.step-text {
+    display: inline-block;
+    position: relative;
+    margin: 0 auto;
+    text-align: center;
+    width: auto;
+    padding: 0;
+    max-width: fit-content;
 }
 
 .title {
     font-size: 22px;
-    margin: 10px 0;
-}
-
-.terms-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin: 20px 0;
-}
-
-.checkbox-container {
-    display: flex;
-    align-items: center;             /* centra verticalmente */
-    justify-content: flex-start;     /* empieza por el checkbox */
-    gap: 10px;
-    background-color: #232323;
-    padding: 15px;
-    border-radius: 5px;
-    width: 100%;
-    box-sizing: border-box;
-    text-align: left;
+    font-weight: bold;
     margin-bottom: 20px;
 }
 
-.checkbox-container input {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;                  /* evita que el checkbox se reduzca */
+.styles-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
 }
 
-.checkbox-container label {
-    font-size: 14px;
-    line-height: 1.4;
-    flex: 1;                         /* ocupa el resto del espacio */
-    display: block;
-    max-width: 100%;
+.style-card {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
 }
 
-
-
-
-
-
-.terms-text {
-    font-size: 12px;
-    color: #b3b3b3;
-    margin: 10px 0;
+.style-card:hover {
+    transform: scale(1.05);
+    background-color: #3a3a3a;
 }
 
-.terms-text a {
-    color: #79e2ff; /* Azul */
-    text-decoration: none;
-}
-
-.terms-text a:hover {
-    text-decoration: underline;
+.style-card.selected {
+    background-color: #79e2ff;
+    color: black;
 }
 
 .btn-blue {
-    width: 65%;
+    width: 100%;
     background-color: #79e2ff;
     color: black;
     padding: 10px;
-    font-size: 16px;
     border: none;
-    border-radius: 50px;
-    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
     font-weight: bold;
-    margin-top: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .btn-blue:hover {
-    background-color: #79e2ffc2;
-}
-
-.register2-gender-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-top: 10px;
-}
-
-.register2-gender-row label {
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    color: white;
-}
-
-.register2-box .register2-logo {
-    display: block;
-    margin: 0 auto 30px;
-    width: 120px !important;
-    height: 120px !important;
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.03);
-    border-radius: 50%;
-    transition: transform 0.3s ease-in-out;
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
-    object-fit: contain;
-}
-
-.register2-logo:hover {
-    transform: scale(1.05);
-}
-
-.register3-box .register3-logo {
-    display: block;
-    margin: 0 auto 30px;
-    width: 140px !important;
-    height: 140px !important;
-    padding: 0;
-    object-fit: cover;
-    background-color: rgba(255, 255, 255, 0.03);
-    border-radius: 50%;
-    transition: transform 0.3s ease-in-out;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
-}
-
-
-
-.register3-logo:hover {
-    transform: scale(1.05);
-}
-
-.logo-vibra {
-    display: block;
-    margin: 0 auto 30px;
-    width: 120px !important;
-    height: 120px !important;
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.03);
-    border-radius: 50%;
-    object-fit: contain;
-    transition: transform 0.3s ease-in-out;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.15));
+    background-color: #5ec8e0;
 }
