@@ -127,7 +127,7 @@ function Register2() {
         userData.dob = { day, month, year };
         userData.gender = gender;
         localStorage.setItem("userData", JSON.stringify(userData));
-        navigate("/register-style");
+        navigate("/register3");
     };
 
 
