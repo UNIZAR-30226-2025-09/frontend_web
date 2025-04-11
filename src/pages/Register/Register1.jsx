@@ -65,7 +65,7 @@ function Register1() {
                     borderRadius: "2px",
                     marginBottom: "15px"
                 }}>
-                    <div style={{width: "33%", height: "100%", backgroundColor: "#79e2ff", borderRadius: "2px"}}></div>
+                    <div style={{width: "25%", height: "100%", backgroundColor: "#79e2ff", borderRadius: "2px"}}></div>
                 </div>
 
                 <h2 style={{textAlign: "center", width: "100%", marginBottom: "10px", marginLeft: "50px"}}>Paso 1 de 4</h2>

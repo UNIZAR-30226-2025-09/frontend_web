@@ -41,9 +41,12 @@ const RegisterStyle = () => {
                     className="register-style-logo"
                 />
                 <div className="progress-bar">
-                    <div className="progress" style={{ width: "66%" }}></div>
+                    <div className="progress" style={{ width: "75%" }}></div>
                 </div>
-                <h2>Paso 3 de 4</h2>
+                {/* Forzar centrado absoluto con div contenedor */}
+                <div className="step-text-container">
+                    <h2 className="step-text">Paso 3 de 4</h2>
+                </div>
                 <h1 className="title">Selecciona tu estilo favorito</h1>
                 <div className="styles-grid">
                     {styles.map((style) => (
