@@ -24,9 +24,10 @@ const SongContent = () => {
     const user_Id = JSON.parse(localStorage.getItem('user')).id;
     const [selectedSong, setSelectedSong] = useState(null);
     const [userPlaylists, setUserPlaylists] = useState([]);
-    const { setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, isPlaying, 
+    const { currentSong, setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, isPlaying,
             setIsPlaying, setPlaylistActive, songActive, setSongActive} = useOutletContext();
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [firstPlay, setFirstPlay] = useState(0);
     const navigate = useNavigate();
 
     // Función para actualizar el estilo favorito del usuario
@@ -118,8 +119,9 @@ const SongContent = () => {
             } catch (error) {
                 console.error("Error al obtener la canción:", error);
             }
-        };
 
+        };
+        setFirstPlay(0);
         fetchSong();
     }, [songId, user_Id]);
 
@@ -155,18 +157,50 @@ const SongContent = () => {
         setCurrentSong(song);
         setCurrentIndex(0);
         setSongs([song]);
+        if(firstPlay === 0){
+            updateLastPlaybackState();
+            setSongActive(songId);
+            setPlaylistActive(0);
+            setFirstPlay(1);
+        }
+
+        if(!isPlaying){setIsPlaying(true);}
+    };
+
+    const updateLastPlaybackState = async () => {
+        if (!user_Id || !currentSong) return;
+
+        const positionMinutes = 0;
+        const positionSeconds = 0;
+
+        try {
+            const response = await apiFetch(`/lastPlaybackState/${user_Id}`, {
+                method: "POST",
+                body: { positionMinutes: positionMinutes,
+                        positionSeconds: positionSeconds,
+                        songId: songId,
+                        playlistId: null, },
+                });
+
+            const result = await response.json();
+            console.log("Última posición de reproducción actualizada:", result);
+        } catch (error) {
+            console.error("Error al actualizar la última posición de reproducción:", error);
+        }
     };
 
     const handlePlaySongs = (isPlaying) => {
         console.log("Reproduciendo canciones en modo aleatorio...");
 
-        if(!isPlaying) {
+        if(!isPlaying && firstPlay === 0) {
             setCurrentSong(song);
             setCurrentIndex(0);
             setSongs([song]);
 
             setSongActive(songId);
             setPlaylistActive(0);
+            updateLastPlaybackState();
+            setFirstPlay(1);
         }
 
         console.log("Cambiando isplaying en playlist");

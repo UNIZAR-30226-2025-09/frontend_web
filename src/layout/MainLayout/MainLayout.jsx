@@ -1,4 +1,4 @@
-import {useRef, useState, useEffect, createContext} from "react";
+import {useRef, useState, useEffect} from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import Navbar from "../../components/Navbar/Navbar";
