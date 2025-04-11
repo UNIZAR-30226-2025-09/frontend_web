@@ -2,7 +2,6 @@ import {FaHeart, FaEllipsisH, FaPlay, FaPause, FaRandom} from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {useOutletContext, useParams, useNavigate} from "react-router-dom";
 import { PlayerProvider} from "../../components/Player/PlayerContext.jsx";
-import {SlPlaylist} from "react-icons/sl";
 import "./Playlist.css"; // Layout y estilos generales
 import "../../components/SongItem/SongItem.css"; // Estilos de la lista de canciones
 import {apiFetch} from "#utils/apiFetch";
@@ -33,6 +32,7 @@ const PlaylistContent = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedSong, setSelectedSong] = useState(null);
     const [user, setUser] = useState(null);
+    const [firstPlay, setFirstPlay] = useState(0);
     const [adds, setAdds] = useState([]);
     const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
     const { currentSong, setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying,
@@ -129,6 +129,7 @@ const PlaylistContent = () => {
     // Alternar el estado del modo aleatorio
     const toggleShuffle = () => {
         setIsShuffling(prev => !prev);
+        setFirstPlay(0);
     };
 
     // Función para mezclar la lista (algoritmo de Fisher-Yates)
@@ -223,12 +224,41 @@ const PlaylistContent = () => {
             setCurrentIndex(0);
             setSongs(songs);
         }
-
+        console.log("Cancion ultima desde handle play SONG: ", song.id);
+        updateLastPlaybackState(song.id);
         setPlaylistActive(playlistId);
         setSongActive(0);
-
         console.log("Cambiando isplaying en playlist a traves de cancion");
         setIsPlaying(true);
+    };
+
+    const updateLastPlaybackState = async (id) => {
+        if (!user_Id || !currentSong) return;
+
+        try {
+            let response;
+            if(firstPlay === 0){
+                 response = await apiFetch(`/lastPlaybackState/${user_Id}`, {
+                    method: "POST",
+                    body: { positionMinutes: 0,
+                        positionSeconds: 0,
+                        songId: id,
+                        playlistId: playlistId, },
+                });
+            }
+            else{
+                 response = await apiFetch(`/lastPlaybackState/${user_Id}`, {
+                    method: "POST",
+                    body: {songId: id,
+                           playlistId: playlistId, },
+                });
+            }
+
+            const result = await response.json();
+            console.log("Última posición de reproducción actualizada:", result);
+        } catch (error) {
+            console.error("Error al actualizar la última posición de reproducción:", error);
+        }
     };
 
     function addsSong(songs) {
@@ -274,30 +304,38 @@ const PlaylistContent = () => {
                 if(!user.is_premium){
                     console.log("USUARIO es premium metiendo anuncios", user.is_premium);
                     result = addsSong(shuffledSongs);
-
+                    console.log("VALOR ID CANCION PLAY SONGS: ", result[0].songId);
                     setCurrentSong(result[0]);
                     setCurrentIndex(0);
                     setSongs(result);
+                    updateLastPlaybackState(result[0].id);
                 }
                 else{
                     setCurrentSong(shuffledSongs[0]);
                     setCurrentIndex(0);
                     setSongs(shuffledSongs);
+                    updateLastPlaybackState(shuffledSongs[0].id);
                 }
+
+                setFirstPlay(0);
             }
             else{
-                console.log("PREMIUM USER: is nt shuffling",user.is_premium);
-                if(!user.is_premium){
-                    result = addsSong(songs);
+                if(firstPlay === 0){
+                    console.log("PREMIUM USER: is nt shuffling",user.is_premium);
+                    if(!user.is_premium){
+                        result = addsSong(songs);
 
-                    setCurrentSong(result[0]);
-                    setCurrentIndex(0);
-                    setSongs(result);
-                }
-                else{
-                    setCurrentSong(songs[0]);
-                    setCurrentIndex(0);
-                    setSongs(songs);
+                        setCurrentSong(result[0]);
+                        setCurrentIndex(0);
+                        setSongs(result);
+                        updateLastPlaybackState(result[0].id);
+                    }
+                    else{
+                        setCurrentSong(songs[0]);
+                        setCurrentIndex(0);
+                        setSongs(songs);
+                        updateLastPlaybackState(songs[0].id);
+                    }
                 }
             }
 
@@ -306,6 +344,7 @@ const PlaylistContent = () => {
         }
 
         console.log("Cambiando isplaying en playlist");
+        setFirstPlay(firstPlay + 1);
         setIsPlaying(!isPlaying);
     };
 
