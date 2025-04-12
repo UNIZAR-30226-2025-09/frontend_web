@@ -9,7 +9,7 @@ const logo = "/vibrablanco.png";
 function CustomDot({ onClick, active }) {
     return (
         <button
-            className={`custom-dot ${active ? "active-dot" : ""}`}
+            className={`custom-dot ${active ? "active" : ""}`}
             onClick={onClick}
             aria-label="Punto de navegación de carrusel"
         />
@@ -146,8 +146,9 @@ const Home = () => {
                         partialVisible={false}
                         customDot={<CustomDot />}
                         beforeChange={(previousSlide, nextSlide) => setCurrentSlide(nextSlide)}
-                            containerClass="carousel-container"
+                        containerClass="carousel-container"
                         itemClass="carousel-item"
+                        dotListClass="custom-dot-list"
                     >
                         {vibraPlaylists.map((playlist) => {
                             const playlistImage = getImageUrl(playlist.front_page, "/default-playlist.jpg");
@@ -214,7 +215,7 @@ const Home = () => {
                     ) : (
                         <div className="login-banner">
                             <div className="login-banner-icon">
-                                    <img src={logo} alt="Vibra Logo" />
+                                <img src={logo} alt="Vibra Logo" />
                             </div>
                             <div className="login-banner-text">
                                 <h3>¡Personaliza tu experiencia musical!</h3>
@@ -250,7 +251,7 @@ const Home = () => {
             </div>
 
 
-            {/* Nueva Sección de Artistas */}
+            {/* Nueva Sección de Artistas - FIXED */}
             <h1 onClick={() => setActive("artists")}>Artistas Populares</h1>
             <div
                 className="scroll-container"
@@ -266,7 +267,7 @@ const Home = () => {
                             const artistImage = getImageUrl(artist.photo, "/default-artist.jpg");
 
                             return (
-                                <div key={artist.id} className="artist-wrapper" onClick={(e) => handleAccessWithoutLogin(e)}>
+                                <div key={artist.id} className="artist-wrapper" onClick={(e) => handleArtistClick(artist.id, e)}>
                                     <div className="home-artist-card">
                                         <img
                                             src={artistImage}
