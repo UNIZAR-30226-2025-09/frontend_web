@@ -257,22 +257,16 @@
     margin-bottom: 16px;
 }
 
-.artists-image {
-    border-radius: 50%;
-}
-
 .playlists-image {
     border-radius: 8px;
 }
 
-.artists-image img,
 .playlists-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.artists-name,
 .playlists-title {
     font-weight: 600;
     margin: 0 0 4px 0;
@@ -281,11 +275,78 @@
     text-overflow: ellipsis;
 }
 
-.artists-type,
+
 .playlists-type {
     color: #a7a7a7;
     font-size: 14px;
     margin: 0;
+}
+/* Agregar estos estilos a tu archivo SearchPage.css */
+
+/* Grid 2x2 para artistas */
+.artists-grid-2x2 {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.artists-row {
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.artists-item {
+    cursor: pointer;
+    width: calc(50% - 10px);
+    max-width: 200px;
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.artists-item:hover {
+    transform: scale(1.05);
+}
+
+.artists-image {
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.artists-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.artists-name {
+    font-weight: bold;
+    margin: 5px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.artists-type {
+    color: #b3b3b3;
+    font-size: 0.9rem;
+}
+
+/* Estilo responsivo */
+@media (max-width: 768px) {
+    .artists-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .artists-item {
+        width: 80%;
+        max-width: 150px;
+        margin-bottom: 15px;
+    }
 }
 /* Mensaje sin resultados */
 .no-results {

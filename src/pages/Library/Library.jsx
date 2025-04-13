@@ -1,19 +1,25 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "#utils/apiFetch";
-import {getImageUrl} from "#utils/getImageUrl";
+import { getImageUrl } from "#utils/getImageUrl";
 import "./Library.css";
+import PlaylistModal from "../../components/PlaylistModal/PlaylistModal";
 
 const Library = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [likedSongPlaylist, setLikedSongPlaylist] = useState(null); // Playlist "Me Gusta"
     const [likedPlaylists, setLikedPlaylists] = useState([]);
-    const [setSortUserPlaylists] = useState("recent");
-    const [ setSortLikedPlaylists] = useState("recent");
     const [userPlaylists, setUserPlaylists] = useState([]);
-    const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
+    // Los estados de ordenación se han declarado pero no se usan; puedes revisarlos
+    const [sortUserPlaylists, setSortUserPlaylists] = useState("recent");
+    const [sortLikedPlaylists, setSortLikedPlaylists] = useState("recent");
 
+    // Estado para mostrar modal de nueva playlist
+
+    const [showPlaylistModal, setShowPlaylistModal] = useState(false);
+
+    const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -43,10 +49,10 @@ const Library = () => {
     useEffect(() => {
         const getLikedPlaylists = async () => {
             try {
-                const userId = user ? user.id : null; // Obtener el userId desde el estado de usuario
+                const userId = user ? user.id : null;
                 if (userId) {
                     const data = await apiFetch(`/playlists/liked/${userId}`);
-                    setLikedPlaylists(data); // Almacena las playlists que te han gustado
+                    setLikedPlaylists(data);
                 }
             } catch (error) {
                 console.error("Error al obtener playlists con like:", error);
@@ -54,7 +60,7 @@ const Library = () => {
         };
 
         if (user) {
-            getLikedPlaylists(); // Llama a la API solo si el usuario está disponible
+            getLikedPlaylists();
         }
     }, [user]);
 
@@ -64,9 +70,8 @@ const Library = () => {
             try {
                 const userId = user ? user.id : null;
                 if (userId) {
-                    // Petición para obtener la playlist de tipo "Vibra_likedSong"
                     const data = await apiFetch(`/playlists/liked-song/${userId}`);
-                    setLikedSongPlaylist(data); // Almacena la playlist "Me Gusta"
+                    setLikedSongPlaylist(data);
                 }
             } catch (error) {
                 console.error("Error al obtener la playlist 'Me Gusta':", error);
@@ -74,10 +79,9 @@ const Library = () => {
         };
 
         if (user) {
-            getLikedSongPlaylist(); // Llama a la API solo si el usuario está disponible
+            getLikedSongPlaylist();
         }
     }, [user]);
-
 
     const sortPlaylists = (type, setFunction, option) => {
         setFunction(option);
@@ -102,8 +106,44 @@ const Library = () => {
 
     // Función para redirigir a la página de detalles de la playlist
     const handlePlaylistClick = (playlistId) => {
-        navigate(`/playlist/${playlistId}`);  // Navega a la ruta de la playlist usando su id
+        navigate(`/playlist/${playlistId}`);
     };
+
+
+    // Funciones para controlar el modal de "Crear Playlist"
+    const openPlaylistModal = () => {
+        setShowPlaylistModal(true);
+    };
+
+    const closePlaylistModal = () => {
+        setShowPlaylistModal(false);
+    };
+
+    const handleCreatePlaylist = async (playlistData) => {
+        try {
+
+            const newPlaylist = await apiFetch("/playlists", {  // Try different endpoint
+                method: "POST",
+                body: {
+                    name: playlistData.title,
+                    description: playlistData.description,
+                    user_id: user_Id,
+                    type: "private",
+                },
+            });
+
+            // Agregar la nueva playlist al estado local
+            setUserPlaylists([newPlaylist, ...userPlaylists]);
+            // Cerrar el modal
+            closePlaylistModal();
+
+            // Redirigir a la nueva playlist
+            navigate(`/playlist/${newPlaylist.id}`);
+        } catch (error) {
+            console.error("Error al crear la playlist:", error);
+        }
+    };
+
 
     return (
         <div className="library-content">
@@ -140,17 +180,29 @@ const Library = () => {
                 <h2>Tus Playlists</h2>
                 <div className="sort-options">
                     <button onClick={() => sortPlaylists("user", setSortUserPlaylists, "recent")}>Recientes</button>
-                    <button onClick={() => sortPlaylists("user", setSortUserPlaylists, "alphabetical")}>Alfabético
-                    </button>
+                    <button onClick={() => sortPlaylists("user", setSortUserPlaylists, "alphabetical")}>Alfabético</button>
                     <button onClick={() => sortPlaylists("user", setSortUserPlaylists, "popular")}>Populares</button>
+                </div>
+                {/* Botón para crear nueva playlist */}
+                <div className="create-playlist">
+                    <button className="create-playlist-button" onClick={openPlaylistModal}>
+                        <svg width="20" height="20" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className="create-playlist-icon">
+                            <circle cx="32" cy="32" r="32" fill="#333333"/>
+                            <path d="M44 20V38C44 40.2091 42.2091 42 40 42C37.7909 42 36 40.2091 36 38C36 35.7909 37.7909 34 40 34C40.6839 34 41.3306 34.1554 41.9 34.4335V24L26 27V41C26 43.2091 24.2091 45 22 45C19.7909 45 18 43.2091 18 41C18 38.7909 19.7909 37 22 37C22.6839 37 23.3306 37.1554 23.9 37.4335V22L44 20Z" fill="#1DB954" stroke="#1DB954" stroke-width="1"/>
+                        </svg>
+                        <span>Crear Playlist</span>
+                    </button>
                 </div>
             </div>
             <div className="scroll-container">
                 <div className="library-playlists">
                     {userPlaylists.length > 0 ? userPlaylists.map(playlist => (
-                        <div key={playlist.id} className="library-playlist-card"  onClick={() => handlePlaylistClick(playlist.id)}>
-                            <img src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"} alt={playlist.name}
-                                 className="library-playlist-image"/>
+                        <div key={playlist.id} className="library-playlist-card" onClick={() => handlePlaylistClick(playlist.id)}>
+                            <img
+                                src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
+                                alt={playlist.name}
+                                className="library-playlist-image"
+                            />
                             <p className="library-playlist-title">{playlist.name}</p>
                         </div>
                     )) : <div className="empty-message">No tienes playlists creadas.</div>}
@@ -162,8 +214,7 @@ const Library = () => {
                 <h2>Playlists que te han gustado</h2>
                 <div className="sort-options">
                     <button onClick={() => sortPlaylists("liked", setSortLikedPlaylists, "recent")}>Recientes</button>
-                    <button onClick={() => sortPlaylists("liked", setSortLikedPlaylists, "alphabetical")}>Alfabético
-                    </button>
+                    <button onClick={() => sortPlaylists("liked", setSortLikedPlaylists, "alphabetical")}>Alfabético</button>
                     <button onClick={() => sortPlaylists("liked", setSortLikedPlaylists, "popular")}>Populares</button>
                 </div>
             </div>
@@ -185,6 +236,11 @@ const Library = () => {
                     )) : <div className="empty-message">No has dado like a ninguna playlist.</div>}
                 </div>
             </div>
+
+            {/* Renderizar el modal de crear playlist si está activo */}
+            {showPlaylistModal && (
+                <PlaylistModal onSubmit={handleCreatePlaylist} onClose={closePlaylistModal} />
+            )}
         </div>
     );
 };
