@@ -8,6 +8,7 @@ import {apiFetch} from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 import CreatePlaylistModal from "../../components/PlaylistModal/PlaylistModal.jsx";
 import OptionsPopup from "../../components/PopUpSelection/OptionsPopup.jsx";
+import Rating from '../../components/Rating/Rating.jsx';
 import axios from "axios";
 
 "#utils/apiFetch.js"
@@ -34,6 +35,7 @@ const PlaylistContent = () => {
     const [user, setUser] = useState(null);
     const [firstPlay, setFirstPlay] = useState(0);
     const [adds, setAdds] = useState([]);
+    const [averageRating, setAverageRating] = useState(0);
     const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
     const { currentSong, setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying,
             isPlaying, setPlaylistActive, playlistActive, setSongActive } = useOutletContext();
@@ -94,6 +96,19 @@ const PlaylistContent = () => {
         console.log("Redirigiendo a la canción...", songId);
         navigate(`/songs/${songId}`);
     };
+
+    useEffect(() => {
+        const fetchRating = async () => {
+            try {
+                const data = await apiFetch(`/ratingPlaylist/${playlistId}/rating`);
+                setAverageRating(data.averageRating);
+            } catch (error) {
+                console.error("Error al obtener la valoración:", error);
+            }
+        };
+
+        fetchRating();
+    }, [playlistId]);
 
     useEffect(() => {
         const fetchUserPlaylists = async () => {
@@ -580,6 +595,17 @@ const PlaylistContent = () => {
                                     Guardada {playlist.likes || 0} veces •
                                     Total --  {playlist.songs?.length} canciones
                                 </p>
+
+                                {/* Sistema de valoración */}
+                                <div className="rating-section">
+                                    <p>Valoración promedio: {averageRating} / 5</p>
+                                    <Rating
+                                        playlistId={playlistId}
+                                        userId={user_Id}
+                                        initialRating={0} // Puedes ajustar esto si tienes la valoración inicial del usuario
+                                        onRatingUpdate={(newRating) => setAverageRating(newRating)}
+                                    />
+                                </div>
                             </>
                         )}
                     </div>

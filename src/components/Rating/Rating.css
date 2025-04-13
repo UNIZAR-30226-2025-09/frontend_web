@@ -1,0 +1,37 @@
+/* Rating.css */
+.rating {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 15px 0;
+}
+
+.average-rating {
+    font-size: 15px;
+    margin-bottom: 10px;
+    color: #ffffff; /* Blanco puro para mejor contraste */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sombra sutil para mejor legibilidad */
+    font-weight: 500; /* Texto semi-bold */
+}
+
+.stars {
+    display: flex;
+    gap: 8px;
+}
+
+.star {
+    font-size: 28px; /* Estrellas más grandes */
+    color: rgba(255, 255, 255, 0.5); /* Estrellas vacías semitransparentes */
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.star.filled {
+    color: #ffdd00; /* Amarillo más brillante para las estrellas marcadas */
+    filter: drop-shadow(0 0 2px rgba(255, 221, 0, 0.5)); /* Brillo sutil */
+}
+
+.star:hover {
+    color: #ffee66; /* Color al pasar el cursor */
+    transform: scale(1.1); /* Efecto de agrandar al pasar el cursor */
+}
