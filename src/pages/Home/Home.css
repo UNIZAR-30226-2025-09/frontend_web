@@ -25,7 +25,55 @@
 }
 
 /* 🔹 Contenedor con scroll horizontal */
+/* Estilos actualizados para el contenedor de scroll */
+.scroll-container {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px 0;
+    cursor: grab;
+    scrollbar-width: thin;
+    scrollbar-color: #1db954 rgba(255, 255, 255, 0.1);
+}
 
+.scroll-container:active {
+    cursor: grabbing;
+}
+
+/* Ocultar scrollbar en Chrome, Safari y Opera */
+.scroll-container::-webkit-scrollbar {
+    height: 5px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+    background-color: #1db954;
+    border-radius: 10px;
+}
+
+/* 🔹 Contenedor de listas de playlists, álbumes, etc */
+.home-playlists, .home-recommendations, .home-albums, .home-artists {
+    display: inline-flex;
+    gap: 15px;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    width: max-content;
+    padding: 10px 5px;
+}
+
+/* 🔹 Contenedor de cada artista (IMAGEN + TEXTO) */
+.artist-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px; /* Espacio entre imagen y título */
+    width: 180px;
+    flex-shrink: 0;
+}
 /* 🔹 Contenedor de listas de playlists, álbumes, etc */
 .home-playlists, .home-recommendations, .home-albums, .home-artists {
     display: flex;
@@ -149,6 +197,7 @@
     scroll-snap-align: center; /* Alinea cada elemento en el centro al detenerse */
 }
 /* Estilos para los dots personalizados */
+/* Estilos para los dots personalizados */
 .custom-dot {
     width: 10px;
     height: 10px;
@@ -162,8 +211,9 @@
     display: inline-block;
 }
 
+/* Nota: Ahora usamos active en lugar de active-dot */
 .custom-dot.active {
-    background-color: #1db954;
+    background-color: #1db954 !important;
     transform: scale(1.2);
 }
 
@@ -172,41 +222,41 @@
     opacity: 0.7;
 }
 
-/* 🔹 Lista de dots para navegación */
-.react-multi-carousel-dot-list {
+/* Clase personalizada para la lista de dots */
+.custom-dot-list {
     position: absolute;
-    bottom: 10px; /* Ajusta la distancia desde la parte inferior */
-    left: 50%; /* Centra horizontalmente */
+    bottom: 10px;
+    left: 50%;
     transform: translateX(-50%);
     display: flex;
     justify-content: center;
     list-style: none;
-    z-index: 10; /* Asegura que los dots estén sobre el contenido */
+    z-index: 10;
 }
 
-/* 🔹 Cada dot individual */
-.react-multi-carousel-dot {
-    width: 10px;
-    height: 10px;
-    margin: 0 5px;
-    background-color: #a7a7a7; /* Color por defecto */
-    border-radius: 50%;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    cursor: pointer;
+/* Aseguramos que los estilos de react-multi-carousel también estén configurados */
+.react-multi-carousel-dot-list {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    z-index: 10;
 }
 
-/* 🔹 Dot activo */
 .react-multi-carousel-dot--active button {
-    background-color: #1db954; /* Color verde para el punto activo */
-    transform: scale(1.2); /* Hace el punto activo más grande */
+    background-color: #1db954 !important;
+    transform: scale(1.2);
 }
 
-/* 🔹 Estilo de los botones de los dots */
 .react-multi-carousel-dot button {
     width: 10px;
     height: 10px;
     border: none;
-    background: transparent;
+    background-color: #a7a7a7;
+    border-radius: 50%;
     cursor: pointer;
     outline: none;
 }
@@ -350,4 +400,14 @@
     background-color: rgba(255, 255, 255, 0.1);
     transform: scale(1.03);
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+.home-artists-scroll {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px 0;
+}
+
+.home-artists {
+    display: inline-flex;
+    gap: 15px;
 }
