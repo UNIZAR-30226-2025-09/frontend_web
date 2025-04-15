@@ -13,6 +13,7 @@ function AccountInfo() {
     const location = useLocation();
     const [mensaje, setMensaje] = useState("");
     const [user, setUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -105,6 +106,50 @@ function AccountInfo() {
 
     const handleUpgradeToPremium = () => {
         navigate("/premium");
+    };
+
+    // Función para cancelar la suscripción premium
+    const handleCancelSubscription = async () => {
+        // Mostrar confirmación
+        const confirmar = window.confirm("¿Estás seguro de que deseas cancelar tu suscripción premium? Perderás el acceso a todas las funciones premium.");
+        
+        if (confirmar) {
+            setIsLoading(true);
+            try {
+                const token = localStorage.getItem("token");
+                
+                const response = await apiFetch("/user/premium", {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: { is_premium: false }
+                });
+                
+                // Actualizar el estado local
+                setUser({
+                    ...user,
+                    is_premium: false
+                });
+
+                // También actualizar en localStorage
+                const storedUser = JSON.parse(localStorage.getItem("user"));
+                storedUser.is_premium = false;
+                localStorage.setItem("user", JSON.stringify(storedUser));
+                
+                // Mostrar mensaje de éxito
+                setMensaje("Tu suscripción premium ha sido cancelada");
+                setTimeout(() => setMensaje(""), 3000);
+                
+            } catch (error) {
+                console.error("Error al cancelar la suscripción:", error);
+                setMensaje("Hubo un problema al cancelar tu suscripción");
+                setTimeout(() => setMensaje(""), 3000);
+            } finally {
+                setIsLoading(false);
+            }
+        }
     };
 
     if (!user) {
@@ -219,13 +264,17 @@ function AccountInfo() {
                             <button className="action-button" onClick={() => navigate(`/plans`)}>Administrar suscripción</button>
 
                             {user?.is_premium && (
-                                <button className="account-option">
+                                <button 
+                                    className="account-option" 
+                                    onClick={handleCancelSubscription} 
+                                    disabled={isLoading}
+                                >
                                     <div className="option-icon">
                                         <svg viewBox="0 0 24 24" width="24" height="24">
                                             <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
                                         </svg>
                                     </div>
-                                    <span>Cancelar suscripción</span>
+                                    <span>{isLoading ? "Cancelando..." : "Cancelar suscripción"}</span>
                                 </button>
                             )}
 

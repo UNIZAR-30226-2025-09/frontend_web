@@ -56,20 +56,70 @@ html, body {
 /* Mantiene la barra superior fija dentro del contenedor */
 .top-bar {
     position: sticky;
-    width: 100%;
+    top: 0;
+    width: 96%; /* Ajustado para centrarlo mejor */
     background: #3a3a3a;
-    padding: 10px 20px;
+    padding: 10px 20px; /* Reducido para subirlo */
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Cambiado para distribuir los elementos */
     align-items: center;
     z-index: 1000;
+    margin: 0 auto 15px; /* Reducido margen inferior y eliminado margen superior */
+    border-radius: 10px;
+    max-width: 1200px; /* Límite de anchura máxima */
+}
+
+.top-bar-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    margin: 0; /* Eliminado margen para mejor alineación */
+}
+
+.premium-button, .help-button {
+    padding: 8px 16px; /* Reducido padding para subirlo */
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    outline: none;
+    height: 36px; /* Reducido altura para subirlo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.premium-button {
+    background: linear-gradient(45deg, #1b82c3, #21a1f1);
+    color: #fff;
+    min-width: 160px;
+}
+
+.premium-button:hover {
+    background: linear-gradient(45deg, #21a1f1, #79e2ff);
+    transform: scale(1.05);
+    box-shadow: 0px 3px 8px rgba(33, 161, 241, 0.5);
+}
+
+.help-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    min-width: 80px;
+}
+
+.help-button:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 /* Asegura que el contenedor principal tenga espacio suficiente para la top-bar */
 .main-content {
     flex-grow: 1;
     background: #3a3a3a;
-    padding: 30px;
+    padding: 20px 30px 30px;
     border-radius: 20px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
     display: flex;
@@ -112,18 +162,22 @@ html, body {
 
 /* Ajuste de la barra de búsqueda */
 .search-container {
-    flex-grow: 1;
+    flex: 0 1 40%;
     display: flex;
     justify-content: center;
-    margin-top: -20px; /* Bajamos un poco */
-    max-width: 100%;
+    align-items: center;
+    padding: 0; /* Eliminado padding */
+    margin: 0;
+    min-width: 300px;
 }
 
 /* Logo */
 .app-logo {
-    height: 75px; /* Un poco más pequeño */
+    height: 70px;
+    width: auto;
     transition: transform 0.2s ease;
-    margin-top: -20px; /* Bajamos un poco */
+    margin: 0;
+    object-fit: contain;
 }
 
 .app-logo:hover {

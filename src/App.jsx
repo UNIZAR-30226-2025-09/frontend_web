@@ -28,6 +28,7 @@ import Contacto from "./pages/Register/Contacto.jsx";
 import ForgotPassword from "./pages/Password/ForgotPassword.jsx";
 import ResetPassword from "./pages/Password/ResetPassword.jsx";
 import SearchPage from './pages/SearchPage/SearchPage';
+import Help from "./pages/Help/Help.jsx";
 
 
 function App() {
@@ -55,6 +56,7 @@ function App() {
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/account" element={<AccountInfo />} />
                     <Route path="/EditAccount" element={<EditAccountInfo />} />
+                    <Route path="/help" element={<Help />} />
 
                     {/* Páginas con layout principal */}
                     <Route path="/" element={<MainLayout />}>

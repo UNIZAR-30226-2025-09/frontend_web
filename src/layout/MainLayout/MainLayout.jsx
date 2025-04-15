@@ -1,4 +1,3 @@
-
 import { useRef, useState, useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -67,7 +66,8 @@ const MainLayout = () => {
                     navigate("/"); // Redirigir al login en caso de error
                 }
             } else {
-                navigate("/"); // Redirigir al login si no hay token o usuario
+                // Si no hay usuario, no redireccionar, solo mantener el estado como null
+                setUser(null);
             }
         };
 
@@ -143,6 +143,7 @@ const MainLayout = () => {
     const closeLoginPopup = () => {
         setShowLoginPopup(false);  // Cerrar el popup
     };
+    
     const handleSearch = (query) => {
         if (!user) {
             // Mostrar popup
@@ -156,8 +157,17 @@ const MainLayout = () => {
 
             // Si no está vacía, vamos a /search
             navigate(`/search?query=${encodeURIComponent(query)}`);
-
         }
+    };
+
+    // Función para navegar a la página de planes premium
+    const navigateToPremiumPlans = () => {
+        navigate("/plans");
+    };
+
+    // Función para navegar a la página de ayuda
+    const navigateToHelp = () => {
+        navigate("/help");
     };
 
     return (
@@ -187,8 +197,27 @@ const MainLayout = () => {
             <div className="main-content">
                 {/* Ahora la barra superior queda fija dentro de .main-content */}
                 <div className="top-bar">
-
                     <SearchBar onSearch={handleSearch} />
+                    
+                    <div className="top-bar-actions">
+                        {!user && (
+                            <>
+                                <button className="premium-button" onClick={navigateToPremiumPlans}>
+                                    Explora Premium
+                                </button>
+                                <button className="help-button" onClick={navigateToHelp}>
+                                    Ayuda
+                                </button>
+                            </>
+                        )}
+
+                        {user && !user.is_premium && (
+                            <button className="premium-button" onClick={navigateToPremiumPlans}>
+                                Hazte Premium
+                            </button>
+                        )}
+                    </div>
+                    
                     <img src={logo} alt="Logo" className="app-logo"/>
                 </div>
 
@@ -243,8 +272,8 @@ const MainLayout = () => {
                         <div className="popup-login-link">
                             ¿Ya tienes una cuenta?{" "}
                             <span onClick={() => navigate("/login")} className="popup-link">
-                    Iniciar sesión
-                </span>
+                                Iniciar sesión
+                            </span>
                         </div>
                     </div>
                 </div>

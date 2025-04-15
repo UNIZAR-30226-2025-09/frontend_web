@@ -5,7 +5,7 @@ import './Rating.css';
 
 const Rating = ({ playlistId, userId, onRatingUpdate }) => {
     const [rating, setRating] = useState(0); // Valoración del usuario
-    const [averageRating, setAverageRating] = useState(null); // Valoración promedio
+    const [averageRating, setAverageRating] = useState(0); // Valoración promedio
     const [hover, setHover] = useState(0);
     const [hasRated, setHasRated] = useState(false); // Indica si el usuario ya ha votado
     const [loading, setLoading] = useState(true); // Estado de carga
@@ -64,33 +64,29 @@ const Rating = ({ playlistId, userId, onRatingUpdate }) => {
         }
     };
 
-    // Mensaje para mostrar
-    const getRatingMessage = () => {
-        if (loading) return "Cargando valoración...";
-        
-        if (hasRated) return `Tu valoración: ${rating} / 5`;
-        
-        if (averageRating > 0) return `Valoración promedio: ${averageRating} / 5`;
-        
-        return "¡Sé el primero en valorar esta playlist!";
-    };
-
     return (
-        <div className="rating">
-            <p className="average-rating">{getRatingMessage()}</p>
-            <div className="stars">
-                {[...Array(5)].map((_, index) => {
-                    const value = index + 1;
-                    return (
-                        <FaStar
-                            key={value}
-                            className={`star ${value <= (hover || (hasRated ? rating : 0)) ? 'filled' : ''}`}
-                            onClick={() => handleRating(value)}
-                            onMouseEnter={() => setHover(value)}
-                            onMouseLeave={() => setHover(0)}
-                        />
-                    );
-                })}
+        <div className="rating-container">
+            {/* Ya no necesitamos mostrar aquí el mensaje con la valoración media,
+                pues se está mostrando en el componente padre (Playlist.jsx) */}
+            
+            <div className="user-rating-section">
+                <p className="rating-label">
+                    {loading ? "Cargando..." : hasRated ? "Tu valoración:" : "¡Valora esta playlist!"}
+                </p>
+                <div className="stars-container">
+                    {[...Array(5)].map((_, index) => {
+                        const value = index + 1;
+                        return (
+                            <FaStar
+                                key={value}
+                                className={`star ${value <= (hover || rating) ? 'filled' : ''}`}
+                                onClick={() => handleRating(value)}
+                                onMouseEnter={() => setHover(value)}
+                                onMouseLeave={() => setHover(0)}
+                            />
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );
