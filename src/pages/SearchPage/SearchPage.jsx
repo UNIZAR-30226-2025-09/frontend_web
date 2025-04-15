@@ -23,11 +23,11 @@ const SearchPage = () => {
     const { handleAccessWithoutLogin } = useOutletContext();
 
     // Función para reproducir canciones
-    const playSong = (song) => {
-        // La implementación de esta función dependerá de cómo quieras manejar la reproducción
-        console.log('Reproduciendo canción:', song);
-        // Aquí se implementaría la lógica para reproducir la canción
-    };
+
+
+
+
+
 
     // Cargar resultados cuando cambia la consulta
     useEffect(() => {
@@ -172,7 +172,8 @@ const SearchPage = () => {
 
         switch (result.type) {
             case 'song':
-                playSong(result.item);
+
+                navigate(`/songs/${result.id}`);
                 break;
             case 'artist':
                 handleArtistClick(result.id);
@@ -184,6 +185,8 @@ const SearchPage = () => {
                 break;
         }
     };
+
+
 
     const mainResult = getMainResult();
     const hasResults = filteredSongs.length > 0 || filteredArtists.length > 0 || filteredPlaylists.length > 0;
@@ -340,7 +343,7 @@ const SearchPage = () => {
                                                     <div
                                                         key={song.id}
                                                         className="songs-item"
-                                                        onClick={() => navigate(`/song/${song.id}`)}
+                                                        onClick={() => navigate(`/songs/${song.id}`)}
                                                     >
                                                         <div className="songs-item-content">
                                                             <div className="songs-image">
