@@ -1,24 +1,25 @@
-/** Estilo inspirado en Spotify con la estructura solicitada - VERSIÓN MODIFICADA */
-
 body {
     margin: 0;
     padding: 0;
-    background-color: #121212;
-    font-family: 'Helvetica Neue', sans-serif;
+    background: linear-gradient(135deg, #0f0f14 0%, #121212 100%);
+    font-family: 'Inter', 'Helvetica Neue', sans-serif;
     color: white;
+    min-height: 100vh;
 }
 
+/* Estilo del header mejorado */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 30px;
-    background-color: #181818;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    padding: 16px 32px;
+    background: linear-gradient(to right, rgba(14, 23, 47, 0.9), rgba(27, 38, 68, 0.9));
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     position: sticky;
     top: 0;
     z-index: 1000;
     animation: slideDown 0.5s ease-out;
+    border-bottom: 1px solid rgba(79, 116, 255, 0.2);
 }
 
 @keyframes slideDown {
@@ -35,57 +36,80 @@ body {
 .logo-container {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .logo {
-    height: 32px;
+    height: 34px;
     width: auto;
     cursor: pointer;
     object-fit: contain;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
 }
 
 .logo:hover {
-    transform: scale(1.05);
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 6px rgba(79, 116, 255, 0.7));
 }
 
 .logo-text {
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 22px;
+    font-weight: 700;
     color: white;
+    letter-spacing: 0.5px;
     transition: color 0.3s;
 }
 
 .logo-text:hover {
-    color: #1db954;
+    color: #4f74ff;
+    text-shadow: 0 0 8px rgba(79, 116, 255, 0.5);
 }
 
 /* Contenedor principal de la página */
 .page-container {
     max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 20px;
+    margin: 30px auto;
+    padding: 0 30px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 28px;
 }
 
-/* Contenedor de los planes (como en Spotify) */
+/* Contenedor de los planes */
 .plans-container {
     display: flex;
-    gap: 20px;
-    margin-bottom: 8px;
+    gap: 28px;
+    margin-bottom: 12px;
+    animation: fadeIn 0.8s ease;
 }
 
 /* Estilo del cuadro de plan (izquierda) */
 .plan-box {
     flex: 1;
-    background-color: #2d2d2d;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.6s ease-in-out;
+    background: rgba(45, 45, 45, 0.6);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: slideUp 0.6s ease;
+}
+
+.plan-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .plan-header {
@@ -93,165 +117,263 @@ body {
 }
 
 .plan-label {
-    color: #8e8e8e;
-    font-size: 12px;
+    color: #4f74ff;
+    font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 8px;
 }
 
 .plan-title {
-    font-size: 22px;
+    font-size: 28px;
+    font-weight: 700;
     color: #ffffff;
-    margin: 6px 0 10px 0;
+    margin: 8px 0 16px 0;
     word-break: break-word;
+    letter-spacing: -0.5px;
+    position: relative;
+}
+
+.plan-title::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 3px;
+    background: #4f74ff;
+    margin-top: 10px;
+    border-radius: 2px;
 }
 
 .plan-details {
-    font-size: 15px;
+    font-size: 16px;
+    line-height: 1.6;
     color: #b3b3b3;
-    margin: 4px 0;
+    margin: 10px 0;
     word-break: break-word;
 }
 
 /* Estilo para el cuadro premium (derecha) */
 .premium-promo-box {
     flex: 1;
-    background: linear-gradient(135deg, #5000ff, #9000ff);
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(145deg, #2e3d68 0%, #3b4980 50%, #4f74ff 100%);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(79, 116, 255, 0.3);
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    animation: fadeIn 0.6s ease-in-out;
+    gap: 16px;
+    animation: slideUp 0.8s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+.premium-promo-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(79, 116, 255, 0.4);
+}
+
+.premium-promo-box::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    opacity: 0.6;
+    pointer-events: none;
 }
 
 .premium-icon {
-    width: 28px;
-    height: 28px;
-    margin-bottom: 2px;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
 }
 
 .premium-title {
-    font-size: 22px;
-    font-weight: 700;
+    font-size: 28px;
+    font-weight: 800;
     margin: 0;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .premium-description {
-    font-size: 15px;
-    line-height: 1.4;
+    font-size: 16px;
+    line-height: 1.6;
     margin: 0;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.95);
 }
 
 .premium-benefits {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin: 4px 0;
+    gap: 12px;
+    margin: 8px 0;
 }
 
 .benefit {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 500;
 }
 
 .check {
-    color: #1ed760;
-    font-size: 16px;
+    color: #fff;
+    font-size: 18px;
+    background: rgba(79, 116, 255, 0.9);
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(79, 116, 255, 0.4);
 }
 
 .premium-button {
     background-color: white;
-    color: #000;
+    color: #2e3d68;
     font-weight: 700;
-    font-size: 14px;
-    padding: 10px 24px;
+    font-size: 15px;
+    padding: 14px 28px;
     border: none;
     border-radius: 500px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     align-self: flex-start;
-    margin-top: 4px;
+    margin-top: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.premium-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: 0.5s;
+    z-index: -1;
 }
 
 .premium-button:hover {
     transform: scale(1.05);
-    background-color: #f8f8f8;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
-/* Sección de Cuenta (debajo de ambos planes) */
+.premium-button:hover::before {
+    left: 100%;
+}
+
+/* Sección de Cuenta */
 .account-section {
-    background-color: #181818;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background: rgba(24, 24, 24, 0.7);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     animation: fadeIn 0.8s ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
 }
 
 .section-title {
-    font-size: 22px;
-    margin: 0 0 16px 0;
-    padding-left: 12px;
-    border-left: 4px solid #1db954;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    padding-left: 16px;
+    border-left: 4px solid #4f74ff;
+    display: flex;
+    align-items: center;
+    letter-spacing: -0.5px;
 }
 
 .account-options {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
 }
 
 .account-option {
     display: flex;
     align-items: center;
     gap: 16px;
-    background-color: #2d2d2d;
+    background: rgba(45, 45, 45, 0.5);
     color: white;
-    padding: 12px 16px;
+    padding: 16px 20px;
     border: none;
-    border-radius: 8px;
-    font-size: 15px;
+    border-radius: 12px;
+    font-size: 16px;
     font-weight: 500;
     text-align: left;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.account-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    transition: 0.5s;
 }
 
 .account-option:hover {
-    background-color: #3d3d3d;
+    background: rgba(61, 61, 61, 0.7);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+.account-option:hover::before {
+    left: 100%;
 }
 
 .option-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #b3b3b3;
+    color: #4f74ff;
+    background: rgba(79, 116, 255, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.account-option:hover .option-icon {
+    transform: scale(1.1);
+    background: rgba(79, 116, 255, 0.2);
 }
 
 .logout {
-    background-color: #e91429;
+    background: linear-gradient(135deg, #e91429, #ff3b50);
+    margin-top: 10px;
+    border: none;
 }
 
 .logout:hover {
-    background-color: #f02e46;
+    background: linear-gradient(135deg, #ff0626, #ff4c61);
 }
 
 .logout .option-icon {
     color: white;
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .profile-container {
@@ -263,20 +385,21 @@ body {
 }
 
 .profile-picture {
-    height: 36px;
-    width: 36px;
+    height: 42px;
+    width: 42px;
     border-radius: 50%;
     background-color: #2a2a2a;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6), 0 0 0 2px rgba(79, 116, 255, 0.5);
+    transition: all 0.3s ease;
 }
 
 .profile-picture:hover {
-    transform: scale(1.05);
+    transform: scale(1.08);
+    box-shadow: 0 0 12px rgba(79, 116, 255, 0.4), 0 0 0 3px rgba(79, 116, 255, 0.6);
 }
 
 .profile-img {
@@ -286,28 +409,42 @@ body {
 }
 
 .mensaje-plan {
-    background-color: #79e2ff;
-    color: black;
-    font-weight: bold;
-    padding: 10px 16px;
-    border-radius: 20px;
+    background: linear-gradient(135deg, #4f74ff, #6b8aff, #8aa6ff);
+    color: #ffffff;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 50px;
     text-align: center;
-    margin: 20px auto 8px;
+    margin: 25px auto 15px;
     width: fit-content;
-    max-width: 90%;
-    box-shadow: 0 0 20px rgba(121, 226, 255, 0.3);
-    animation: fadeInMsg 0.5s ease;
+    max-width: 85%;
+    box-shadow: 0 10px 25px rgba(79, 116, 255, 0.5);
+    animation: pulseMessage 2s infinite alternate;
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-@keyframes fadeInMsg {
+@keyframes pulseMessage {
+    from {
+        box-shadow: 0 8px 20px rgba(79, 116, 255, 0.4);
+    }
+    to {
+        box-shadow: 0 12px 30px rgba(79, 116, 255, 0.6);
+    }
+}
+
+@keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(-10px);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
     }
+}
+
+/* Eliminando account-actions duplicado */
+.account-actions {
+    display: none; /* Ocultar el div duplicado */
 }
 
 /* Responsividad */
@@ -317,7 +454,12 @@ body {
     }
 
     .premium-promo-box {
-        margin-top: 12px;
+        margin-top: 5px;
+    }
+    
+    .page-container {
+        margin: 20px auto;
+        padding: 0 20px;
     }
 }
 
@@ -327,17 +469,21 @@ body {
     }
 
     .page-container {
-        padding: 0 16px;
-        margin: 20px auto;
+        padding: 0 18px;
+        margin: 15px auto;
     }
 
-    .premium-title {
-        font-size: 20px;
+    .premium-title, .plan-title {
+        font-size: 24px;
     }
 
     .plan-box,
     .premium-promo-box {
-        padding: 16px;
+        padding: 20px;
+    }
+    
+    .section-title {
+        font-size: 22px;
     }
 }
 
@@ -345,5 +491,288 @@ body {
     .premium-button {
         width: 100%;
         text-align: center;
+        padding: 12px 20px;
+    }
+    
+    .account-option {
+        padding: 14px 16px;
+    }
+    
+    .plan-box, .premium-promo-box, .account-section {
+        padding: 18px;
+        border-radius: 12px;
+    }
+}
+
+/* Modal de confirmación */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-container {
+    background: linear-gradient(145deg, #1e2538, #2a3450);
+    width: 90%;
+    max-width: 450px;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(79, 116, 255, 0.2);
+    animation: scaleIn 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #4f74ff, #6b8aff);
+}
+
+.modal-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 16px;
+    color: white;
+}
+
+.modal-message {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.modal-button {
+    padding: 12px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.modal-button-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.modal-button-cancel:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-button-confirm {
+    background: #e91429;
+    color: white;
+}
+
+.modal-button-confirm:hover {
+    background: #ff0626;
+    transform: scale(1.05);
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Estilos para el modal de notificación */
+.notification-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+}
+
+.notification-container {
+    background: linear-gradient(145deg, #1e2538, #2a3450);
+    width: 90%;
+    max-width: 400px;
+    border-radius: 20px;
+    padding: 28px 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(79, 116, 255, 0.2);
+    animation: bounceIn 0.5s ease;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.notification-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.notification-icon-premium {
+    background: linear-gradient(145deg, #4f74ff, #6b8aff);
+    color: white;
+}
+
+.notification-icon-premium::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+}
+
+.notification-icon-free {
+    background: linear-gradient(145deg, #4CAF50, #8BC34A);
+    color: white;
+}
+
+.notification-icon-free::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.notification-icon-cancel {
+    background: linear-gradient(145deg, #FF5722, #FF9800);
+    color: white;
+    position: relative;
+}
+
+.notification-icon-cancel::before {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 4px;
+    background: white;
+    border-radius: 2px;
+    transform: rotate(45deg);
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.notification-icon-cancel::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 4px;
+    background: white;
+    border-radius: 2px;
+    transform: rotate(-45deg);
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.notification-icon-error {
+    background: linear-gradient(145deg, #e91429, #ff3b50);
+    color: white;
+}
+
+.notification-icon-error::before {
+    content: '!';
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.notification-icon-default {
+    background: linear-gradient(145deg, #4f74ff, #6b8aff);
+    color: white;
+}
+
+.notification-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    color: white;
+}
+
+.notification-message {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    padding: 0 10px;
+}
+
+.notification-button {
+    background: linear-gradient(to right, #4f74ff, #6b8aff);
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 12px 36px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(79, 116, 255, 0.4);
+}
+
+.notification-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(79, 116, 255, 0.5);
+    background: linear-gradient(to right, #3a5eef, #5a7eff);
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+    70% {
+        transform: scale(0.95);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
     }
 }
