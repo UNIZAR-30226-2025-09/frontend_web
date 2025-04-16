@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { apiFetch } from "#utils/apiFetch";
 import "./EditAccountInfo.css";
 import Compressor from 'compressorjs';
-import {getImageUrl} from "#utils/getImageUrl";
-import {useNavigate} from "react-router-dom";
+import { getImageUrl } from "#utils/getImageUrl";
+import { useNavigate } from "react-router-dom";
 
 function EditAccountInfo() {
     const userId = JSON.parse(localStorage.getItem('user')).id;
@@ -66,8 +66,11 @@ function EditAccountInfo() {
                 setProfileImageShow(response.user_picture);
             }
 
-            // Recargar la página para reflejar los cambios
-            window.location.reload();
+            // Mostrar mensaje de éxito
+            alert("¡Cambios guardados correctamente!");
+            
+            // Navegar a la página de cuenta
+            navigate("/account");
         } catch (error) {
             console.error("Error al actualizar el perfil:", error);
             alert("Hubo un error al guardar los cambios.");
@@ -107,24 +110,23 @@ function EditAccountInfo() {
     };
 
     return (
-        <div>
+        <>
             <div className="header">
                 <div className="logo-container">
                     <img
-                        src="../vibrablanco.png"
+                        src="/vibrablanco.png"
                         alt="Vibra Logo"
                         className="logo"
-                        onClick={() => {navigate(`/`)}}
+                        onClick={() => { navigate(`/`) }}
                     />
                     <span className="logo-text">Vibra</span>
                 </div>
                 <div className="profile-container">
                     <div className="profile-picture">
-                        {/* Muestra la imagen del usuario */}
                         <img
                             src={profileImageShow ?
                                 (profileImageShow.startsWith('data:') ? profileImageShow : getImageUrl(profileImageShow))
-                                : '../default-profile.png'}
+                                : '/default-profile.png'}
                             alt="Foto de perfil"
                             className="profile-img"
                         />
@@ -132,28 +134,30 @@ function EditAccountInfo() {
                 </div>
             </div>
             <div className="account-info-page">
-
                 <div className="edit-profile-container">
-                    <h2>Editar Información de la Cuenta</h2>
+                    <h2>Editar perfil</h2>
 
                     <div className="form-group">
-                        <label htmlFor="nickname">Correo electrónico:</label>
-                        {userInfo.mail}
+                        <label htmlFor="email">Correo electrónico</label>
+                        <div className="email-display">{userInfo.mail}</div>
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="nickname">Nombre de usuario:</label>
-                        <label htmlFor="nickname">{ nickname}</label>
+                        <label htmlFor="nickname">Nombre de usuario actual</label>
+                        <span className="current-username">{userInfo.nickname}</span>
+                        <label htmlFor="new-nickname">Nuevo nombre de usuario</label>
                         <input
                             type="text"
-                            id="nickname"
+                            id="new-nickname"
+                            value={nickname}
                             onChange={handleNicknameChange}
                             className="form-input"
+                            placeholder="Introduce un nuevo nombre de usuario"
                         />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="profileImage">Foto de perfil:</label>
+                        <label htmlFor="profileImage">Foto de perfil</label>
                         <input
                             type="file"
                             id="profileImage"
@@ -161,18 +165,41 @@ function EditAccountInfo() {
                             accept="image/*"
                             className="form-input"
                         />
+                        
+                        {/* Vista previa de la imagen */}
+                        {profileImageShow && (
+                            <div className="profile-preview">
+                                <img
+                                    src={profileImageShow.startsWith('data:') ? profileImageShow : getImageUrl(profileImageShow)}
+                                    alt="Vista previa"
+                                    className="profile-preview-img"
+                                />
+                            </div>
+                        )}
                     </div>
 
-                    <button
-                        onClick={handleSaveChanges}
-                        className="save-btn"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? "Guardando..." : "Guardar cambios"}
-                    </button>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <button
+                            className="back-button"
+                            onClick={() => navigate("/account")}
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" />
+                            </svg>
+                            Volver
+                        </button>
+                        
+                        <button
+                            onClick={handleSaveChanges}
+                            className="save-btn"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? "Guardando..." : "Guardar cambios"}
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

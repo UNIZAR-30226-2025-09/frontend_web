@@ -30,7 +30,8 @@ html, body {
 
 /* Contenedor del perfil */
 .profile-container {
-    background: #3a3a3a;
+    /* background: #3a3a3a; */
+    background: transparent;
     padding: 20px;
     border-radius: 15px;
     text-align: center;
@@ -186,25 +187,26 @@ html, body {
 
 /* Botón de Iniciar Sesión */
 .login-button {
-    background-color: #1b82c3; /* Azul inicial de la aplicación */
+    background: linear-gradient(135deg, #4f74ff, #6b8aff); /* Azul corporativo con gradiente */
     color: white;
     border: none;
     padding: 12px 24px;
     font-size: 16px;
-    border-radius: 30px; /* Bordes redondeados */
+    border-radius: 12px; /* Bordes más suaves */
     width: 100%;
     cursor: pointer;
-    transition: all 0.3s ease; /* Transición suave */
+    transition: all 0.3s ease;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0px 4px 15px rgba(33, 161, 241, 0.5);
+    box-shadow: 0 4px 15px rgba(79, 116, 255, 0.4);
+    margin: 10px 0; /* Añadimos margen para equilibrar el espacio */
 }
 
 .login-button:hover {
-    background-color: #79e2ff; /* Nuevo azul al pasar el ratón */
-    transform: scale(1.05); /* Aumento de tamaño */
-    box-shadow: 0px 6px 18px rgba(33, 161, 241, 0.6); /* Sombra más pronunciada */
+    background: linear-gradient(135deg, #6b8aff, #79e2ff);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(79, 116, 255, 0.6);
 }
 
 .login-button:focus {
