@@ -8,22 +8,26 @@
     --colorPrimaryDark: #2e2c2c;
     --borderRadius: 8px;
 }
-
 /* Contenedor principal del reproductor */
 .playerContainer {
+    width: 100%;
+    max-width: 280px; /* o el valor que uses para el reproductor */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
 }
 
 /* Contenedor de la imagen de la canción */
 .musicCover {
-    width: 250px;
-    height: 250px;
+    max-width: 100%;
+    width: 100%; /* adapta al contenedor */
+    height: auto; /* mantiene proporción */
     object-fit: cover;
     border-radius: var(--borderRadius);
     margin-bottom: 1.5rem;
-    align-items: center;
-    justify-content: center;
+    display: block;
 }
-
 /* Contenedor de la información de la canción */
 .info {
     text-align: center;

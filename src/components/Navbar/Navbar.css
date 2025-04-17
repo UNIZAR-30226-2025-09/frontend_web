@@ -6,6 +6,9 @@
     padding: 10px;
     border-radius: 15px;
     margin-top: 3rem;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
 .menu a {

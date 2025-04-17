@@ -24,8 +24,8 @@ html, body {
     display: flex;
     flex-direction: column;
 
-    width: 300px;
-    padding: 20px;
+    max-width: 300px;
+    overflow: hidden;
 }
 
 /* Contenedor del perfil */
