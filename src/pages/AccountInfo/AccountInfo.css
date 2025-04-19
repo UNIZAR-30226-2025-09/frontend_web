@@ -243,11 +243,11 @@ body {
 }
 
 .logout {
-    background-color: #e91429;
+    background-color: #FF6B6B;
 }
 
 .logout:hover {
-    background-color: #f02e46;
+    background-color: #ff8585;
 }
 
 .logout .option-icon {
