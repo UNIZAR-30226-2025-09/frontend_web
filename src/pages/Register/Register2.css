@@ -588,3 +588,26 @@ body {
         gap: var(--space-sm);
     }
 }
+
+/* Estilos específicos para el botón cuando está habilitado */
+.submit-button:not(:disabled) {
+    background-color: var(--color-primary);
+    color: #000000;
+    cursor: pointer;
+}
+
+/* Mejora del cursor cuando el botón está deshabilitado */
+.submit-button:disabled {
+    cursor: not-allowed;
+    position: relative;
+}
+
+/* Mostrar un indicador visual claro cuando el botón está habilitado */
+.submit-button:not(:disabled) .button-icon {
+    opacity: 1;
+}
+
+/* Eliminar cualquier estilo que pueda estar interfiriendo */
+.submit-button:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+}
