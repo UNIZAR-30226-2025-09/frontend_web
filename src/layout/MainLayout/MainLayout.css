@@ -23,9 +23,9 @@ html, body {
 .sidebar {
     display: flex;
     flex-direction: column;
-
     max-width: 300px;
-    overflow: hidden;
+    overflow: visible; /* Cambiado de hidden a visible para permitir sticky */
+    height: 100%; /* Asegurar altura completa */
 }
 
 /* Contenedor del perfil */
@@ -41,17 +41,21 @@ html, body {
 
 /* Contenedor del reproductor */
 .player-container {
-
     margin-top: 2em;
     display: flex;
     flex-direction: column;
     background-color: #3a3a3a;
     text-align: center;
-    position: sticky;      /* 🔹 Se fija al hacer scroll */
-    top: 25px;             /* 🔹 Se quedará a 1rem de la parte superior */
+    position: sticky;      /* Se fija al hacer scroll */
+    top: 25px;             /* Se quedará a 1rem de la parte superior */
     border-radius: 1rem;
     padding: 2rem;
     color: #fff;
+
+    align-self: flex-start;
+    max-height: calc(100vh - 50px);
+    overflow-y: auto;
+    z-index: 10;
 }
 
 /* Mantiene la barra superior fija dentro del contenedor */

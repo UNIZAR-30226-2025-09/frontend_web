@@ -14,7 +14,7 @@
     border-radius: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     width: 320px;          /* Ancho fijo (puedes usar % si quieres) */
-    height: 32px;          /* Alto total */
+    height: 40px;          /* Alto total */
     padding: 3px;
     border: 3px solid #1eaddc; /* color base */
     transition: box-shadow 0.2s;
