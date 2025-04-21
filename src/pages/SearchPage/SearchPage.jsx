@@ -1,5 +1,4 @@
-// src/pages/SearchPage/SearchPage.jsx
-import { useState, useEffect } from 'react'; // Elimino useCallback porque no se usa
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useOutletContext } from 'react-router-dom';
 import { apiFetch } from '#utils/apiFetch';
 import { getImageUrl } from '#utils/getImageUrl';
@@ -24,11 +23,11 @@ const SearchPage = () => {
     const { handleAccessWithoutLogin } = useOutletContext();
 
     // Función para reproducir canciones
-    const playSong = (song) => {
-        // La implementación de esta función dependerá de cómo quieras manejar la reproducción
-        console.log('Reproduciendo canción:', song);
-        // Aquí se implementaría la lógica para reproducir la canción
-    };
+
+
+
+
+
 
     // Cargar resultados cuando cambia la consulta
     useEffect(() => {
@@ -115,7 +114,7 @@ const SearchPage = () => {
                     idAutor: playlist.user_id,
                     description: playlist.description || "",
                     esPublica: playlist.type,
-                    esAlbum: playlist.typeP
+                    esAlbum: playlist.typeP === "album",
                 }));
         } catch (error) {
             console.error("Error buscando playlists:", error);
@@ -173,7 +172,8 @@ const SearchPage = () => {
 
         switch (result.type) {
             case 'song':
-                playSong(result.item);
+
+                navigate(`/songs/${result.id}`);
                 break;
             case 'artist':
                 handleArtistClick(result.id);
@@ -186,6 +186,8 @@ const SearchPage = () => {
         }
     };
 
+
+
     const mainResult = getMainResult();
     const hasResults = filteredSongs.length > 0 || filteredArtists.length > 0 || filteredPlaylists.length > 0;
 
@@ -193,11 +195,28 @@ const SearchPage = () => {
     const showSongs = activeCategory === 'todo' || activeCategory === 'canciones';
     const showArtists = activeCategory === 'todo' || activeCategory === 'artistas';
     const showPlaylists = activeCategory === 'todo' || activeCategory === 'playlists';
+    const showAlbums = activeCategory === 'todo' || activeCategory === 'albums';
 
-    // Limitar a máximo 2 elementos por categoría cuando se muestra "todo"
+    // Filtrar playlists que son álbumes
+    const albumPlaylists = filteredPlaylists.filter(playlist => playlist.esAlbum);
+
+    // Limitar a máximo 4 elementos por categoría cuando se muestra "todo"
     const limitedSongs = activeCategory === 'todo' ? filteredSongs.slice(0, 4) : filteredSongs;
     const limitedArtists = activeCategory === 'todo' ? filteredArtists.slice(0, 4) : filteredArtists;
-    const limitedPlaylists = activeCategory === 'todo' ? filteredPlaylists.slice(0, 4) : filteredPlaylists;
+    const limitedPlaylists = activeCategory === 'todo' ? filteredPlaylists.filter(p => !p.esAlbum).slice(0, 4) : filteredPlaylists.filter(p => !p.esAlbum);
+    const limitedAlbums = activeCategory === 'todo' ? albumPlaylists.slice(0, 4) : albumPlaylists;
+
+    // Función para agrupar artistas en pares (2 por fila)
+    const groupArtistsInPairs = (artists) => {
+        const pairs = [];
+        for (let i = 0; i < artists.length; i += 2) {
+            pairs.push(artists.slice(i, i + 2));
+        }
+        return pairs;
+    };
+
+    // Agrupar artistas en pares para el layout 2x2
+    const artistPairs = groupArtistsInPairs(activeCategory === 'todo' ? limitedArtists : filteredArtists);
 
     return (
         <div className="search-page">
@@ -283,25 +302,29 @@ const SearchPage = () => {
                                         </div>
                                     )}
 
-                                    {/* Artistas */}
+                                    {/* Artistas - Layout 2x2 */}
                                     {filteredArtists.length > 0 && showArtists && (
                                         <div className="artists-section">
                                             <h2 className="section-title">Artistas</h2>
-                                            <div className="artists-grid">
-                                                {(activeCategory === 'todo' ? limitedArtists : filteredArtists).map((artist) => (
-                                                    <div
-                                                        key={artist.id}
-                                                        className="artists-item"
-                                                        onClick={() => handleArtistClick(artist.id)}
-                                                    >
-                                                        <div className="artists-image">
-                                                            <img
-                                                                src={getImageUrl(artist.photo) || "/artist-placeholder.jpg"}
-                                                                alt={artist.name}
-                                                            />
-                                                        </div>
-                                                        <p className="artists-name">{artist.name}</p>
-                                                        <p className="artists-type">Artista</p>
+                                            <div className="artists-grid-2x2">
+                                                {artistPairs.map((pair, rowIndex) => (
+                                                    <div key={`row-${rowIndex}`} className="artists-row">
+                                                        {pair.map((artist) => (
+                                                            <div
+                                                                key={artist.id}
+                                                                className="artists-item"
+                                                                onClick={() => handleArtistClick(artist.id)}
+                                                            >
+                                                                <div className="artists-image">
+                                                                    <img
+                                                                        src={getImageUrl(artist.photo) || "/artist-placeholder.jpg"}
+                                                                        alt={artist.name}
+                                                                    />
+                                                                </div>
+                                                                <p className="artists-name">{artist.name}</p>
+                                                                <p className="artists-type">Artista</p>
+                                                            </div>
+                                                        ))}
                                                     </div>
                                                 ))}
                                             </div>
@@ -309,7 +332,7 @@ const SearchPage = () => {
                                     )}
                                 </div>
 
-                                {/* Columna derecha con Canciones y Playlists */}
+                                {/* Columna derecha con Canciones, Playlists y Álbumes */}
                                 <div className="results-right">
                                     {/* Canciones */}
                                     {filteredSongs.length > 0 && showSongs && (
@@ -320,7 +343,7 @@ const SearchPage = () => {
                                                     <div
                                                         key={song.id}
                                                         className="songs-item"
-                                                        onClick={() => navigate(`/song/${song.id}`)}
+                                                        onClick={() => navigate(`/songs/${song.id}`)}
                                                     >
                                                         <div className="songs-item-content">
                                                             <div className="songs-image">
@@ -334,34 +357,56 @@ const SearchPage = () => {
                                                                 <p className="songs-artist">{song.artist}</p>
                                                             </div>
                                                         </div>
-
                                                     </div>
                                                 ))}
                                             </div>
                                         </div>
                                     )}
 
-                                    {/* Playlists */}
-                                    {filteredPlaylists.length > 0 && showPlaylists && (
+                                    {/* Playlists (mostrando solo las que NO son álbumes) */}
+                                    {filteredPlaylists.filter(p => !p.esAlbum).length > 0 && showPlaylists && (
                                         <div className="section">
                                             <h2 className="section-title">Playlists</h2>
                                             <div className="playlists-grid">
-                                                {(activeCategory === 'todo' ? limitedPlaylists : filteredPlaylists).map((playlist) => (
+                                                {limitedPlaylists.map((playlist) => (
                                                     <div
                                                         key={playlist.id}
-                                                        className="playlist-item"
+                                                        className="playlists-item"
                                                         onClick={(e) => handlePlaylistClick(playlist.id, e)}
                                                     >
-                                                        <div className="playlist-image">
+                                                        <div className="playlists-image">
                                                             <img
                                                                 src={getImageUrl(playlist.imageUrl) || "/playlist-placeholder.jpg"}
                                                                 alt={playlist.title}
                                                             />
                                                         </div>
-                                                        <p className="playlist-title">{playlist.title}</p>
-                                                        <p className="playlist-type">
-                                                            {playlist.esAlbum ? 'Álbum' : 'Playlist'}
-                                                        </p>
+                                                        <p className="playlists-title">{playlist.title}</p>
+                                                        <p className="playlists-type">Playlist</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Álbumes (mostrando solo las playlists que SÍ son álbumes) */}
+                                    {albumPlaylists.length > 0 && showAlbums && (
+                                        <div className="section">
+                                            <h2 className="section-title">Álbumes</h2>
+                                            <div className="playlists-grid">
+                                                {(activeCategory === 'todo' ? limitedAlbums : albumPlaylists).map((album) => (
+                                                    <div
+                                                        key={album.id}
+                                                        className="playlists-item"
+                                                        onClick={(e) => handlePlaylistClick(album.id, e)}
+                                                    >
+                                                        <div className="playlists-image">
+                                                            <img
+                                                                src={getImageUrl(album.imageUrl) || "/playlist-placeholder.jpg"}
+                                                                alt={album.title}
+                                                            />
+                                                        </div>
+                                                        <p className="playlists-title">{album.title}</p>
+                                                        <p className="playlists-type">Álbum</p>
                                                     </div>
                                                 ))}
                                             </div>

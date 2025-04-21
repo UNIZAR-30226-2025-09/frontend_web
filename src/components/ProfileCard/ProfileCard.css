@@ -1,30 +1,52 @@
 .profile-card {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    padding: 10px; /* Reduce el espacio interno del profile card */
-    margin: 0; /* Elimina el margen extra */
-    border-radius: 10px;
+    justify-content: space-between;
+    padding: 22px 24px;
+    border-radius: 14px;
     color: white;
-    background-color: transparent; /* Mantén el fondo transparente */
+    background: #3a3a3a;
     width: 100%;
-    box-shadow: none;
-    flex-grow: 1;
-    position: relative; /* Necesario para el menú desplegable */
-    z-index: 1; /* Asegura que el contenido esté por encima de otros elementos */
-    overflow: visible; /* Asegura que no sobresalga nada */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: visible; /* Aseguramos que el menú sea visible */
 }
 
-/* Contenedor del avatar */
+.profile-card:hover {
+    background: #404040;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Contenedor del contenido principal */
+.profile-content {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+/* Contenedor del avatar sin efecto de brillo */
 .profile-pic-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 60px;
-    height: 60px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     flex-shrink: 0;
-    margin-right: 10px; /* Espacio entre la foto y el nombre */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+.profile-card:hover .profile-pic-container {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25), 0 0 0 2px rgba(255, 255, 255, 0.2);
 }
 
 /* Imagen de perfil */
@@ -35,105 +57,170 @@
     object-fit: cover;
 }
 
-/* Avatar por defecto */
+/* Avatar por defecto con gradiente */
 .profile-pic-default {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: 100%;
-    background-color: #79e2ff;
     border-radius: 50%;
     color: white;
-    font-size: 24px;
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra más suave */
+    font-size: 22px;
+    font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* Información del perfil */
 .profile-info {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    margin-left: 10px; /* Ajusta el espacio entre la foto y la información */
+    margin-left: 16px;
+    overflow: hidden;
+    min-width: 0;
 }
 
-/* Nombre y email */
+/* Nombre con efecto de texto */
 .profile-name {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 0;
-}
-
-.profile-email {
-    font-size: 14px;
-    color: #b0b0b0;
-    margin-top: 5px;
-}
-
-/* Estilo para el menú de opciones */
-.options-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    position: relative;
-}
-
-/* Icono de tres puntos */
-.options-button {
-    background: transparent;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: white;
-    margin-top: 10px;
 }
 
-/* Menú de opciones */
-.options-menu {
-    background-color: #3a3a3a;
-    padding: 10px;
-    border-radius: 8px;
-    position: absolute;
-    right: 0;
-    top: 100%;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    margin-top: 10px;
+/* Email con opacidad */
+.profile-email {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 4px 0 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+
+/* Contenedor del menú de opciones */
+.profile-options {
+    margin-left: 10px;
+    flex-shrink: 0;
+    position: relative;
     z-index: 10;
-    min-width: 150px;
 }
 
-/* Estilo para los elementos del menú */
+/* Icono de tres puntos mejorado */
+.options-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.25s ease;
+    width: 36px;
+    height: 36px;
+}
+
+.options-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Menú de opciones - más pequeño */
+.options-menu {
+    background: #1b82c3; /* Color azul sólido */
+    padding: 10px;
+    border-radius: 10px;
+    position: absolute;
+    right: -5px;
+    top: calc(100% + 8px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    z-index: 100;
+    min-width: 190px; /* Más pequeño */
+    animation: slideDown 0.2s ease;
+    transform-origin: top right;
+    overflow: visible;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilo para los elementos del menú - más pequeños */
 .options-item {
     background: transparent;
     border: none;
     color: white;
-    padding: 8px 15px;
+    padding: 12px 14px; /* Más pequeño */
     width: 100%;
     text-align: left;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 14px; /* Más pequeño */
+    font-weight: 600;
+    border-radius: 6px;
+    transition: background-color 0.2s ease, padding-left 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Más pequeño */
+    margin: 2px 0;
 }
 
-/* Hover para los elementos del menú */
 .options-item:hover {
-    background-color: #79e2ff;
+    background-color: rgba(255, 255, 255, 0.15);
+    padding-left: 16px;
 }
 
-/* Botón de logout */
-.logout-button {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background-color: #f44336;
-    border: none;
-    border-radius: 5px;
+.options-item svg {
+    width: 18px; /* Más pequeño */
+    height: 18px; /* Más pequeño */
+    transition: transform 0.2s ease;
+}
+
+.options-item:hover svg {
+    transform: scale(1.1);
+}
+
+/* Botón específico de logout */
+.options-item-logout {
     color: white;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    margin-top: 5px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 12px; /* Más pequeño */
+    font-weight: 700;
 }
 
-.logout-button:hover {
-    background-color: #e53935;
+.options-item-logout:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.options-item-logout svg {
+    color: white;
+}
+
+/* Estilos para la flecha del menú */
+.options-menu::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: 16px;
+    width: 12px;
+    height: 12px;
+    background: #1b82c3;
+    transform: rotate(45deg);
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
 }

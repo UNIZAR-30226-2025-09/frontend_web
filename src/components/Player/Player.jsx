@@ -8,7 +8,8 @@ import { IconContext } from "react-icons";
 import { getImageUrl } from "#utils/getImageUrl";
 import styles from "./PlayerStyles.module.css";
 import {apiFetch} from "#utils/apiFetch";
-
+import SynchronizedLyrics from "../SynchronizedLyrics/SynchronizedLyrics";
+import { parseLRC } from "../../utils/parseLRC";
 function Player() {
     const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs,
             isPlaying, setIsPlaying, setSongs, playlistActive, setPlaylistActive, setSongActive } = usePlayer();
@@ -20,6 +21,8 @@ function Player() {
     const [isLiked, setIsLiked] = useState(false); // Estado para saber si la canción está en favoritos
     const soundRef = useRef(null);
     const intervalRef = useRef(null);
+    const [lyrics, setLyrics] = useState([]); // New state for lyrics
+    const [showLyrics, setShowLyrics] = useState(false); // Toggle for showing/hiding lyrics
 
     const user = JSON.parse(localStorage.getItem('user'));
     const userId = user ? user.id : null; // Evitar errores si el usuario no está logueado
@@ -216,7 +219,56 @@ function Player() {
         };
     }, [currentSong, songUrl]);  // Solo se ejecuta cuando currentSong o songUrl cambian
 
+    useEffect(() => {
+        const fetchLyrics = async () => {  // Define an async function inside useEffect
+            if (currentSong) {  // Add a check if currentSong exists
+                try {
+                    // Get the exact song name
+                    const songName = currentSong.name;
 
+                    // Add .lrc extension if not already present
+                    const lrcFilename = songName.endsWith('.lrc') ? songName : songName + '.lrc';
+
+                    // Encode the filename for URL
+                    const encodedFilename = encodeURIComponent(lrcFilename);
+
+                    console.log("Fetching lyrics:", encodedFilename);
+
+                    const response = await fetch(`http://localhost:5001/lyrics/${encodedFilename}`);
+                    if (response.ok) {
+                        const lrcText = await response.text();
+                        const parsedLyrics = parseLRC(lrcText);
+                        setLyrics(parsedLyrics);
+                        setShowLyrics(true);
+                        console.log("Lyrics loaded successfully");
+                    } else {
+                        console.log("Lyrics not found:", response.status);
+                        setLyrics([]);
+                        setShowLyrics(false);
+                    }
+                } catch (error) {
+                    console.error("Error fetching lyrics:", error);
+                    setLyrics([]);
+                    setShowLyrics(false);
+                }
+            } else {
+                // Handle case when currentSong is null or undefined
+                setLyrics([]);
+                setShowLyrics(false);
+            }
+        };
+
+        fetchLyrics();  // Call the async function
+    }, [currentSong]);
+
+    // Add this right before your fetchLyrics useEffect
+    useEffect(() => {
+        console.log("Current song:", currentSong);
+        if (currentSong) {
+            console.log("Has lrcFilename?", !!currentSong.lrcFilename);
+            console.log("lrcFilename value:", currentSong.lrcFilename);
+        }
+    }, [currentSong]);
 
     useEffect(() => {
         if (!currentSong || !userId) return;
@@ -504,6 +556,33 @@ function Player() {
                     </button>
                 </div>
             )}
+            {!noSongSelected && (
+                <div className={styles.lyricsButtonContainer}>
+                    <button
+                        className={styles.lyricsToggle}
+                        onClick={() => {
+                            console.log("Toggle lyrics button clicked. Current lyrics state:", showLyrics);
+                            console.log("Lyrics array length:", lyrics.length);
+                            setShowLyrics(!showLyrics);
+                        }}
+                        disabled={lyrics.length === 0} // Disable if no lyrics found
+                    >
+                        {lyrics.length > 0 ?
+                            (showLyrics ? "Ocultar letra" : "Mostrar letra") :
+                            "No hay letra disponible"}
+                    </button>
+                </div>
+            )}
+
+            {/* Letras sincronizadas */}
+            {showLyrics && lyrics.length > 0 && (
+                <div className={styles.lyricsContainer}>
+                    <SynchronizedLyrics
+                        lyrics={lyrics}
+                        currentTime={seconds}
+                    />
+                </div>
+            )}
 
             {/* Barra de progreso siempre presente, pero deshabilitada si no hay canción */}
             <div className={styles.timelineContainer}>
@@ -534,6 +613,7 @@ function Player() {
                     disabled={noSongSelected}
                 />
             </div>
+
         </div>
     );
 }

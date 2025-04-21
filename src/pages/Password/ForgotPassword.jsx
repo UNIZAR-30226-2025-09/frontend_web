@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "#utils/apiFetch";
-import "../Login/Login.css";
+import "./ForgotPassword.css"; // Actualizado para usar su propio CSS
 
 function ForgotPassword() {
     const [email, setEmail] = useState("");
@@ -31,58 +31,95 @@ function ForgotPassword() {
     };
 
     return (
-        <div className="login-container">
-            <div className="login-box">
-                <img
-                    src="../vibrablanco.png"
-                    alt="Vibra Logo"
-                    className="logo"
-                    onClick={() => navigate("/")}
-                />
-                <h1 className="login-txt">Recuperar Contraseña</h1>
-                <hr className="line" />
-                
-                {!isSuccess ? (
-                    <form onSubmit={handleSubmit}>
-                        <div className="input-label">
-                            <label htmlFor="email">Correo Electrónico</label>
-                            <input
-                                type="email"
-                                id="email"
-                                placeholder="Ingresa tu correo electrónico"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="globalInput"
-                                required
-                            />
-                        </div>
-                        {message && (
-                            <p style={{ color: "red", fontSize: "14px" }}>
-                                {message}
-                            </p>
-                        )}
-                        <button 
-                            type="submit" 
-                            className="btn-blue"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? "Enviando..." : "Enviar enlace de recuperación"}
-                        </button>
-                        <p className="back-to-login" onClick={() => navigate("/login")}>
-                            Volver a Iniciar Sesión
-                        </p>
-                    </form>
-                ) : (
-                    <div className="success-message">
-                        <p>{message}</p>
-                        <button 
-                            onClick={() => navigate("/login")} 
-                            className="btn-blue"
-                        >
-                            Volver a Iniciar Sesión
-                        </button>
+        <div className="auth-container">
+            <div className="auth-background">
+                <div className="auth-bg-shape shape1"></div>
+                <div className="auth-bg-shape shape2"></div>
+                <div className="auth-bg-shape shape3"></div>
+            </div>
+            
+            <div className="auth-card">
+                <div className="auth-header">
+                    <div className="logo-container">
+                        <img
+                            src="../vibrablanco.png"
+                            alt="Vibra Logo"
+                            className="logo-image"
+                            onClick={() => navigate("/")}
+                        />
                     </div>
-                )}
+                </div>
+                
+                <div className="auth-content">
+                    <div>
+                        <h1 className="auth-title">Recuperar Contraseña</h1>
+                        <p className="auth-subtitle">
+                            Introduce tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña
+                        </p>
+                    </div>
+                    
+                    {!isSuccess ? (
+                        <form className="auth-form" onSubmit={handleSubmit}>
+                            <div className="form-field">
+                                <label htmlFor="email" className="field-label">Correo Electrónico</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    className="field-input"
+                                    placeholder="ejemplo@correo.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            
+                            {message && !isSuccess && (
+                                <div className="message message-error">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                                    </svg>
+                                    <span>{message}</span>
+                                </div>
+                            )}
+                            
+                            <button 
+                                type="submit" 
+                                className="submit-button"
+                                disabled={isLoading || !email}
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <span className="loading-spinner"></span>
+                                        <span>Enviando...</span>
+                                    </>
+                                ) : "Enviar enlace de recuperación"}
+                            </button>
+                            
+                            <div style={{ textAlign: "center" }}>
+                                <a className="back-link" onClick={() => navigate("/login")}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                                    </svg>
+                                    Volver a Iniciar Sesión
+                                </a>
+                            </div>
+                        </form>
+                    ) : (
+                        <div className="success-container">
+                            <svg className="success-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M0 0h24v24H0V0z" fill="none"/>
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                            </svg>
+                            <p className="success-message">{message}</p>
+                            <button 
+                                onClick={() => navigate("/login")} 
+                                className="submit-button"
+                            >
+                                Volver a Iniciar Sesión
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

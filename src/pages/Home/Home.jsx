@@ -222,7 +222,7 @@ const Home = () => {
                                 <p>Inicia sesión para ver recomendaciones</p>
                             </div>
                             <div className="login-banner-buttons">
-                                <button className="login-button" onClick={() => navigate("/login")}>Iniciar sesión</button>
+                                <button className="banner-login-button" onClick={() => navigate("/login")}>Iniciar sesión</button>
                                 <button className="register-button" onClick={() => navigate("/register")}>Registrarse</button>
                             </div>
                         </div>

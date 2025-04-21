@@ -35,7 +35,13 @@ const Plans = () => {
     const navigate = useNavigate();
 
     const cambiarAGratis = () => {
-        localStorage.setItem("is_premium", "false");
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        if (storedUser) {
+            storedUser.is_premium = false;
+            localStorage.setItem("user", JSON.stringify(storedUser));
+        }
+
+        // Navegamos a la página de cuenta con el parámetro plan=gratis
         navigate("/account?plan=gratis");
     };
 
