@@ -16,13 +16,20 @@
 .footer-container {
     display: flex;
     justify-content: space-between;
+    gap: 40px;
     margin-bottom: 1rem;
+    flex-wrap: wrap;
 }
 
 .footer-section {
     flex: 1;
+    min-width: 0; /* para evitar desbordamientos */
+    max-width: 33.33%;
     padding: 0 1rem;
+    text-align: center;
 }
+
+
 
 .footer-section h3 {
     font-size: 1.2rem;
@@ -44,10 +51,6 @@
     margin: 0.5rem 0;
 }
 
-.footer-section a {
-    color: #ddd;
-    text-decoration: none;
-}
 
 .footer-bottom {
     font-size: 0.875rem;
@@ -86,3 +89,17 @@
     border: 0;
     border-top: 2px solid #ddd; /* Línea gris claro */
 }
+
+
+.footer-section a {
+    color: #ddd;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block; /* necesario para que transform funcione bien */
+}
+
+.footer-section a:hover {
+    color: #2196f3;
+    transform: scale(1.05); /* efecto visual sin cambiar el flujo del layout */
+}
+
