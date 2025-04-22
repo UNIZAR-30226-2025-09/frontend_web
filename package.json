@@ -17,6 +17,7 @@
     "@tailwindcss/postcss": "^4.0.0",
     "axios": "^1.8.3",
     "compressorjs": "^1.2.1",
+    "date-fns": "^4.1.0",
     "flowbite": "^3.0.0-beta.1",
     "lodash.debounce": "^4.0.8",
     "prop-type": "^0.0.1",
