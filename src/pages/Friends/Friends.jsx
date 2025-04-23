@@ -73,31 +73,33 @@ function Friends() {
     // Efecto para hacer scroll hasta el último mensaje
     useEffect(() => {
         if (messagesEndRef.current && shouldAutoScroll) {
-            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+            // Solo scrollea el contenedor de mensajes, no el documento
+            chatContainerRef.current?.scrollTo({
+                top: chatContainerRef.current.scrollHeight,
+                behavior: "smooth"
+            });
         }
     }, [chatMessages, shouldAutoScroll]);
     
     // Monitorear el scroll del container de chat
     useEffect(() => {
         const chatContainer = chatContainerRef.current;
-        
         if (!chatContainer) return;
-        
+    
         const handleScroll = () => {
             const { scrollTop, scrollHeight, clientHeight } = chatContainer;
             const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-            
-            // Si estamos a más de 100px del fondo, mostrar el botón
-            const shouldShow = distanceFromBottom > 100;
-            setShowScrollButton(shouldShow);
-            
-            // Sólo habilitamos auto-scroll cuando estamos cerca del final
+            setShowScrollButton(distanceFromBottom > 100);
             setShouldAutoScroll(distanceFromBottom < 50);
         };
-        
+    
         chatContainer.addEventListener('scroll', handleScroll);
+    
+        // Llama a handleScroll al montar y cuando cambian los mensajes
+        handleScroll();
+    
         return () => chatContainer.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [chatMessages, selectedFriend]);
 
     useEffect(() => {
         console.log("Estado de showScrollButton:", showScrollButton);
@@ -471,9 +473,12 @@ function Friends() {
     
     // Función para desplazarse al final del chat
     const scrollToBottom = useCallback(() => {
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-            setShouldAutoScroll(true); // Reactivar auto-scroll al hacer clic en el botón
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTo({
+                top: chatContainerRef.current.scrollHeight,
+                behavior: "smooth"
+            });
+            setShouldAutoScroll(true);
         }
     }, []);
 

@@ -219,7 +219,7 @@
 .friends-content {
     flex: 1;
     padding: 30px;
-    overflow-y: auto;
+    overflow-y: visible;
     background-color: var(--background-dark);
     height: 100%;
     position: relative;
@@ -843,16 +843,17 @@ h3 i {
 
 /* Ventana de chat mejorada */
 .chat-window {
+    position: relative;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 140px); /* Ajuste para el reproductor inferior y navbar */
+    height: calc(100vh - 140px);
     background-color: rgba(30, 30, 30, 0.95);
     border-radius: var(--border-radius-lg);
     overflow: hidden;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.05);
     animation: fadeInUp 0.4s ease-out;
-    margin-bottom: 100px; /* Espacio para el reproductor */
+    margin-bottom: 100px;
 }
 
 /* Cabecera del chat */
@@ -932,17 +933,14 @@ h3 i {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    background-color: var(--background-dark);
-    
-    /* Fondo elegante mejorado */
+    background-color: #121212;
     background-image: 
-        linear-gradient(rgba(24, 119, 242, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(24, 119, 242, 0.02) 1px, transparent 1px);
-    background-size: 30px 30px;
-    background-position: center;
-    
+        radial-gradient(rgba(255,255,255,0.03) 2px, transparent 2px), 
+        radial-gradient(rgba(255,255,255,0.03) 2px, transparent 2px);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px;
     scrollbar-width: thin;
-    scrollbar-color: var(--primary-color) var(--background-light);
+    scrollbar-color: #1db954 #282828;
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -1264,22 +1262,30 @@ h3 i {
 /* Botón de scroll hacia abajo */
 .scroll-bottom-button {
     position: absolute;
+    right: 28px;
     bottom: 90px;
-    right: 20px;
-    width: 45px;
-    height: 45px;
+    z-index: 30;
+    background: #fff; /* Fondo blanco para destacar */
+    color: #222;      /* Icono oscuro */
+    border: 2px solid var(--primary-color);
     border-radius: 50%;
-    background-color: var(--primary-color);
-    color: white;
+    width: 44px;
+    height: 44px;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.3s ease;
-    transition: all var(--transition-fast);
-    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.scroll-bottom-button.visible {
+    opacity: 0.92;
+    pointer-events: auto;
+    transform: translateY(0);
 }
 
 .scroll-bottom-button i {
@@ -1287,9 +1293,14 @@ h3 i {
 }
 
 .scroll-bottom-button:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    background: #f0f0f0;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: scale(1.08);
+}
+
+.scroll-bottom-button svg {
+    fill: currentColor;
 }
 
 /* Selector de emojis mejorado */
