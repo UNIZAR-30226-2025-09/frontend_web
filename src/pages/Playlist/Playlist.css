@@ -268,3 +268,199 @@
     font-size: 1rem;
     color: white;
 }
+
+/* Estilos mejorados para el popup de compartir */
+.share-popup {
+    max-width: 460px;
+    background: linear-gradient(to bottom, #1a1e26, #2a2f38);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(24, 119, 242, 0.15);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.share-popup h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.share-popup h3::before {
+    content: "";
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230399b6'%3E%3Cpath d='M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Estilo mejorado para el input de búsqueda */
+.share-popup .edit-input {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 12px 16px 12px 42px;
+    font-size: 16px;
+    color: white;
+    width: calc(100% - 58px);
+    transition: all 0.3s ease;
+    margin-bottom: 18px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 12px center;
+    background-size: 20px;
+}
+
+.share-popup .edit-input:focus {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: #0399b6;
+    box-shadow: 0 0 0 2px rgba(3, 153, 182, 0.2);
+    outline: none;
+}
+
+/* Contenedor de la lista de amigos */
+.share-friends-list {
+    max-height: 280px;
+    overflow-y: auto;
+    margin: 0 0 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px;
+}
+
+.share-friends-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.share-friends-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.share-friends-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+/* Mejorar estilo de cada item amigo */
+.share-friend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1rem;
+    padding: 10px 12px;
+    border-radius: 12px;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.share-friend-item:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.share-friend-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.share-friend-item input[type="checkbox"]:checked {
+    background-color: #0399b6;
+    border-color: #0399b6;
+}
+
+.share-friend-item input[type="checkbox"]:checked::after {
+    content: "";
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    position: absolute;
+    top: 2px;
+    left: 6px;
+    transform: rotate(45deg);
+}
+
+/* Estilo para los avatares */
+.share-friend-item .friend-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    object-fit: cover;
+}
+
+.share-friend-item .initials-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #0399b6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* Botones de acción */
+.share-popup-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.share-popup-actions button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.share-popup-actions button:first-child {
+    background-color: #0399b6;
+    color: white;
+}
+
+.share-popup-actions button:first-child:hover {
+    background-color: #02889f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(3, 153, 182, 0.3);
+}
+
+.share-popup-actions button:last-child {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.share-popup-actions button:last-child:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Mensaje cuando no hay amigos */
+.share-friends-empty {
+    text-align: center;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+}

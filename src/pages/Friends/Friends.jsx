@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { apiFetch } from '../../utils/apiFetch';
+import { getImageUrl } from '../../utils/getImageUrl';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import './Friends.css';
@@ -611,6 +612,31 @@ function Friends() {
         return { initial, bgColor };
     }, []);
 
+    function linkify(text) {
+        if (!text) return "";
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.split(urlRegex).map((part, i) =>
+            urlRegex.test(part) ? (
+                <a
+                    key={i}
+                    href={part}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                        color: "#fff",
+                        textDecoration: "underline",
+                        wordBreak: "break-all",
+                        fontWeight: 500
+                    }}
+                    onMouseOver={e => e.target.style.textDecoration = "underline"}
+                    onMouseOut={e => e.target.style.textDecoration = "none"}
+                >
+                    {part}
+                </a>
+            ) : part
+        );
+    }
+
     return (
         <div className="friends-container">
             {/* Sidebar mejorada */}
@@ -906,7 +932,69 @@ function Friends() {
                                                         className={`message ${isSentByMe ? 'sent' : 'received'} ${isConsecutive ? 'consecutive' : ''} ${msg.isOptimistic ? 'optimistic' : ''}`}
                                                     >
                                                         <div className="message-content">
-                                                            <p>{msg.txt_message}</p>
+                                                        {msg.shared_content && msg.shared_content.type === 'playlist' ? (
+                                                            <>
+                                                                <p style={{
+                                                                    marginBottom: 10,
+                                                                    fontWeight: 500,
+                                                                    color: "#fff"
+                                                                }}>
+                                                                    {msg.txt_message}
+                                                                </p>
+                                                                <div
+                                                                    className="shared-playlist-message"
+                                                                    style={{
+                                                                        display: "flex",
+                                                                        alignItems: "center",
+                                                                        background: "#181c2f",
+                                                                        borderRadius: 14,
+                                                                        boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+                                                                        padding: 12,
+                                                                        cursor: "pointer",
+                                                                        transition: "box-shadow 0.2s, transform 0.2s",
+                                                                        gap: 14,
+                                                                        marginBottom: 4
+                                                                    }}
+                                                                    onClick={() => window.open(msg.shared_content.url, '_blank')}
+                                                                    onMouseOver={e => e.currentTarget.style.boxShadow = "0 4px 24px rgba(24,119,242,0.25)"}
+                                                                    onMouseOut={e => e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.15)"}
+                                                                >
+                                                                    <img
+                                                                        src={getImageUrl(msg.shared_content.image, '/default-playlist.jpg')}
+                                                                        alt={msg.shared_content.name || "Playlist"}
+                                                                        style={{
+                                                                            width: 64,
+                                                                            height: 64,
+                                                                            borderRadius: 10,
+                                                                            objectFit: "cover",
+                                                                            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                                                                            background: "#222"
+                                                                        }}
+                                                                        onError={e => e.target.src = "/default-playlist.jpg"}
+                                                                    />
+                                                                    <div style={{ flex: 1 }}>
+                                                                        <div style={{
+                                                                            fontWeight: 600,
+                                                                            fontSize: 16,
+                                                                            color: "#fff",
+                                                                            marginBottom: 2
+                                                                        }}>
+                                                                            {msg.shared_content.name || "Playlist"}
+                                                                        </div>
+                                                                        <div style={{
+                                                                            fontSize: 13,
+                                                                            color: "#b3b3b3"
+                                                                        }}>
+                                                                            Playlist • ¡Haz clic para ver!
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        ) : (
+                                                            <p style={{ marginBottom: 10, fontWeight: 500, color: "#fff" }}>
+                                                                {linkify(msg.txt_message)}
+                                                            </p>
+                                                        )}
                                                             <div className="message-footer">
                                                                 <span className="message-time">{formatMessageTime(msg.sent_at)}</span>
                                                                 {isSentByMe && (
@@ -914,7 +1002,7 @@ function Friends() {
                                                                         {msg.isOptimistic ? (
                                                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                                                 <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" fill="currentColor"/>
-                                                                                <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="currentColor"/>
+                                                                                <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67V7z" fill="currentColor"/>
                                                                             </svg>
                                                                         ) : msg.read ? (
                                                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
