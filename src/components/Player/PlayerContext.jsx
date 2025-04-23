@@ -12,6 +12,7 @@ export const PlayerProvider = ({ children }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [playlistActive, setPlaylistActive] = useState(0);
     const [songActive, setSongActive] = useState(0);
+    const [dailySkips, setDailySkips] = useState(0);
     return (
         <PlayerContext.Provider
             value={{
@@ -27,6 +28,8 @@ export const PlayerProvider = ({ children }) => {
                 setPlaylistActive,
                 songActive,
                 setSongActive,
+                dailySkips,
+                setDailySkips,
             }}
         >
             {children}
