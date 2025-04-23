@@ -318,18 +318,27 @@
     align-items: center;
     justify-content: space-between;
     background-color: var(--background-card);
-    padding: 18px;
-    margin-bottom: 12px;
-    border-radius: var(--border-radius-md);
-    transition: all var(--transition-slow);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    position: relative;
-    overflow: hidden;
-    animation: fadeIn 0.4s ease-out;
+    padding: 22px 28px;
+    margin-bottom: 18px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 4px 18px rgba(24, 119, 242, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    min-width: 320px;
+    max-width: 500px;
+    width: 100%;
+    font-size: 1.08rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+    animation: fadeIn 0.4s;
+    gap: 18px;
 }
 
-.friend-card:hover, .request-card:hover, .user-card:hover, .conversation-card:hover {
+.user-card:hover {
+    box-shadow: 0 8px 28px rgba(24, 119, 242, 0.18);
+    transform: translateY(-2px) scale(1.03);
+    border-color: var(--primary-color);
+}
+
+.friend-card:hover, .request-card:hover, .conversation-card:hover {
     background-color: rgba(40, 40, 40, 0.95);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
@@ -356,11 +365,26 @@
 }
 
 /* Info de personas */
-.friend-info, .request-info, .user-info, .conversation-info {
+.friend-info, .conversation-info {
     display: flex;
     align-items: center;
     gap: 15px;
     flex: 1;
+}
+
+.request-info {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex: 1;
+}
+
+.user-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
 }
 
 .conversation-info {
@@ -395,7 +419,7 @@
     position: relative;
 }
 
-.friend-avatar, .request-avatar, .user-avatar, .conversation-avatar {
+.friend-avatar, .request-avatar, .conversation-avatar {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -405,21 +429,34 @@
     transition: all var(--transition-normal);
 }
 
+.user-avatar {
+    width: 56px;
+    height: 56px;
+    font-size: 1.5rem;
+    margin-right: 18px;
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 2px 8px rgba(24, 119, 242, 0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Avatar con iniciales mejorado */
 .initials-avatar {
-    width: 50px;
-    height: 50px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: 600;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     text-transform: uppercase;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-    border: 2px solid transparent;
+    box-shadow: 0 2px 8px rgba(24, 119, 242, 0.10);
+    border: 2px solid var(--primary-color);
     transition: all var(--transition-normal);
+    margin-right: 18px;
 }
 
 .chat-avatar.initials-avatar {
@@ -437,11 +474,19 @@
     transform: scale(1.05);
 }
 
-.friend-name, .request-name, .user-name, .conversation-name {
+.friend-name, .request-name, .conversation-name {
     font-size: 1rem;
     font-weight: 600;
     letter-spacing: 0.3px;
     margin: 0;
+}
+
+.user-name {
+    font-size: 1.13rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-right: 18px;
+    white-space: nowrap;
 }
 
 .request-time, .conversation-time {
@@ -449,10 +494,17 @@
     color: var(--text-muted);
 }
 
-.request-user-info, .conversation-meta {
+.conversation-meta {
     display: flex;
     flex-direction: column;
     gap: 4px;
+}
+
+.request-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* Espacio vertical entre nombre y texto */
+    margin-right: 18px; /* Espacio a la derecha del texto */
 }
 
 .conversation-meta {
@@ -464,11 +516,11 @@
     min-width: 80px;
 }
 
-.friend-actions {
+.friend-actions, .request-actions {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-left: 15px;
+    gap: 18px; /* Más espacio entre botones */
+    margin-left: 28px; /* Más separación respecto al texto */
 }
 
 .unread-count {
@@ -787,11 +839,6 @@
     margin-bottom: 50px;
 }
 
-.request-actions {
-    display: flex;
-    gap: 10px;
-}
-
 /* Encabezados */
 h2 {
     font-size: 1.7rem;
@@ -940,7 +987,7 @@ h3 i {
     background-size: 40px 40px;
     background-position: 0 0, 20px 20px;
     scrollbar-width: thin;
-    scrollbar-color: #1db954 #282828;
+    scrollbar-color: var(--primary-color) var(--background-light);
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -953,7 +1000,7 @@ h3 i {
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
+    background: var(--primary-color) !important;
     border-radius: 3px;
 }
 

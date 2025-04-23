@@ -704,9 +704,10 @@ function Friends() {
                                 
                                 {conversations.length > 0 ? (
                                     <div className="conversations-list">
-                                        {conversations.map(conv => {
-                                            const avatarInfo = getInitialsAvatar(conv.friend.nickname, conv.friend.id);
-                                            
+                                        {conversations
+                                            .filter(conv => conv.lastMessage) // Solo conversaciones con mensajes
+                                            .map(conv => {
+                                                const avatarInfo = getInitialsAvatar(conv.friend.nickname, conv.friend.id);
                                             return (
                                                 <div 
                                                     key={conv.friend.id} 
@@ -1221,24 +1222,21 @@ function Friends() {
                                             
                                             return (
                                                 <div key={user.id} className="user-card">
-                                                    <div className="user-info">
-                                                        {user.user_picture ? (
-                                                            <img 
-                                                                src={user.user_picture} 
-                                                                alt={user.nickname} 
-                                                                className="user-avatar"
-                                                            />
-                                                        ) : avatarInfo && (
-                                                            <div 
-                                                                className="initials-avatar" 
-                                                                style={{backgroundColor: avatarInfo.bgColor}}
-                                                            >
-                                                                {avatarInfo.initial}
-                                                            </div>
-                                                        )}
-                                                        <span className="user-name">{user.nickname}</span>
-                                                    </div>
-                                                    
+                                                    {user.user_picture ? (
+                                                        <img 
+                                                            src={user.user_picture} 
+                                                            alt={user.nickname} 
+                                                            className="user-avatar"
+                                                        />
+                                                    ) : avatarInfo && (
+                                                        <div 
+                                                            className="initials-avatar" 
+                                                            style={{backgroundColor: avatarInfo.bgColor}}
+                                                        >
+                                                            {avatarInfo.initial}
+                                                        </div>
+                                                    )}
+                                                    <span className="user-name">{user.nickname}</span>
                                                     {user.isFriend ? (
                                                         <div className="is-friend-indicator">
                                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
