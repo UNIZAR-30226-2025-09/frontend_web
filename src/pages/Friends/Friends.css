@@ -1,3 +1,4 @@
+
 /* Variables para una paleta consistente y fácil de modificar */
 :root {
     --primary-color: #1877f2; /* Azul principal */
@@ -443,20 +444,20 @@
 
 /* Avatar con iniciales mejorado */
 .initials-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 1.5rem;
-    text-transform: uppercase;
-    box-shadow: 0 2px 8px rgba(24, 119, 242, 0.10);
-    border: 2px solid var(--primary-color);
-    transition: all var(--transition-normal);
-    margin-right: 18px;
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 600 !important;
+    font-size: 1.3rem !important;
+    text-transform: uppercase !important;
+    flex-shrink: 0 !important;
+    margin-right: 15px !important;
+    border: 2px solid transparent !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
 }
 
 .chat-avatar.initials-avatar {
@@ -1573,4 +1574,278 @@ button:focus:not(:focus-visible), input:focus:not(:focus-visible) {
 }
 .message-content a:hover {
     text-decoration: underline;
+}
+
+/* Botón de ver más mejorado */
+.load-more-button {
+    margin-top: 25px;
+    margin-bottom: 30px;
+    background-color: rgba(24, 119, 242, 0.1);
+    color: var(--primary-color);
+    border: 1px solid rgba(24, 119, 242, 0.3);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 12px 20px;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 2px 6px rgba(24, 119, 242, 0.1);
+}
+
+.load-more-button:hover {
+    background-color: rgba(24, 119, 242, 0.2);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(24, 119, 242, 0.2);
+}
+
+.load-more-button:active {
+    transform: translateY(0);
+    background-color: rgba(24, 119, 242, 0.25);
+}
+
+/* Añadir icono al botón */
+.load-more-button::before {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231877f2'%3E%3Cpath d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6-1.41-1.41z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Versión para modales con fondo más oscuro */
+.modal-body .load-more-button {
+    background-color: rgba(24, 119, 242, 0.15);
+    margin: 15px 0 5px;
+}
+
+/* Modal para todas las solicitudes */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s;
+}
+
+.modal-content {
+    width: 90%;
+    max-width: 700px;
+    max-height: 85vh;
+    background-color: var(--background-card);
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    animation: fadeInUp 0.4s;
+}
+
+.modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    padding-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-header h2::after {
+    display: none;
+}
+
+.modal-close-button {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.modal-close-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+    transform: scale(1.1);
+}
+
+.modal-search {
+    padding: 15px 24px;
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modal-search input {
+    width: 100%;
+    padding: 12px 40px 12px 15px;
+    background-color: rgba(45, 45, 45, 0.95);
+    border: none;
+    border-radius: var(--border-radius-md);
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+.modal-search input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.modal-search .search-clear {
+    position: absolute;
+    right: 35px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 20px 24px;
+    overflow-y: auto;
+    max-height: 60vh;
+}
+
+.modal-requests-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.modal-body .request-card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-body .request-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Restaurar bordes azules para los avatares */
+.initials-avatar, 
+.request-avatar, 
+.friend-avatar, 
+.conversation-avatar {
+    border: 2px solid var(--primary-color) !important;
+    box-shadow: 0 2px 8px rgba(24, 119, 242, 0.2) !important;
+}
+
+/* Asegurar que sea perfectamente circular con el borde */
+.request-card .initials-avatar,
+.request-card .request-avatar {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 2px solid var(--primary-color) !important;
+    box-shadow: 0 2px 8px rgba(24, 119, 242, 0.2) !important;
+    overflow: hidden !important;
+}
+
+/* Mejorar la apariencia del avatar en modales */
+.modal-requests-list .initials-avatar,
+.modal-requests-list .request-avatar {
+    border: 2px solid var(--primary-color) !important;
+    box-shadow: 0 2px 8px rgba(24, 119, 242, 0.2) !important;
+}
+
+/* Resaltar al pasar el ratón */
+.request-card:hover .initials-avatar,
+.request-card:hover .request-avatar,
+.modal-requests-list .request-card:hover .initials-avatar,
+.modal-requests-list .request-card:hover .request-avatar {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 3px 12px rgba(24, 119, 242, 0.4) !important;
+    transform: scale(1.05);
+}
+
+/* Estilos para las listas de amigos y conversaciones en modales */
+.modal-friends-list, .modal-conversations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+.modal-friends-list .friend-card {
+    animation: fadeIn 0.3s ease-out;
+    transition: transform 0.2s ease;
+    padding: 10px 15px;
+    border-radius: var(--border-radius-md);
+    background-color: rgba(30, 30, 30, 0.6);
+}
+
+.modal-friends-list .friend-card:hover {
+    background-color: rgba(40, 40, 40, 0.8);
+    transform: translateY(-2px);
+}
+
+.modal-conversations-list .conversation-card {
+    animation: fadeIn 0.3s ease-out;
+    border-bottom: none;
+    padding: 12px 15px;
+    border-radius: var(--border-radius-md);
+    background-color: rgba(30, 30, 30, 0.6);
+    margin-bottom: 8px;
+}
+
+.modal-conversations-list .conversation-card:hover {
+    background-color: rgba(40, 40, 40, 0.8);
+    transform: translateY(-2px);
+}
+
+/* Estilos para los resultados de búsqueda en el modal */
+.modal-user-card .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-direction: row; /* Asegurar que sea horizontal */
+}
+
+.modal-user-card .user-avatar,
+.modal-user-card .initials-avatar {
+    margin-right: 0 !important; /* Eliminar margen derecho adicional */
+}
+
+.modal-user-card .user-name {
+    margin-left: 5px; /* Añadir un pequeño margen a la izquierda del nombre */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+/* Alineación mejorada para los elementos dentro de la tarjeta */
+.modal-search-results .modal-user-card {
+    padding: 10px 15px;
+    align-items: center;
 }

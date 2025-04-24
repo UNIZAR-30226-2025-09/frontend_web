@@ -30,7 +30,64 @@ function Friends() {
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true); // Nuevo estado para controlar el auto-scroll
     const [recentEmojis, setRecentEmojis] = useState(['❤️', '👍', '😊', '🎵', '🔥']);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+    const [visibleRequests, setVisibleRequests] = useState(1); // Muestra solo 3 inicialmente
+    const [visibleFriends, setVisibleFriends] = useState(2); // Muestra solo 3 inicialmente
+    const [visibleSearchResults, setVisibleSearchResults] = useState(3); // Mostrar inicialmente 3 resultados
     
+    const [showAllRequestsModal, setShowAllRequestsModal] = useState(false);
+    const [requestsSearchTerm, setRequestsSearchTerm] = useState('');
+    const [showAllReceivedRequestsModal, setShowAllReceivedRequestsModal] = useState(false);
+    const [receivedRequestsSearchTerm, setReceivedRequestsSearchTerm] = useState('');
+    const [showAllFriendsModal, setShowAllFriendsModal] = useState(false);
+    const [friendsSearchTerm, setFriendsSearchTerm] = useState('');
+    const [showAllConversationsModal, setShowAllConversationsModal] = useState(false);
+    const [conversationsSearchTerm, setConversationsSearchTerm] = useState('');
+    const [showAllSearchResultsModal, setShowAllSearchResultsModal] = useState(false);
+    const [searchResultsModalTerm, setSearchResultsModalTerm] = useState('');
+
+    // Función para filtrar solicitudes enviadas por nickname
+    const filteredSentRequests = useMemo(() => {
+        if (!requestsSearchTerm.trim()) return sentRequests;
+        return sentRequests.filter(request => 
+        request.nickname.toLowerCase().includes(requestsSearchTerm.toLowerCase())
+        );
+    }, [sentRequests, requestsSearchTerm]);
+
+    // Función para filtrar solicitudes recibidas por nickname
+    const filteredReceivedRequests = useMemo(() => {
+        if (!receivedRequestsSearchTerm.trim()) return receivedRequests;
+        return receivedRequests.filter(request => 
+            request.nickname.toLowerCase().includes(receivedRequestsSearchTerm.toLowerCase())
+        );
+    }, [receivedRequests, receivedRequestsSearchTerm]);
+    
+    // Función para filtrar amigos por nickname
+    const filteredFriends = useMemo(() => {
+        if (!friendsSearchTerm.trim()) return friends;
+        return friends.filter(friend => 
+        friend.nickname.toLowerCase().includes(friendsSearchTerm.toLowerCase())
+        );
+    }, [friends, friendsSearchTerm]);
+  
+    // Función para filtrar conversaciones por nickname
+    const filteredConversations = useMemo(() => {
+        if (!conversationsSearchTerm.trim()) return conversations.filter(conv => conv.lastMessage);
+        return conversations
+        .filter(conv => conv.lastMessage)
+        .filter(conv => 
+            conv.friend.nickname.toLowerCase().includes(conversationsSearchTerm.toLowerCase())
+        );
+    }, [conversations, conversationsSearchTerm]);
+
+    // Función para filtrar resultados de búsqueda por nickname en el modal
+    const filteredSearchResults = useMemo(() => {
+        if (!searchResultsModalTerm.trim()) return searchResults;
+        return searchResults.filter(user => 
+        user.nickname.toLowerCase().includes(searchResultsModalTerm.toLowerCase())
+        );
+    }, [searchResults, searchResultsModalTerm]);
+
     // Token de autenticación
     const token = localStorage.getItem('token');
     const userId = parseInt(localStorage.getItem('userId') || '1'); // Usamos 1 como fallback
@@ -731,7 +788,8 @@ function Friends() {
                                 {conversations.length > 0 ? (
                                     <div className="conversations-list">
                                         {conversations
-                                            .filter(conv => conv.lastMessage) // Solo conversaciones con mensajes
+                                            .filter(conv => conv.lastMessage)
+                                            .slice(0, visibleFriends) // Limitamos a visibleRequests
                                             .map(conv => {
                                                 const avatarInfo = getInitialsAvatar(conv.friend.nickname, conv.friend.id);
                                             return (
@@ -792,6 +850,20 @@ function Friends() {
                                                 </div>
                                             );
                                         })}
+
+                                        {conversations.filter(conv => conv.lastMessage).length > visibleFriends && (
+                                            <button 
+                                                className="load-more-button"
+                                                onClick={() => setShowAllConversationsModal(true)}
+                                                style={{
+                                                    display: 'block',
+                                                    marginTop: '15px',
+                                                    width: '100%'
+                                                }}
+                                            >
+                                                Ver todas las conversaciones ({conversations.filter(conv => conv.lastMessage).length - visibleFriends} más)
+                                            </button>
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="empty-state">
@@ -812,7 +884,7 @@ function Friends() {
                                             Tus amigos
                                         </h3>
                                         <div className="friends-grid">
-                                            {friends.map(friend => {
+                                            {friends.slice(0, visibleFriends).map(friend => {
                                                 const avatarInfo = getInitialsAvatar(friend.nickname, friend.friendId);
                                                 
                                                 return (
@@ -859,6 +931,20 @@ function Friends() {
                                                 );
                                             })}
                                         </div>
+
+                                        {friends.length > visibleFriends && (
+                                            <button 
+                                                className="load-more-button"
+                                                onClick={() => setShowAllFriendsModal(true)}
+                                                style={{
+                                                display: 'block',
+                                                marginTop: '15px',
+                                                width: '100%'
+                                                }}
+                                            >
+                                                Ver todos tus amigos ({friends.length - visibleFriends} más)
+                                            </button>
+                                        )}
                                     </div>
                                 )}
                             </>
@@ -1130,7 +1216,7 @@ function Friends() {
                             
                             {receivedRequests.length > 0 ? (
                                 <div className="requests-list">
-                                    {receivedRequests.map(request => {
+                                    {receivedRequests.slice(0, visibleRequests).map(request => {
                                         const avatarInfo = getInitialsAvatar(request.nickname, request.friendId);
                                         
                                         return (
@@ -1179,6 +1265,20 @@ function Friends() {
                                             </div>
                                         );
                                     })}
+                                    
+                                    {receivedRequests.length > visibleRequests && (
+                                        <button 
+                                            className="load-more-button"
+                                            onClick={() => setShowAllReceivedRequestsModal(true)}
+                                            style={{
+                                                display: 'block',
+                                                marginTop: '15px',
+                                                width: '100%'
+                                            }}
+                                        >
+                                            Ver todas las solicitudes ({receivedRequests.length - visibleRequests} más)
+                                        </button>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="empty-state">
@@ -1201,7 +1301,7 @@ function Friends() {
                             
                             {sentRequests.length > 0 ? (
                                 <div className="requests-list">
-                                    {sentRequests.map(request => {
+                                    {sentRequests.slice(0, visibleRequests).map(request => {
                                         const avatarInfo = getInitialsAvatar(request.nickname, request.friendId);
                                         
                                         return (
@@ -1236,6 +1336,20 @@ function Friends() {
                                             </div>
                                         );
                                     })}
+                                    
+                                    {sentRequests.length > visibleRequests && (
+                                        <button 
+                                            className="load-more-button"
+                                            onClick={() => setShowAllRequestsModal(true)}
+                                            style={{
+                                            display: 'block',
+                                            marginTop: '15px',
+                                            width: '100%'
+                                            }}
+                                        >
+                                            Ver todas las solicitudes ({sentRequests.length - visibleRequests} más)
+                                        </button>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="empty-state">
@@ -1305,7 +1419,7 @@ function Friends() {
                             <>
                                 {searchResults.length > 0 ? (
                                     <div className="search-results">
-                                        {searchResults.map(user => {
+                                        {searchResults.slice(0, visibleSearchResults).map(user => {
                                             const avatarInfo = getInitialsAvatar(user.nickname, user.id);
                                             
                                             return (
@@ -1352,6 +1466,20 @@ function Friends() {
                                                 </div>
                                             );
                                         })}
+
+                                        {searchResults.length > visibleSearchResults && (
+                                            <button 
+                                                className="load-more-button"
+                                                onClick={() => setShowAllSearchResultsModal(true)}
+                                                style={{
+                                                    display: 'block',
+                                                    marginTop: '15px',
+                                                    width: '100%'
+                                                }}
+                                            >
+                                                Ver todos los resultados ({searchResults.length - visibleSearchResults} más)
+                                            </button>
+                                        )}
                                     </div>
                                 ) : (
                                     searchTerm ? (
@@ -1380,6 +1508,553 @@ function Friends() {
                     </div>
                 )}
             </div>
+
+            {/* Modal para ver todas las solicitudes enviadas */}
+            {showAllRequestsModal && (
+            <div className="modal-overlay" onClick={() => setShowAllRequestsModal(false)}>
+                <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                    <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/>
+                    </svg>
+                    Todas las Solicitudes Enviadas
+                    </h2>
+                    <button 
+                    className="modal-close-button"
+                    onClick={() => setShowAllRequestsModal(false)}
+                    >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                    </svg>
+                    </button>
+                </div>
+                
+                <div className="modal-search">
+                    <input 
+                    type="text"
+                    placeholder="Buscar por nickname..."
+                    value={requestsSearchTerm}
+                    onChange={(e) => setRequestsSearchTerm(e.target.value)}
+                    />
+                    {requestsSearchTerm && (
+                    <button 
+                        className="search-clear" 
+                        onClick={() => setRequestsSearchTerm('')}
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                    )}
+                </div>
+                
+                <div className="modal-body">
+                    {filteredSentRequests.length > 0 ? (
+                    <div className="modal-requests-list">
+                        {filteredSentRequests.map(request => {
+                        const avatarInfo = getInitialsAvatar(request.nickname, request.friendId);
+                        
+                        return (
+                            <div key={request.friendId} className="request-card">
+                            <div className="request-info">
+                                {request.user_picture ? (
+                                <img 
+                                    src={request.user_picture} 
+                                    alt={request.nickname} 
+                                    className="request-avatar"
+                                />
+                                ) : avatarInfo && (
+                                <div 
+                                    className="initials-avatar" 
+                                    style={{backgroundColor: avatarInfo.bgColor}}
+                                >
+                                    {avatarInfo.initial}
+                                </div>
+                                )}
+                                <div className="request-user-info">
+                                <span className="request-name">{request.nickname}</span>
+                                <span className="request-time">Enviado hace {formatRelativeTime(request.requestDate || new Date())}</span>
+                                </div>
+                            </div>
+                            <button 
+                                className="cancel-button"
+                                onClick={() => cancelFriendRequest(request.friendId)}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                                </svg> Cancelar
+                            </button>
+                            </div>
+                        );
+                        })}
+                    </div>
+                    ) : (
+                    <div className="empty-state" style={{margin: '20px 0'}}>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/>
+                        </svg>
+                        <p>No se encontraron solicitudes</p>
+                        <p>Intenta con otro término de búsqueda</p>
+                    </div>
+                    )}
+                </div>
+                </div>
+            </div>
+            )}
+
+            {/* Modal para ver todas las solicitudes recibidas */}
+            {showAllReceivedRequestsModal && (
+                <div className="modal-overlay" onClick={() => setShowAllReceivedRequestsModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M19 3H4.99c-1.11 0-1.98.9-1.98 2L3 19c0 1.1.88 2 1.99 2H19c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 12h-4c0 1.66-1.35 3-3 3s-3-1.34-3-3H4.99V5H19v10zm-3-5h-2V7h-4v3H8l4 4 4-4z" fill="currentColor"/>
+                                </svg>
+                                Todas las Solicitudes Recibidas
+                            </h2>
+                            <button 
+                                className="modal-close-button"
+                                onClick={() => setShowAllReceivedRequestsModal(false)}
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div className="modal-search">
+                            <input 
+                                type="text"
+                                placeholder="Buscar por nickname..."
+                                value={receivedRequestsSearchTerm}
+                                onChange={(e) => setReceivedRequestsSearchTerm(e.target.value)}
+                            />
+                            {receivedRequestsSearchTerm && (
+                                <button 
+                                    className="search-clear" 
+                                    onClick={() => setReceivedRequestsSearchTerm('')}
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                        
+                        <div className="modal-body">
+                            {filteredReceivedRequests.length > 0 ? (
+                                <div className="modal-requests-list">
+                                    {filteredReceivedRequests.map(request => {
+                                        const avatarInfo = getInitialsAvatar(request.nickname, request.friendId);
+                                        
+                                        return (
+                                            <div key={request.friendId} className="request-card">
+                                                <div className="request-info">
+                                                    {request.user_picture ? (
+                                                        <img 
+                                                            src={request.user_picture} 
+                                                            alt={request.nickname} 
+                                                            className="request-avatar"
+                                                        />
+                                                    ) : avatarInfo && (
+                                                        <div 
+                                                            className="initials-avatar" 
+                                                            style={{backgroundColor: avatarInfo.bgColor}}
+                                                        >
+                                                            {avatarInfo.initial}
+                                                        </div>
+                                                    )}
+                                                    <div className="request-user-info">
+                                                        <span className="request-name">{request.nickname}</span>
+                                                        <span className="request-time">Solicitado hace {formatRelativeTime(request.requestDate || new Date())}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="request-actions">
+                                                    <button 
+                                                        className="accept-button"
+                                                        onClick={() => {
+                                                            acceptFriendRequest(request.friendId);
+                                                            setShowAllReceivedRequestsModal(false);
+                                                        }}>
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/>
+                                                            <circle cx="19" cy="10" r="8" fill="var(--success-color)"/>
+                                                            <path d="M15 10L18 13L23 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                                        </svg> Aceptar
+                                                    </button>
+                                                    <button 
+                                                        className="reject-button"
+                                                        onClick={() => {
+                                                            rejectFriendRequest(request.friendId);
+                                                            setShowAllReceivedRequestsModal(false);
+                                                        }}>
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M15 6.5c0-2.21-1.79-4-4-4S7 4.29 7 6.5s1.79 4 4 4 4-1.79 4-4zm-4 5c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                                                            <circle cx="19" cy="6.5" r="6" fill="var(--danger-color)"/>
+                                                            <path d="M16 3.5L22 9.5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                                                            <path d="M22 3.5L16 9.5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                                                        </svg> Rechazar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="empty-state" style={{margin: '20px 0'}}>
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/>
+                                    </svg>
+                                    <p>No se encontraron solicitudes</p>
+                                    <p>Intenta con otro término de búsqueda</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal para ver todos los amigos */}
+            {showAllFriendsModal && (
+                <div className="modal-overlay" onClick={() => setShowAllFriendsModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/>
+                            </svg>
+                            Todos tus amigos
+                            </h2>
+                            <button 
+                            className="modal-close-button"
+                            onClick={() => setShowAllFriendsModal(false)}
+                            >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                            </svg>
+                            </button>
+                        </div>
+                        
+                        <div className="modal-search">
+                            <input 
+                            type="text"
+                            placeholder="Buscar por nickname..."
+                            value={friendsSearchTerm}
+                            onChange={(e) => setFriendsSearchTerm(e.target.value)}
+                            />
+                            {friendsSearchTerm && (
+                            <button 
+                                className="search-clear" 
+                                onClick={() => setFriendsSearchTerm('')}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                            )}
+                        </div>
+                        
+                        <div className="modal-body">
+                            {filteredFriends.length > 0 ? (
+                            <div className="modal-friends-list">
+                                {filteredFriends.map(friend => {
+                                const avatarInfo = getInitialsAvatar(friend.nickname, friend.friendId);
+                                
+                                return (
+                                    <div key={friend.friendId} className="friend-card modal-friend-card">
+                                    <div className="friend-info">
+                                        {friend.user_picture ? (
+                                        <img 
+                                            src={friend.user_picture} 
+                                            alt={friend.nickname} 
+                                            className="friend-avatar"
+                                        />
+                                        ) : avatarInfo && (
+                                        <div 
+                                            className="initials-avatar" 
+                                            style={{backgroundColor: avatarInfo.bgColor}}
+                                        >
+                                            {avatarInfo.initial}
+                                        </div>
+                                        )}
+                                        <span className="friend-name">{friend.nickname}</span>
+                                    </div>
+                                    <div className="friend-actions">
+                                        <button 
+                                        className="chat-button"
+                                        onClick={() => {
+                                            selectFriend(friend);
+                                            setShowAllFriendsModal(false);
+                                        }}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H6L4 18V4H20V16Z" fill="currentColor"/>
+                                        </svg> Chatear
+                                        </button>
+                                        <button 
+                                        className="unfollow-mini-button"
+                                        onClick={() => {
+                                            unfollowFriend(friend.friendId);
+                                            setShowAllFriendsModal(false);
+                                        }}
+                                        title="Dejar de seguir"
+                                        >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M14 8c0-2.21-1.79-4-4-4S6 5.79 6 8s1.79 4 4 4 4-1.79 4-4zm3 2v2h6v-2h-6zM2 18v2h16v-2c0-2.66-5.33-4-8-4s-8 1.34-8 4z" fill="currentColor"/>
+                                        </svg>
+                                        </button>
+                                    </div>
+                                    </div>
+                                );
+                                })}
+                            </div>
+                            ) : (
+                            <div className="empty-state" style={{margin: '20px 0'}}>
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/>
+                                </svg>
+                                <p>No se encontraron amigos</p>
+                                <p>Intenta con otro término de búsqueda</p>
+                            </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal para ver todas las conversaciones */}
+            {showAllConversationsModal && (
+                <div className="modal-overlay" onClick={() => setShowAllConversationsModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H6L4 18V4H20V16Z" fill="currentColor"/>
+                            </svg>
+                            Todas tus conversaciones
+                            </h2>
+                            <button 
+                            className="modal-close-button"
+                            onClick={() => setShowAllConversationsModal(false)}
+                            >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                            </svg>
+                            </button>
+                        </div>
+                        
+                        <div className="modal-search">
+                            <input 
+                            type="text"
+                            placeholder="Buscar por nickname..."
+                            value={conversationsSearchTerm}
+                            onChange={(e) => setConversationsSearchTerm(e.target.value)}
+                            />
+                            {conversationsSearchTerm && (
+                            <button 
+                                className="search-clear" 
+                                onClick={() => setConversationsSearchTerm('')}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                            )}
+                        </div>
+                        
+                        <div className="modal-body">
+                            {filteredConversations.length > 0 ? (
+                            <div className="modal-conversations-list">
+                                {filteredConversations.map(conv => {
+                                const avatarInfo = getInitialsAvatar(conv.friend.nickname, conv.friend.id);
+                                
+                                return (
+                                    <div 
+                                    key={conv.friend.id} 
+                                    className={`conversation-card ${conv.unreadCount > 0 ? 'has-unread' : ''}`}
+                                    onClick={() => {
+                                        const friend = friends.find(f => f.friendId === conv.friend.id);
+                                        if (friend) {
+                                        selectFriend(friend);
+                                        setShowAllConversationsModal(false);
+                                        }
+                                    }}
+                                    >
+                                    <div className="conversation-info">
+                                        <div className="avatar-container">
+                                        {conv.friend.user_picture ? (
+                                            <img 
+                                            src={conv.friend.user_picture} 
+                                            alt={conv.friend.nickname} 
+                                            className="conversation-avatar"
+                                            />
+                                        ) : avatarInfo && (
+                                            <div 
+                                            className="initials-avatar" 
+                                            style={{backgroundColor: avatarInfo.bgColor}}
+                                            >
+                                            {avatarInfo.initial}
+                                            </div>
+                                        )}
+                                        </div>
+                                        <div className="conversation-details">
+                                        <span className="conversation-name">{conv.friend.nickname}</span>
+                                        {conv.lastMessage && (
+                                            <p className="conversation-preview">
+                                            {conv.lastMessage.user1_id === userId ? (
+                                                <><span className="msg-prefix">Tú:</span> {conv.lastMessage.txt_message.length > 30 
+                                                ? conv.lastMessage.txt_message.substring(0, 30) + '...' 
+                                                : conv.lastMessage.txt_message}</>
+                                            ) : (
+                                                conv.lastMessage.txt_message.length > 35 
+                                                ? conv.lastMessage.txt_message.substring(0, 35) + '...' 
+                                                : conv.lastMessage.txt_message
+                                            )}
+                                            </p>
+                                        )}
+                                        </div>
+                                    </div>
+                                    <div className="conversation-meta">
+                                        {conv.lastMessage && (
+                                        <span className="conversation-time">
+                                            {formatRelativeTime(conv.lastMessage.sent_at)}
+                                        </span>
+                                        )}
+                                        {conv.unreadCount > 0 && (
+                                        <span className="unread-count">{conv.unreadCount}</span>
+                                        )}
+                                    </div>
+                                    </div>
+                                );
+                                })}
+                            </div>
+                            ) : (
+                            <div className="empty-state" style={{margin: '20px 0'}}>
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/>
+                                </svg>
+                                <p>No se encontraron conversaciones</p>
+                                <p>Intenta con otro término de búsqueda</p>
+                            </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal para ver todos los resultados de búsqueda */}
+            {showAllSearchResultsModal && (
+                <div className="modal-overlay" onClick={() => setShowAllSearchResultsModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/>
+                                </svg>
+                                Resultados de búsqueda: {searchTerm}
+                            </h2>
+                            <button 
+                                className="modal-close-button"
+                                onClick={() => setShowAllSearchResultsModal(false)}
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div className="modal-search">
+                            <input 
+                                type="text"
+                                placeholder="Filtrar por nickname..."
+                                value={searchResultsModalTerm}
+                                onChange={(e) => setSearchResultsModalTerm(e.target.value)}
+                            />
+                            {searchResultsModalTerm && (
+                                <button 
+                                    className="search-clear" 
+                                    onClick={() => setSearchResultsModalTerm('')}
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                        
+                        <div className="modal-body">
+                            {filteredSearchResults.length > 0 ? (
+                                <div className="modal-search-results">
+                                    {filteredSearchResults.map(user => {
+                                        const avatarInfo = getInitialsAvatar(user.nickname, user.id);
+                                        
+                                        return (
+                                            <div key={user.id} className="user-card modal-user-card">
+                                                <div className="user-info">
+                                                    {user.user_picture ? (
+                                                        <img 
+                                                            src={user.user_picture} 
+                                                            alt={user.nickname} 
+                                                            className="user-avatar"
+                                                        />
+                                                    ) : avatarInfo && (
+                                                        <div 
+                                                            className="initials-avatar" 
+                                                            style={{backgroundColor: avatarInfo.bgColor}}
+                                                        >
+                                                            {avatarInfo.initial}
+                                                        </div>
+                                                    )}
+                                                    <span className="user-name">{user.nickname}</span>
+                                                </div>
+                                                
+                                                {user.isFriend ? (
+                                                    <div className="is-friend-indicator">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="currentColor"/>
+                                                        </svg> 
+                                                        Ya es tu amigo
+                                                    </div>
+                                                ) : user.hasPendingRequest ? (
+                                                    <div className="is-friend-indicator" style={{backgroundColor: "rgba(24, 119, 242, 0.1)", color: "var(--primary-color)"}}>
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z" fill="currentColor"/>
+                                                        </svg>
+                                                        Solicitud pendiente
+                                                    </div>
+                                                ) : (
+                                                    <button 
+                                                        className="add-button"
+                                                        onClick={() => {
+                                                            sendFriendRequest(user.id);
+                                                            const updatedSearchResults = searchResults.map(sr => 
+                                                                sr.id === user.id ? {...sr, hasPendingRequest: true} : sr
+                                                            );
+                                                            setSearchResults(updatedSearchResults);
+                                                        }}>
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                                                        </svg> 
+                                                        Añadir
+                                                    </button>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="empty-state" style={{margin: '20px 0'}}>
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="currentColor"/>
+                                    </svg>
+                                    <p>No se encontraron usuarios</p>
+                                    <p>Intenta con otro término de búsqueda</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
