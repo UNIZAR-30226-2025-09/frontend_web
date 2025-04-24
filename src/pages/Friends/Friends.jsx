@@ -184,6 +184,17 @@ function Friends() {
         
         return () => clearInterval(interval);
     }, [token]);
+
+    useEffect(() => {
+        if (searchResults.length > 0) {
+          console.log("Resultados procesados:", searchResults.map(user => ({
+            id: user.id,
+            nickname: user.nickname,
+            tiene_imagen: Boolean(user.user_picture),
+            imagen_raw: user.user_picture
+          })));
+        }
+      }, [searchResults]);
     
     // Funciones para obtener datos optimizadas con useCallback
     const fetchFriends = useCallback(async () => {
@@ -807,7 +818,7 @@ function Friends() {
                                                         <div className="avatar-container">
                                                             {conv.friend.user_picture ? (
                                                                 <img 
-                                                                    src={conv.friend.user_picture} 
+                                                                    src={getImageUrl(conv.friend.user_picture)} 
                                                                     alt={conv.friend.nickname} 
                                                                     className="conversation-avatar"
                                                                 />
@@ -892,7 +903,7 @@ function Friends() {
                                                         <div className="friend-info">
                                                             {friend.user_picture ? (
                                                                 <img 
-                                                                    src={friend.user_picture} 
+                                                                    src={getImageUrl(friend.user_picture)} 
                                                                     alt={friend.nickname} 
                                                                     className="friend-avatar"
                                                                 />
@@ -963,7 +974,7 @@ function Friends() {
                                     <div className="chat-user-info">
                                         {selectedFriend.user_picture ? (
                                             <img 
-                                                src={selectedFriend.user_picture} 
+                                                src={getImageUrl(selectedFriend.user_picture)} 
                                                 alt={selectedFriend.nickname} 
                                                 className="chat-avatar"
                                             />
@@ -1072,6 +1083,122 @@ function Friends() {
                                                                             color: "#b3b3b3"
                                                                         }}>
                                                                             Playlist • ¡Haz clic para ver!
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        ) : msg.shared_content && msg.shared_content.type === 'song' ? (
+                                                            <>
+                                                                <p style={{
+                                                                    marginBottom: 10,
+                                                                    fontWeight: 500,
+                                                                    color: "#fff"
+                                                                }}>
+                                                                    {msg.txt_message}
+                                                                </p>
+                                                                <div
+                                                                    className="shared-song-message"
+                                                                    style={{
+                                                                        display: "flex",
+                                                                        alignItems: "center",
+                                                                        background: "#181c2f",
+                                                                        borderRadius: 14,
+                                                                        boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+                                                                        padding: 12,
+                                                                        cursor: "pointer",
+                                                                        transition: "box-shadow 0.2s, transform 0.2s",
+                                                                        gap: 14,
+                                                                        marginBottom: 4
+                                                                    }}
+                                                                    onClick={() => window.open(msg.shared_content.url, '_blank')}
+                                                                    onMouseOver={e => e.currentTarget.style.boxShadow = "0 4px 24px rgba(24,119,242,0.25)"}
+                                                                    onMouseOut={e => e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.15)"}
+                                                                >
+                                                                    <img
+                                                                        src={getImageUrl(msg.shared_content.image, '/default-song.jpg')}
+                                                                        alt={msg.shared_content.name || "Canción"}
+                                                                        style={{
+                                                                            width: 64,
+                                                                            height: 64,
+                                                                            borderRadius: 10,
+                                                                            objectFit: "cover",
+                                                                            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                                                                            background: "#222"
+                                                                        }}
+                                                                        onError={e => e.target.src = "/default-song.jpg"}
+                                                                    />
+                                                                    <div style={{ flex: 1 }}>
+                                                                        <div style={{
+                                                                            fontWeight: 600,
+                                                                            fontSize: 16,
+                                                                            color: "#fff",
+                                                                            marginBottom: 2
+                                                                        }}>
+                                                                            {msg.shared_content.name || "Canción"}
+                                                                        </div>
+                                                                        <div style={{
+                                                                            fontSize: 13,
+                                                                            color: "#b3b3b3"
+                                                                        }}>
+                                                                            Canción • ¡Haz clic para escuchar!
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        ) : msg.shared_content && msg.shared_content.type === 'artist' ? (
+                                                            <>
+                                                                <p style={{
+                                                                    marginBottom: 10,
+                                                                    fontWeight: 500,
+                                                                    color: "#fff"
+                                                                }}>
+                                                                    {msg.txt_message}
+                                                                </p>
+                                                                <div
+                                                                    className="shared-artist-message"
+                                                                    style={{
+                                                                        display: "flex",
+                                                                        alignItems: "center",
+                                                                        background: "#181c2f",
+                                                                        borderRadius: 14,
+                                                                        boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+                                                                        padding: 12,
+                                                                        cursor: "pointer",
+                                                                        transition: "box-shadow 0.2s, transform 0.2s",
+                                                                        gap: 14,
+                                                                        marginBottom: 4
+                                                                    }}
+                                                                    onClick={() => window.open(msg.shared_content.url, '_blank')}
+                                                                    onMouseOver={e => e.currentTarget.style.boxShadow = "0 4px 24px rgba(24,119,242,0.25)"}
+                                                                    onMouseOut={e => e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.15)"}
+                                                                >
+                                                                    <img
+                                                                        src={getImageUrl(msg.shared_content.image, '/default-artist.jpg')}
+                                                                        alt={msg.shared_content.name || "Artista"}
+                                                                        style={{
+                                                                            width: 64,
+                                                                            height: 64,
+                                                                            borderRadius: 10,
+                                                                            objectFit: "cover",
+                                                                            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                                                                            background: "#222"
+                                                                        }}
+                                                                        onError={e => e.target.src = "/default-artist.jpg"}
+                                                                    />
+                                                                    <div style={{ flex: 1 }}>
+                                                                        <div style={{
+                                                                            fontWeight: 600,
+                                                                            fontSize: 16,
+                                                                            color: "#fff",
+                                                                            marginBottom: 2
+                                                                        }}>
+                                                                            {msg.shared_content.name || "Artista"}
+                                                                        </div>
+                                                                        <div style={{
+                                                                            fontSize: 13,
+                                                                            color: "#b3b3b3"
+                                                                        }}>
+                                                                            Artista • ¡Haz clic para ver!
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1224,7 +1351,7 @@ function Friends() {
                                                 <div className="request-info">
                                                     {request.user_picture ? (
                                                         <img 
-                                                            src={request.user_picture} 
+                                                            src={getImageUrl(request.user_picture)} 
                                                             alt={request.nickname} 
                                                             className="request-avatar"
                                                         />
@@ -1309,7 +1436,7 @@ function Friends() {
                                                 <div className="request-info">
                                                     {request.user_picture ? (
                                                         <img 
-                                                            src={request.user_picture} 
+                                                            src={getImageUrl(request.user_picture)} 
                                                             alt={request.nickname} 
                                                             className="request-avatar"
                                                         />
@@ -1426,7 +1553,7 @@ function Friends() {
                                                 <div key={user.id} className="user-card">
                                                     {user.user_picture ? (
                                                         <img 
-                                                            src={user.user_picture} 
+                                                            src={getImageUrl(user.user_picture)}
                                                             alt={user.nickname} 
                                                             className="user-avatar"
                                                         />
@@ -1560,7 +1687,7 @@ function Friends() {
                             <div className="request-info">
                                 {request.user_picture ? (
                                 <img 
-                                    src={request.user_picture} 
+                                    src={getImageUrl(request.user_picture)} 
                                     alt={request.nickname} 
                                     className="request-avatar"
                                 />
@@ -1653,7 +1780,7 @@ function Friends() {
                                                 <div className="request-info">
                                                     {request.user_picture ? (
                                                         <img 
-                                                            src={request.user_picture} 
+                                                            src={getImageUrl(request.user_picture)} 
                                                             alt={request.nickname} 
                                                             className="request-avatar"
                                                         />
@@ -1766,7 +1893,7 @@ function Friends() {
                                     <div className="friend-info">
                                         {friend.user_picture ? (
                                         <img 
-                                            src={friend.user_picture} 
+                                            src={getImageUrl(friend.user_picture)} 
                                             alt={friend.nickname} 
                                             className="friend-avatar"
                                         />
@@ -1884,7 +2011,7 @@ function Friends() {
                                         <div className="avatar-container">
                                         {conv.friend.user_picture ? (
                                             <img 
-                                            src={conv.friend.user_picture} 
+                                            src={getImageUrl(conv.friend.user_picture)} 
                                             alt={conv.friend.nickname} 
                                             className="conversation-avatar"
                                             />
@@ -1987,13 +2114,13 @@ function Friends() {
                                 <div className="modal-search-results">
                                     {filteredSearchResults.map(user => {
                                         const avatarInfo = getInitialsAvatar(user.nickname, user.id);
-                                        
+                
                                         return (
                                             <div key={user.id} className="user-card modal-user-card">
                                                 <div className="user-info">
                                                     {user.user_picture ? (
                                                         <img 
-                                                            src={user.user_picture} 
+                                                            src={getImageUrl(user.user_picture)}
                                                             alt={user.nickname} 
                                                             className="user-avatar"
                                                         />

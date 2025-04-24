@@ -13,7 +13,7 @@ html, body {
     justify-content: space-between;
     min-height: 100vh;
     width: 100vw;
-    background-color: #1a1a1a;
+    background-color: #121212;
     padding: 20px;
     gap: 20px;
     box-sizing: border-box;
@@ -44,7 +44,7 @@ html, body {
     margin-top: 2em;
     display: flex;
     flex-direction: column;
-    background-color: #3a3a3a;
+    background-color: #1a1a1a;
     text-align: center;
     position: sticky;      /* Se fija al hacer scroll */
     top: 25px;             /* Se quedará a 1rem de la parte superior */
@@ -63,7 +63,7 @@ html, body {
     position: sticky;
     top: 0;
     width: 96%; /* Ajustado para centrarlo mejor */
-    background: #3a3a3a;
+    background: #1a1a1a;
     padding: 10px 20px; /* Reducido para subirlo */
     display: flex;
     justify-content: space-between; /* Cambiado para distribuir los elementos */
@@ -123,7 +123,7 @@ html, body {
 /* Asegura que el contenedor principal tenga espacio suficiente para la top-bar */
 .main-content {
     flex-grow: 1;
-    background: #3a3a3a;
+    background: #1a1a1a;
     padding: 20px 30px 30px;
     border-radius: 20px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
