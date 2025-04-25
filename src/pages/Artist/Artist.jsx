@@ -28,6 +28,11 @@ const ArtistContent = () => {
         isPlaying, setPlaylistActive, playlistActive, setSongActive, currentSong} = useOutletContext();
     const navigate = useNavigate();
 
+    const [showSharePopup, setShowSharePopup] = useState(false);
+    const [shareSearch, setShareSearch] = useState('');
+    const [selectedFriends, setSelectedFriends] = useState([]);
+    const [friendsList, setFriendsList] = useState([]);
+
     useEffect(() => {
         const fetchArtist = async () => {
             try {
@@ -128,6 +133,34 @@ const ArtistContent = () => {
         return <p>Cargando artista...</p>;
     }
 
+    const handleArtistOptionSelect = (option) => {
+        if (option.label === "Copiar enlace") {
+            const url = `${window.location.origin}/artist/${artistId}`;
+            navigator.clipboard.writeText(url)
+                .then(() => alert("Enlace copiado al portapapeles"))
+                .catch(err => console.error('Error al copiar enlace:', err));
+        } else if (option.label === "Compartir con amigos") {
+            fetchFriendsList();
+            setShowSharePopup(true);
+        }
+    };
+
+    // Función para cargar la lista de amigos
+    const fetchFriendsList = async () => {
+        try {
+            const data = await apiFetch('/social/getFriendsList', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            setFriendsList(data.friends || []);
+        } catch (error) {
+            console.error('Error al cargar la lista de amigos:', error);
+            setFriendsList([]);
+        }
+    };
+
     return (
         <div className="layout">
             <div className="box">
@@ -166,18 +199,26 @@ const ArtistContent = () => {
                             </button>
 
                             <div className="popup-wrapper">
-                                <OptionsPopup
-                                    trigger={<FaEllipsisH className="icon" />}
-                                    options={[{
-                                        label: "Compartir",
-                                        submenu: [
-                                            { label: "Copiar enlace" },
-                                            { label: "Compartir con amigos" },
-                                        ],
-                                    }]}
-                                    position="bottom-right"
-                                    submenuPosition="right"
-                                />
+                            <OptionsPopup
+                                trigger={<FaEllipsisH className="icon" />}
+                                options={[{
+                                    label: "Compartir",
+                                    submenu: [
+                                        { label: "Copiar enlace" },
+                                        { label: "Compartir con amigos" },
+                                    ],
+                                }]}
+                                position="bottom-right"
+                                submenuPosition="right"
+                                onOptionSelect={(option) => {
+                                    // Si es una opción anidada, pasamos la etiqueta
+                                    if (option.item && option.item.label) {
+                                        handleArtistOptionSelect(option.item);
+                                    } else {
+                                        handleArtistOptionSelect(option);
+                                    }
+                                }}
+                            />
                             </div>
                         </div>
                     </div>
@@ -365,6 +406,125 @@ const ArtistContent = () => {
                     </>
                 )}
             </div>
+
+            {showSharePopup && (
+                <div className="popup-overlay">
+                    <div className="popup-content artist-share-popup">
+                        <div className="artist-popup-header">
+                            <h3>Compartir artista con amigos</h3>
+                        </div>
+                        <div className="artist-search-container">
+                            <span className="artist-search-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </span>
+                            <input
+                                type="text"
+                                placeholder="Buscar amigo..."
+                                value={shareSearch}
+                                onChange={e => setShareSearch(e.target.value)}
+                                className="artist-edit-input"
+                            />
+                            {shareSearch && (
+                                <button 
+                                    className="artist-clear-search" 
+                                    onClick={() => setShareSearch('')}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                        <div className="artist-friends-list">
+                            {friendsList.filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase())).length > 0 ? (
+                                friendsList
+                                    .filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase()))
+                                    .map(f => (
+                                        <label key={f.friendId} className="artist-friend-item">
+                                            <div className="artist-checkbox-wrapper">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`artist-friend-${f.friendId}`}
+                                                    checked={selectedFriends.includes(f.friendId)}
+                                                    onChange={e => {
+                                                        if (e.target.checked) {
+                                                            setSelectedFriends(prev => [...prev, f.friendId]);
+                                                        } else {
+                                                            setSelectedFriends(prev => prev.filter(id => id !== f.friendId));
+                                                        }
+                                                    }}
+                                                />
+                                                <span className="artist-custom-checkbox"></span>
+                                            </div>
+                                            {f.user_picture ? (
+                                                <img src={getImageUrl(f.user_picture)} alt={f.nickname} className="artist-friend-avatar" />
+                                            ) : (
+                                                <span className="artist-friend-initials">{f.nickname[0]}</span>
+                                            )}
+                                            <span className="artist-friend-name">{f.nickname}</span>
+                                            {selectedFriends.includes(f.friendId) && (
+                                                <span className="artist-selected-badge">✓</span>
+                                            )}
+                                        </label>
+                                    ))
+                            ) : (
+                                <div className="artist-friends-empty">
+                                    {shareSearch
+                                        ? "No se encontraron amigos con ese nombre"
+                                        : "No tienes amigos para compartir este artista"}
+                                </div>
+                            )}
+                        </div>
+                        <div className="artist-popup-actions">
+                            <button
+                                className="artist-share-btn"
+                                onClick={async () => {
+                                    try {
+                                        for (const friendId of selectedFriends) {
+                                            await apiFetch('/chat/send', {
+                                                method: 'POST',
+                                                headers: {
+                                                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                                                },
+                                                body: {
+                                                    user2_id: friendId,
+                                                    message: `Te comparto este artista: ${artist.name}`,
+                                                    shared_content: {
+                                                        type: 'artist',
+                                                        id: artist.id,
+                                                        name: artist.name,
+                                                        image: artist.photo ? artist.photo : null,
+                                                        url: `${window.location.origin}/artist/${artist.id}`
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        setShowSharePopup(false);
+                                        setSelectedFriends([]);
+                                        setShareSearch("");
+                                        alert("Artista compartido por chat!");
+                                    } catch (error) {
+                                        console.error("Error al compartir:", error);
+                                        alert("Hubo un error al compartir");
+                                    }
+                                }}
+                            >
+                                Enviar
+                            </button>
+                            <button
+                                className="artist-cancel-btn"
+                                onClick={() => setShowSharePopup(false)}
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
