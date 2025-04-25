@@ -596,3 +596,101 @@
     from { opacity: 0; transform: translateY(20px);}
     to { opacity: 1; transform: translateY(0);}
 }
+
+
+/* Estilos para el icono de búsqueda y la barra de búsqueda */
+.search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 22px;
+    color: white;
+}
+
+.search-button:hover {
+    color: #0399b6;
+    transform: scale(1.05);
+}
+
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    width: 0;
+    transition: width 0.3s ease;
+    margin-right: 10px;
+}
+
+.search-container.expanded {
+    width: 250px;
+}
+
+.search-input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    color: white;
+    padding: 8px 16px 8px 40px;
+    width: 100%;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #0399b6;
+    box-shadow: 0 0 0 2px rgba(3, 153, 182, 0.2);
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.search-icon-inside {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.clear-search {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.clear-search:hover {
+    color: #fff;
+}
+
+/* Mensaje cuando no hay resultados */
+.no-results {
+    text-align: center;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.6);
+    width: 100%;
+    font-style: italic;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    margin: 10px 0;
+}

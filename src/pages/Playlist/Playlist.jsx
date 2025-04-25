@@ -1,4 +1,4 @@
-import {FaHeart, FaEllipsisH, FaPlay, FaPause, FaRandom} from "react-icons/fa";
+import {FaHeart, FaEllipsisH, FaPlay, FaPause, FaRandom, FaSearch, FaTimes} from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {useOutletContext, useParams, useNavigate} from "react-router-dom";
 import { PlayerProvider} from "../../components/Player/PlayerContext.jsx";
@@ -43,6 +43,40 @@ const PlaylistContent = () => {
     const [shareSearch, setShareSearch] = useState("");
     const [selectedFriends, setSelectedFriends] = useState([]);
     const [friendsList, setFriendsList] = useState([]);
+
+    const [searchVisible, setSearchVisible] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredSongs, setFilteredSongs] = useState([]);
+
+    useEffect(() => {
+        if (!playlist) return;
+        
+        if (!searchTerm.trim()) {
+            setFilteredSongs(playlist.songs);
+            return;
+        }
+        
+        const filtered = playlist.songs.filter(song => 
+            song.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            (song.album?.name && song.album.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+        
+        setFilteredSongs(filtered);
+    }, [searchTerm, playlist]);
+    
+    // Inicializa las canciones filtradas cuando se carga la playlist
+    useEffect(() => {
+        if (playlist) {
+            setFilteredSongs(playlist.songs);
+        }
+    }, [playlist]);
+    
+    const toggleSearch = () => {
+        setSearchVisible(!searchVisible);
+        if (searchVisible) {
+            setSearchTerm('');
+        }
+    };
 
     const options = [
         playlist?.user_id && playlist.user_id === user_Id ? { label: "Eliminar Playlist" } : null,
@@ -778,6 +812,36 @@ const PlaylistContent = () => {
                         </div>
 
                         <div className="actions-right">
+
+                            <div className={`search-container ${searchVisible ? 'expanded' : ''}`}>
+                                {searchVisible && (
+                                    <>
+                                        <FaSearch className="search-icon-inside" />
+                                        <input
+                                            type="text"
+                                            className="search-input"
+                                            placeholder="Buscar en esta playlist..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            autoFocus
+                                        />
+                                        {searchTerm && (
+                                            <button 
+                                                className="clear-search" 
+                                                onClick={() => setSearchTerm('')}
+                                            >
+                                                <FaTimes />
+                                            </button>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+
+                            {/* Botón de búsqueda */}
+                            <button className="search-button" onClick={toggleSearch}>
+                                <FaSearch className="icon" />
+                            </button>
+
                             <button className="shuffle-btn" onClick={toggleLike}>
                                 <FaHeart
                                     className={`icon heart-icon ${isLiked ? "liked" : ""}`}
@@ -797,68 +861,74 @@ const PlaylistContent = () => {
                         {/* Cabecera: 6 columnas (#/Play, Portada, Título, Álbum, Fecha, Duración) */}
 
                         <div className="song-list">
-                            {playlist.songs.map((song, index) => (
-                                <div key={song.id || index} className="song-item">
-                                    {/* Columna 1: (# / botón al hover) */}
-                                    <div className="song-action">
-                                        <span className="song-index">{index + 1}</span>
-                                        <button
-                                            className="play-icon"
-                                            onClick={() => handlePlaySong(song, index, playlist.songs)}
-                                        >
-                                            <FaPlay/>
-                                        </button>
-                                    </div>
+                            {filteredSongs.length > 0 ? (
+                                filteredSongs.map((song, index) => (
+                                    <div key={song.id || index} className="song-item">
+                                        {/* Columna 1: (# / botón al hover) */}
+                                        <div className="song-action">
+                                            <span className="song-index">{index + 1}</span>
+                                            <button
+                                                className="play-icon"
+                                                onClick={() => handlePlaySong(song, index, playlist.songs)}
+                                            >
+                                                <FaPlay/>
+                                            </button>
+                                        </div>
 
-                                    {/* Columna 2: Portada */}
-                                    <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>
+                                        {/* Columna 2: Portada */}
+                                        <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>
 
-                                    {/* Columna 3: Título */}
-                                    <span className="song-title" onClick={() => redirectToSong(song.id)}>{song.name}</span>
+                                        {/* Columna 3: Título */}
+                                        <span className="song-title" onClick={() => redirectToSong(song.id)}>{song.name}</span>
 
-                                    {/* Columna 4: Álbum */}
-                                    <span className="song-artist">
-                                    {song.album?.name || "Sin álbum"}
-                                    </span>
+                                        {/* Columna 4: Álbum */}
+                                        <span className="song-artist">
+                                        {song.album?.name || "Sin álbum"}
+                                        </span>
 
-                                    {/* Columna 5: Fecha */}
-                                    <span className="song-date">
-                                    {song.song_playlist?.date || "Fecha desconocida"}
-                                    </span>
+                                        {/* Columna 5: Fecha */}
+                                        <span className="song-date">
+                                        {song.song_playlist?.date || "Fecha desconocida"}
+                                        </span>
 
-                                    {/* Columna 6: Duración (min:seg) */}
-                                    <span className="song-duration">
-                                    {formatDuration(song.duration)}
-                                    </span>
+                                        {/* Columna 6: Duración (min:seg) */}
+                                        <span className="song-duration">
+                                        {formatDuration(song.duration)}
+                                        </span>
 
-                                    {/* Contenedor de opciones (tres puntos) que aparece al hacer hover */}
-                                    <div className="song-options">
-                                        <OptionsPopup
-                                            trigger={<FaEllipsisH className="song-options-icon"/>}
-                                            options={[
-                                                {
-                                                    label: "Agregar a playlist",
-                                                    submenu: agregarAFavoritosSubmenu,
-                                                },
-                                                playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
-                                                {
-                                                    label: song.liked ?  "Eliminar de favoritos" : "Agregar a favoritos" ,
-                                                },
-                                                {label: "Ver detalles"},
-                                            ].filter(option => option != null)}
-                                            position="bottom-right"
-                                            submenuPosition="left"
-                                            onOptionSelect={(option, idx) => handleSongOptionSelect(option, idx, song)}
-                                        />
-                                        {showCreateModal && (
-                                            <CreatePlaylistModal
-                                                onSubmit={handleCreatePlaylist}
-                                                onClose={() => setShowCreateModal(false)}
+                                        {/* Contenedor de opciones (tres puntos) que aparece al hacer hover */}
+                                        <div className="song-options">
+                                            <OptionsPopup
+                                                trigger={<FaEllipsisH className="song-options-icon"/>}
+                                                options={[
+                                                    {
+                                                        label: "Agregar a playlist",
+                                                        submenu: agregarAFavoritosSubmenu,
+                                                    },
+                                                    playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
+                                                    {
+                                                        label: song.liked ?  "Eliminar de favoritos" : "Agregar a favoritos" ,
+                                                    },
+                                                    {label: "Ver detalles"},
+                                                ].filter(option => option != null)}
+                                                position="bottom-right"
+                                                submenuPosition="left"
+                                                onOptionSelect={(option, idx) => handleSongOptionSelect(option, idx, song)}
                                             />
-                                        )}
+                                            {showCreateModal && (
+                                                <CreatePlaylistModal
+                                                    onSubmit={handleCreatePlaylist}
+                                                    onClose={() => setShowCreateModal(false)}
+                                                />
+                                            )}
+                                        </div>
                                     </div>
+                                ))
+                            ) : (
+                                <div className="no-results">
+                                    No se encontraron canciones que coincidan con la búsqueda
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
                 </div>
