@@ -11,15 +11,16 @@ const Library = () => {
     const [likedSongPlaylist, setLikedSongPlaylist] = useState(null); // Playlist "Me Gusta"
     const [likedPlaylists, setLikedPlaylists] = useState([]);
     const [userPlaylists, setUserPlaylists] = useState([]);
-    // Los estados de ordenación se han declarado pero no se usan; puedes revisarlos
+    const [collaborativePlaylists, setCollaborativePlaylists] = useState([]); // Nueva state para playlists colaborativas
+    // Los estados de ordenación
     const [sortUserPlaylists, setSortUserPlaylists] = useState("recent");
     const [sortLikedPlaylists, setSortLikedPlaylists] = useState("recent");
+    const [sortCollaborativePlaylists, setSortCollaborativePlaylists] = useState("recent"); // Nuevo estado para ordenar playlists colaborativas
 
     // Estado para mostrar modal de nueva playlist
-
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
 
-    const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
+    const user_Id = JSON.parse(localStorage.getItem('user')).id;
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -42,6 +43,24 @@ const Library = () => {
 
         if (user_Id) {
             fetchUserPlaylists();
+        }
+    }, [user_Id]);
+
+    // NUEVO: Fetch de las playlists colaborativas
+    useEffect(() => {
+        const fetchCollaborativePlaylists = async () => {
+            try {
+                const data = await apiFetch(`/collaborators/playlists-for-user/${user_Id}`, {
+                    method: "GET",
+                });
+                setCollaborativePlaylists(data);
+            } catch (error) {
+                console.error("Error al obtener las playlists colaborativas:", error);
+            }
+        };
+
+        if (user_Id) {
+            fetchCollaborativePlaylists();
         }
     }, [user_Id]);
 
@@ -85,7 +104,18 @@ const Library = () => {
 
     const sortPlaylists = (type, setFunction, option) => {
         setFunction(option);
-        let sortedPlaylists = type === "user" ? [...userPlaylists] : [...likedPlaylists];
+        let sortedPlaylists;
+
+        // Determinar qué array de playlists ordenar
+        if (type === "user") {
+            sortedPlaylists = [...userPlaylists];
+        } else if (type === "liked") {
+            sortedPlaylists = [...likedPlaylists];
+        } else if (type === "collaborative") {
+            sortedPlaylists = [...collaborativePlaylists];
+        } else {
+            return;
+        }
 
         switch (option) {
             case "alphabetical":
@@ -101,14 +131,20 @@ const Library = () => {
                 break;
         }
 
-        type === "user" ? setUserPlaylists(sortedPlaylists) : setLikedPlaylists(sortedPlaylists);
+        // Actualizar el estado correspondiente
+        if (type === "user") {
+            setUserPlaylists(sortedPlaylists);
+        } else if (type === "liked") {
+            setLikedPlaylists(sortedPlaylists);
+        } else if (type === "collaborative") {
+            setCollaborativePlaylists(sortedPlaylists);
+        }
     };
 
     // Función para redirigir a la página de detalles de la playlist
     const handlePlaylistClick = (playlistId) => {
         navigate(`/playlist/${playlistId}`);
     };
-
 
     // Funciones para controlar el modal de "Crear Playlist"
     const openPlaylistModal = () => {
@@ -121,14 +157,14 @@ const Library = () => {
 
     const handleCreatePlaylist = async (playlistData) => {
         try {
-
-            const newPlaylist = await apiFetch("/playlists", {  // Try different endpoint
+            const newPlaylist = await apiFetch("/playlists", {
                 method: "POST",
                 body: {
                     name: playlistData.title,
                     description: playlistData.description,
                     user_id: user_Id,
                     type: "private",
+                    typeP: "playlist",
                 },
             });
 
@@ -143,7 +179,6 @@ const Library = () => {
             console.error("Error al crear la playlist:", error);
         }
     };
-
 
     return (
         <div className="library-content">
@@ -188,7 +223,7 @@ const Library = () => {
                     <button className="create-playlist-button" onClick={openPlaylistModal}>
                         <svg width="20" height="20" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className="create-playlist-icon">
                             <circle cx="32" cy="32" r="32" fill="#333333"/>
-                            <path d="M44 20V38C44 40.2091 42.2091 42 40 42C37.7909 42 36 40.2091 36 38C36 35.7909 37.7909 34 40 34C40.6839 34 41.3306 34.1554 41.9 34.4335V24L26 27V41C26 43.2091 24.2091 45 22 45C19.7909 45 18 43.2091 18 41C18 38.7909 19.7909 37 22 37C22.6839 37 23.3306 37.1554 23.9 37.4335V22L44 20Z" fill="#1DB954" stroke="#1DB954" stroke-width="1"/>
+                            <path d="M44 20V38C44 40.2091 42.2091 42 40 42C37.7909 42 36 40.2091 36 38C36 35.7909 37.7909 34 40 34C40.6839 34 41.3306 34.1554 41.9 34.4335V24L26 27V41C26 43.2091 24.2091 45 22 45C19.7909 45 18 43.2091 18 41C18 38.7909 19.7909 37 22 37C22.6839 37 23.3306 37.1554 23.9 37.4335V22L44 20Z" fill="#1DB954" stroke="#1DB954" strokeWidth="1"/>
                         </svg>
                         <span>Crear Playlist</span>
                     </button>
@@ -197,15 +232,48 @@ const Library = () => {
             <div className="scroll-container">
                 <div className="library-playlists">
                     {userPlaylists.length > 0 ? userPlaylists.map(playlist => (
-                        <div key={playlist.id} className="library-playlist-card" onClick={() => handlePlaylistClick(playlist.id)}>
-                            <img
-                                src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
-                                alt={playlist.name}
-                                className="library-playlist-image"
-                            />
-                            <p className="library-playlist-title">{playlist.name}</p>
+                        <div key={playlist.id} className="playlist-wrapper">
+                            <div className="library-playlist-card" onClick={() => handlePlaylistClick(playlist.id)}>
+                                <img
+                                    src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
+                                    alt={playlist.name}
+                                    className="library-playlist-image"
+                                />
+                            </div>
+                            <div onClick={() => handlePlaylistClick(playlist.id)}>
+                                <p className="library-playlist-title">{playlist.name}</p>
+                            </div>
                         </div>
                     )) : <div className="empty-message">No tienes playlists creadas.</div>}
+                </div>
+            </div>
+
+            {/* NUEVA SECCIÓN: Playlists Colaborativas */}
+            <div className="library-section-header">
+                <h2>Playlists Colaborativas</h2>
+                <div className="sort-options">
+                    <button onClick={() => sortPlaylists("collaborative", setSortCollaborativePlaylists, "recent")}>Recientes</button>
+                    <button onClick={() => sortPlaylists("collaborative", setSortCollaborativePlaylists, "alphabetical")}>Alfabético</button>
+                    <button onClick={() => sortPlaylists("collaborative", setSortCollaborativePlaylists, "popular")}>Populares</button>
+                </div>
+            </div>
+            <div className="scroll-container">
+                <div className="library-playlists">
+                    {collaborativePlaylists.length > 0 ? collaborativePlaylists.map(playlist => (
+                        <div key={playlist.id} className="playlist-wrapper">
+                            <div className="library-playlist-card collaborative" onClick={() => handlePlaylistClick(playlist.id)}>
+                                <div className="collaborative-badge">Colaborador</div>
+                                <img
+                                    src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
+                                    alt={playlist.name}
+                                    className="library-playlist-image"
+                                />
+                            </div>
+                            <div onClick={() => handlePlaylistClick(playlist.id)}>
+                                <p className="library-playlist-title">{playlist.name}</p>
+                            </div>
+                        </div>
+                    )) : <div className="empty-message">No estás colaborando en ninguna playlist.</div>}
                 </div>
             </div>
 

@@ -2,8 +2,10 @@ import {FaHeart, FaEllipsisH, FaPlay, FaPause, FaRandom} from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {useOutletContext, useParams, useNavigate} from "react-router-dom";
 import { PlayerProvider} from "../../components/Player/PlayerContext.jsx";
+import Collaborators from "../../components/Collaborators/Collaborators.jsx";
 import "./Playlist.css"; // Layout y estilos generales
 import "../../components/SongItem/SongItem.css"; // Estilos de la lista de canciones
+import "../../components/Collaborators/Collaborators.css";
 import {apiFetch} from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 import CreatePlaylistModal from "../../components/PlaylistModal/PlaylistModal.jsx";
@@ -40,11 +42,15 @@ const PlaylistContent = () => {
     const { currentSong, setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying,
             isPlaying, setPlaylistActive, playlistActive, setSongActive } = useOutletContext();
     const navigate = useNavigate();
+    const[showCollabModal, setShowCollabModal] = useState(false);
 
     const options = [
         playlist?.user_id && playlist.user_id === user_Id ? { label: "Eliminar Playlist" } : null,
         playlist?.user_id && playlist.user_id === user_Id ? { label: `Hacer ${playlist?.type === "public" ? "privada" : "pública"}` } : null,
-        { label: "Invitar Colaboradores" },
+        playlist?.typeP === "playlist" ? {
+            label: "Invitar Colaboradores",
+            action: () => setShowCollabModal(true),
+        } : null,
         {
             label: "Compartir",
             submenu: [
@@ -408,47 +414,50 @@ const PlaylistContent = () => {
                     console.error("Error al eliminar la playlist:", error);
                 }
             }
-        } else if (option.label === "Hacer privada")
-        {
+        } else if (option.label === "Hacer privada") {
             try {
                 const response = await apiFetch(`/playlists/${playlistId}`, {
                     method: "PUT",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
                     },
-                    body: { type: "private" }
+                    body: { type: "private" },
                 });
 
                 console.log("Playlist actualizada a privada:", response);
                 window.location.reload();
             } catch (error) {
-                console.error("Error al eliminar la playlist:", error);
+                console.error("Error al actualizar la playlist:", error);
             }
-        }
-        else if (option.label === "Hacer pública")
-        {
+        } else if (option.label === "Hacer pública") {
             try {
                 const response = await apiFetch(`/playlists/${playlistId}`, {
                     method: "PUT",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
                     },
-                    body: { type: "public" }
+                    body: { type: "public" },
                 });
 
-                console.log("Playlist actualizada a privada:", response);
+                console.log("Playlist actualizada a pública:", response);
                 window.location.reload();
             } catch (error) {
-                console.error("Error al eliminar la playlist:", error);
+                console.error("Error al actualizar la playlist:", error);
             }
-        }
-        else
-        {
+        } else if (option.label === "Invitar Colaboradores") {
+            if (playlist?.typeP === "playlist") {
+                setShowCollabModal(true); // Abre el modal
+                console.log("Abriendo modal para invitar colaboradores");
+            } else {
+                console.log("No se puede invitar colaboradores a esta playlist porque no es del tipo permitido");
+                alert("Solo puedes invitar colaboradores a playlists de tipo 'typeP: playlist'.");
+            }
+
+        } else {
             // Aquí manejas las demás opciones
             console.log("Opción no manejada:", option);
         }
     };
-
 
     const handleSongOptionSelect = async (option, idx, song) => {
         console.log("Opción seleccionada:", option, idx, song);
@@ -720,7 +729,14 @@ const PlaylistContent = () => {
                     </div>
                 </div>
             </div>
+            {showCollabModal && (
+                <Collaborators
+                    playlistId={playlistId}
+                    onClose={() => setShowCollabModal(false)}
+                />
+            )}
         </div>
+
     );
 };
 

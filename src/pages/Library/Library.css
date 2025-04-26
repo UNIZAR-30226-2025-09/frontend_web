@@ -173,4 +173,20 @@ h2:hover {
     height: 20px;
     margin-right: 8px;
 }
+/* Estilos para playlists colaborativas */
+.library-playlist-card.collaborative {
+    position: relative;
+}
+
+.collaborative-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(29, 185, 84, 0.8); /* Color verde Spotify */
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    z-index: 2;
+}
 
