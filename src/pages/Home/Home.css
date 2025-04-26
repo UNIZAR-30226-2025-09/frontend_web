@@ -411,3 +411,53 @@
     display: inline-flex;
     gap: 15px;
 }
+
+/* Seccion de visitados recientemente */
+
+.recently-visited-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px; /* espacio entre playlists aumentado */
+    padding: 16px;
+    justify-content: flex-start;
+}
+
+.playlist-wrapper {
+    flex: 0 0 calc(20% - 24px); /* 5 por fila en desktop */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.playlist-wrapper:hover {
+    transform: scale(1.05); /* efecto hover zoom suave */
+}
+
+.playlist-image {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    object-fit: cover;
+}
+
+.playlist-title {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+@media (max-width: 1024px) {
+    .playlist-wrapper {
+        flex: 0 0 calc(33.333% - 24px); /* 3 por fila en tablet */
+    }
+}
+
+@media (max-width: 768px) {
+    .playlist-wrapper {
+        flex: 0 0 calc(50% - 24px); /* 2 por fila en móvil */
+    }
+}

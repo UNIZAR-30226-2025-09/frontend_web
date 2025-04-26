@@ -36,6 +36,9 @@ const PlaylistContent = () => {
     const [firstPlay, setFirstPlay] = useState(0);
     const [adds, setAdds] = useState([]);
     const [averageRating, setAverageRating] = useState(0);
+    const [sortOption, setSortOption] = useState(null);
+    const [newImage, setNewImage] = useState(null); // para guardar el archivo subido
+    const [newImagePreview, setNewImagePreview] = useState(null); // para mostrar preview
     const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
     const { currentSong, setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying,
             isPlaying, setPlaylistActive, playlistActive, setSongActive } = useOutletContext();
@@ -168,12 +171,8 @@ const PlaylistContent = () => {
                     method: "GET"
                 });
 
-
-                console.log("Playlist cargada:", data);
-                console.log("Imagen de portada:", data.front_page); // Aquí verás la URL de la portada
                 setPlaylist(data);
-                console.log("Canciones de la playlist", data.songs);
-                console.log("LIKES: ", data.likes);
+
                 const likeData = await apiFetch(`/playlists/${playlistId}/like?user_id=${user_Id}`, {
                     method: "GET"
                 });
@@ -182,11 +181,24 @@ const PlaylistContent = () => {
                     method: "GET"
                 });
 
-                console.log("Anuncios ", adds);
-
                 setAdds(adds);
-
                 setIsLiked(likeData.isLiked);
+
+                // REGISTRAR VISITA
+                const recordVisit = async () => {
+                    try {
+                        await apiFetch(`/playlists/${playlistId}/visit`, {
+                            method: "POST",
+                            body: { userId: user_Id }
+                        });
+                        console.log("Guardando visita de playlist:", playlistId, "usuario:", user_Id);
+                    } catch (error) {
+                        console.error("Error registrando la visita:", error);
+                    }
+                };
+
+                await recordVisit();
+
             } catch (error) {
                 console.error("Error al obtener la playlist:", error);
             }
@@ -367,13 +379,28 @@ const PlaylistContent = () => {
         setIsEditing(!isEditing);
     };
 
+    const convertFileToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
+
     const handleSaveChanges = async () => {
         try {
             const updatedPlaylist = {
                 ...playlist,
                 name: newTitle || playlist.name,
-                description: newDescription || playlist.description
+                description: newDescription || playlist.description,
             };
+
+            // Si hay imagen nueva, conviértela a base64 y añádela
+            if (newImage) {
+                const base64Image = await convertFileToBase64(newImage);
+                updatedPlaylist.front_page = base64Image;
+            }
 
             const data = await apiFetch(`/playlists/${playlistId}`, {
                 method: "PUT",
@@ -392,6 +419,7 @@ const PlaylistContent = () => {
             console.error("Error al actualizar la playlist:", error);
         }
     };
+
 
     const handleOptionSelect = async (option, index) => {
         console.log("Opción seleccionada:", option, index);
@@ -547,21 +575,51 @@ const PlaylistContent = () => {
         }
     };
 
+    const sortedSongs = [...(playlist?.songs || [])];
+
+    if (sortOption === 'title') {
+        sortedSongs.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortOption === 'artist') {
+        sortedSongs.sort((a, b) => {
+            const artistA = a.album?.name || '';
+            const artistB = b.album?.name || '';
+            return artistA.localeCompare(artistB);
+        });
+    } else if (sortOption === 'date') {
+        sortedSongs.sort((a, b) => {
+            const dateA = new Date(a.song_playlist?.date);
+            const dateB = new Date(b.song_playlist?.date);
+            return dateA - dateB;
+        });
+    }
+
+    const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Mostrar una preview
+        const previewUrl = URL.createObjectURL(file);
+        setNewImagePreview(previewUrl);
+        setNewImage(file);
+    };
+
     return (
         <div className="layout">
             {/* Columna derecha: contenido de la playlist */}
             <div className="box">
                 <div className="play-cont">
-                    <div className={`${playlist?.user_id && playlist.user_id === user_Id ? 'image' : 'imagenoedit'}`} onClick={handleEditToggle} style={{cursor: "pointer"}}>
+                    <div
+                        className={`${playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id ? 'image' : 'imagenoedit'}`}
+                        onClick={handleEditToggle} style={{cursor: "pointer"}}>
                         <img
-                            src={getImageUrl(playlist.front_page)}  // Usa getImageUrl aquí para generar la URL completa
+                            src={`${getImageUrl(playlist.front_page)}?t=${Date.now()}`}
                             width="275"
                             alt="Playlist Cover"
-                            onError={(e) => (e.target.src = "/default-playlist.jpg")} // Si la imagen falla, muestra la imagen por defecto
+                            onError={(e) => (e.target.src = "/default-playlist.jpg")}
                         />
                     </div>
                     <div className="playlist-info">
-                        {playlist?.user_id && playlist.user_id === user_Id && isEditing ? (
+                        {playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id && isEditing ? (
                             <div className="popup-overlay">
                                 <div className="popup-content">
                                     <label htmlFor="title">Título de la Playlist</label>
@@ -581,6 +639,25 @@ const PlaylistContent = () => {
                                         className="edit-input"
                                     />
 
+                                    <label htmlFor="playlistImage">Imagen de portada</label>
+                                    <input
+                                        id="playlistImage"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageUpload}
+                                        className="edit-input"
+                                    />
+
+                                    {newImagePreview && (
+                                        <div className="image-preview-play">
+                                            <img
+                                                src={newImagePreview}
+                                                alt="Vista previa"
+                                                style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "10px" }}
+                                            />
+                                        </div>
+                                    )}
+
                                     <button className="save-btn" onClick={handleSaveChanges}>Guardar</button>
                                     <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancelar</button>
                                 </div>
@@ -593,19 +670,21 @@ const PlaylistContent = () => {
                                 <p>
                                     {playlist.owner?.nickname || "Desconocido"} •
                                     Guardada {playlist.likes || 0} veces •
-                                    Total --  {playlist.songs?.length} canciones
+                                    Total -- {playlist.songs?.length} canciones
                                 </p>
 
                                 {/* Sistema de valoración */}
-                                <div className="rating-section">
-                                    <p>Valoración promedio: {averageRating} / 5</p>
-                                    <Rating
-                                        playlistId={playlistId}
-                                        userId={user_Id}
-                                        initialRating={0} // Puedes ajustar esto si tienes la valoración inicial del usuario
-                                        onRatingUpdate={(newRating) => setAverageRating(newRating)}
-                                    />
-                                </div>
+                                {playlist.typeP !== "Vibra_likedSong" && (
+                                    <div className="rating-section">
+                                        <p>Valoración promedio: {averageRating} / 5</p>
+                                        <Rating
+                                            playlistId={playlistId}
+                                            userId={user_Id}
+                                            initialRating={0} // Puedes ajustar esto si tienes la valoración inicial del usuario
+                                            onRatingUpdate={(newRating) => setAverageRating(newRating)}
+                                        />
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>
@@ -618,30 +697,35 @@ const PlaylistContent = () => {
                             className="play-btn"
                             onClick={() => currentSong?.type !== "anuncio" && handlePlaySongs(playlist.songs, isPlaying)}
                         >
-                            {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ? <FaPause/> : <FaPlay/>}
+                            {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ?
+                                <FaPause/> : <FaPlay/>}
                         </button>
 
                         <button className="shuffle-btn" onClick={toggleShuffle}>
                             <FaRandom className={`shuffle-icon ${isShuffling ? "active" : ""}`}/>
                         </button>
-                        <div className="popup-wrapper ">
-                            <OptionsPopup
-                                trigger={<FaEllipsisH className="icon"/>}
-                                options={options}
-                                position="bottom-right"
-                                submenuPosition="right"
-                                onOptionSelect={handleOptionSelect}
-                            />
-                        </div>
+                        {playlist.typeP !== "Vibra_likedSong" && (
+                            <div className="popup-wrapper ">
+                                <OptionsPopup
+                                    trigger={<FaEllipsisH className="icon"/>}
+                                    options={options}
+                                    position="bottom-right"
+                                    submenuPosition="right"
+                                    onOptionSelect={handleOptionSelect}
+                                />
+                            </div>
+                        )}
                     </div>
 
-                    <div className="actions-right">
-                        <button className="shuffle-btn" onClick={toggleLike}>
-                            <FaHeart
-                                className={`icon heart-icon ${isLiked ? "liked" : ""}`}
-                            />
-                        </button>
-                    </div>
+                    {playlist.typeP !== "Vibra_likedSong" && (
+                        <div className="actions-right">
+                            <button className="shuffle-btn" onClick={toggleLike}>
+                                <FaHeart
+                                    className={`icon heart-icon ${isLiked ? "liked" : ""}`}
+                                />
+                            </button>
+                        </div>
+                    )}
                 </div>
                 <div className="song-header">
                     <span># / Play</span>
@@ -650,12 +734,18 @@ const PlaylistContent = () => {
                     <span>Álbum</span>
                     <span>Fecha Añadida</span>
                     <span>Duración</span>
+
+                </div>
+                <div className="sort-buttons">
+                    <button onClick={() => setSortOption('title')}>Ordenar por Título</button>
+                    <button onClick={() => setSortOption('artist')}>Ordenar por Artista</button>
+                    <button onClick={() => setSortOption('date')}>Ordenar por Fecha Añadida</button>
                 </div>
                 <div className="song-cont">
                     {/* Cabecera: 6 columnas (#/Play, Portada, Título, Álbum, Fecha, Duración) */}
 
                     <div className="song-list">
-                        {playlist.songs.map((song, index) => (
+                        {sortedSongs.map((song, index) => (
                             <div key={song.id || index} className="song-item">
                                 {/* Columna 1: (# / botón al hover) */}
                                 <div className="song-action">
@@ -698,9 +788,9 @@ const PlaylistContent = () => {
                                                 label: "Agregar a playlist",
                                                 submenu: agregarAFavoritosSubmenu,
                                             },
-                                            playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
+                                            playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
                                             {
-                                                label: song.liked ?  "Eliminar de favoritos" : "Agregar a favoritos" ,
+                                                label: song.liked ? "Eliminar de favoritos" : "Agregar a favoritos",
                                             },
                                             {label: "Ver detalles"},
                                         ].filter(option => option != null)}
