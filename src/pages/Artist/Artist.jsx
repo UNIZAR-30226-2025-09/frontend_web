@@ -5,6 +5,8 @@ import { PlayerProvider } from "../../components/Player/PlayerContext.jsx";
 import { apiFetch } from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 import OptionsPopup from "../../components/PopUpSelection/OptionsPopup.jsx";
+import axios from "axios";
+import CreatePlaylistModal from "../../components/PlaylistModal/PlaylistModal.jsx";
 import "./Artist.css"; // Estilos para el artista
 
 // Convierte segundos a m:ss
@@ -32,6 +34,11 @@ const ArtistContent = () => {
     const [shareSearch, setShareSearch] = useState('');
     const [selectedFriends, setSelectedFriends] = useState([]);
     const [friendsList, setFriendsList] = useState([]);
+
+    const [userPlaylists, setUserPlaylists] = useState([]);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [selectedSong, setSelectedSong] = useState(null);
+
 
     useEffect(() => {
         const fetchArtist = async () => {
@@ -67,6 +74,144 @@ const ArtistContent = () => {
         }
     }, [view, currentSong, isPlaying]);  // Dependencias del efecto
 
+    // Añade este useEffect para cargar las playlists del usuario
+    useEffect(() => {
+        const fetchUserPlaylists = async () => {
+            try {
+                const data = await apiFetch(`/playlists/users/${user_Id}/playlists`, {
+                    method: "GET",
+                });
+                setUserPlaylists(data);
+            } catch (error) {
+                console.error("Error al obtener las playlists del usuario:", error);
+            }
+        };
+
+        if (user_Id) {
+            fetchUserPlaylists();
+        }
+    }, [user_Id]);
+
+    // Añade esta función para crear una playlist
+    const handleCreatePlaylist = async ({ title, description }) => {
+        try {
+            const newPlaylist = await apiFetch(`/playlists`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: {
+                    name: title,
+                    description: description,
+                    user_id: user_Id,
+                    type: "private",
+                },
+            });
+            console.log("Playlist creada:", newPlaylist);
+
+            // Añade la canción a la nueva playlist
+            const response = await apiFetch(`/playlists/${newPlaylist.id}/addSong`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: { songId: selectedSong.id },
+            });
+            console.log("Canción agregada a la nueva playlist:", response);
+        } catch (error) {
+            console.error("Error al crear la playlist y agregar la canción:", error);
+        } finally {
+            setShowCreateModal(false);
+        }
+    };
+
+    const updateUserFavoriteStyle = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("Token no proporcionado");
+                return;
+            }
+    
+            await apiFetch("/user/updateStyle", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+    
+            console.log("Estilo favorito actualizado correctamente");
+        } catch (error) {
+            console.error("Error en la actualización del estilo favorito:", error);
+        }
+    };
+    
+    const handleSongOptionSelect = async (option, song) => {
+        console.log("Opción seleccionada:", option);
+        
+        if (option.label === "Crear playlist") {
+            setSelectedSong(song);
+            setShowCreateModal(true);
+        } else if (option.label === "Ver detalles") {
+            redirectToSong(song.id);
+        } else if (option.label === "Agregar a favoritos" || option.label === "Eliminar de favoritos") {
+            try {
+                const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/songliked', {
+                    user_id: user_Id
+                });
+                console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.data.playlist);
+                
+                const playlistId = likedPlaylistRes.data.playlist.id;
+                
+                const response = await axios.post(`http://localhost:5001/api/song_like/${song.id}/likeUnlike`, {
+                    user_id: user_Id,
+                    playlist_id: playlistId
+                });
+                
+                // Actualizar estilo favorito después de dar like a la canción
+                updateUserFavoriteStyle();
+                
+                console.log("Respuesta del servidor:", response.data);
+                if (view === "songs") {
+                    // Actualizar el estado de canciones populares
+                    setSongs1(prevSongs => 
+                        prevSongs.map(s => 
+                            s.id === song.id ? { ...s, liked: !s.liked } : s
+                        )
+                    );
+                } else if (view === "singles") {
+                    // Actualizar el estado de singles
+                    setSingles(prevSingles => 
+                        prevSingles.map(s => 
+                            s.id === song.id ? { ...s, liked: !s.liked } : s
+                        )
+                    );
+                }
+            } catch (error) {
+                console.error("Error al agregar/quitar canción de favoritos:", error);
+            }
+        } else if (userPlaylists.some(pl => pl.name === option.label)) {
+            // Es una playlist existente, añadir canción
+            try {
+                const playlist = userPlaylists.find(pl => pl.name === option.label);
+                const response = await apiFetch(`/playlists/${playlist.id}/addSong`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: { songId: song.id }
+                });
+                console.log("Canción agregada a la playlist existente:", response);
+                alert(`Canción añadida a la playlist "${option.label}"`);
+            } catch (error) {
+                console.error("Error al añadir la canción a la playlist existente:", error);
+            }
+        }
+    };
+
+    // Crear el submenu para agregar a playlists
+    const agregarAFavoritosSubmenu = [
+        { label: "Crear playlist" },
+        ...userPlaylists.map((pl) => ({
+            label: pl.name,
+            playlistId: pl.id,
+        })),
+    ];
 
     const toggleShuffle = () => {
         setIsShuffling(prev => !prev);
@@ -297,18 +442,27 @@ const ArtistContent = () => {
                                             <OptionsPopup
                                                 trigger={<FaEllipsisH className="song-options-icon" />}
                                                 options={[
-                                                    { label: "Agregar a favoritos" },
                                                     {
-                                                        label: "Ver detalles",
-                                                        onClick: (e) => {
-                                                            e.stopPropagation();
-                                                            redirectToSong(song.id);
-                                                        }
-                                                    }
+                                                        label: "Agregar a playlist",
+                                                        submenu: agregarAFavoritosSubmenu,
+                                                    },
+                                                    {
+                                                        label: song.liked ? "Eliminar de favoritos" : "Agregar a favoritos",
+                                                    },
+                                                    {label: "Ver detalles"},
                                                 ]}
                                                 position="bottom-right"
                                                 submenuPosition="left"
+                                                onOptionSelect={(option) => handleSongOptionSelect(option, song)}
                                             />
+
+                                            {/* Y mostrar el modal de creación de playlist cuando sea necesario */}
+                                            {showCreateModal && (
+                                                <CreatePlaylistModal
+                                                    onSubmit={handleCreatePlaylist}
+                                                    onClose={() => setShowCreateModal(false)}
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -384,20 +538,29 @@ const ArtistContent = () => {
 
                                         <div className="song-options">
                                             <OptionsPopup
-                                                trigger={<FaEllipsisH className="song-options-icon"/>}
+                                                trigger={<FaEllipsisH className="song-options-icon" />}
                                                 options={[
-                                                    {label: "Agregar a favoritos"},
                                                     {
-                                                        label: "Ver detalles",
-                                                        onClick: (e) => {
-                                                            e.stopPropagation();
-                                                            redirectToSong(song.id);
-                                                        }
-                                                    }
+                                                        label: "Agregar a playlist",
+                                                        submenu: agregarAFavoritosSubmenu,
+                                                    },
+                                                    {
+                                                        label: song.liked ? "Eliminar de favoritos" : "Agregar a favoritos",
+                                                    },
+                                                    {label: "Ver detalles"},
                                                 ]}
                                                 position="bottom-right"
                                                 submenuPosition="left"
+                                                onOptionSelect={(option) => handleSongOptionSelect(option, song)}
                                             />
+
+                                            {/* Y mostrar el modal de creación de playlist cuando sea necesario */}
+                                            {showCreateModal && (
+                                                <CreatePlaylistModal
+                                                    onSubmit={handleCreatePlaylist}
+                                                    onClose={() => setShowCreateModal(false)}
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                 ))}
