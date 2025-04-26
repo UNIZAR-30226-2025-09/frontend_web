@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 import "./Library.css";
 import PlaylistModal from "../../components/PlaylistModal/PlaylistModal";
+import { FaPlus, FaChevronLeft, FaChevronRight } from "react-icons/fa";  
 
 const Library = () => {
     const navigate = useNavigate();
@@ -11,30 +12,54 @@ const Library = () => {
     const [likedSongPlaylist, setLikedSongPlaylist] = useState(null); // Playlist "Me Gusta"
     const [likedPlaylists, setLikedPlaylists] = useState([]);
     const [userPlaylists, setUserPlaylists] = useState([]);
-    // Los estados de ordenación se han declarado pero no se usan; puedes revisarlos
-    const [sortUserPlaylists, setSortUserPlaylists] = useState("recent");
-    const [sortLikedPlaylists, setSortLikedPlaylists] = useState("recent");
-
-    // Estado para mostrar modal de nueva playlist
-
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
+    const [overflowStates, setOverflowStates] = useState({
+        likedSongs: false,
+        userPlaylists: false,
+        likedPlaylists: false
+    });
 
-    const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
+    // Referencias para los contenedores de scroll
+    const likedSongsRef = useRef(null);
+    const userPlaylistsRef = useRef(null);
+    const likedPlaylistsRef = useRef(null);
 
+    const user_Id = JSON.parse(localStorage.getItem('user')).id;
+
+    // Obtener datos del usuario con más detalle
     useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem("user"));
-        if (storedUser) {
-            setUser(storedUser);
-        }
+        const fetchUserDetails = async () => {
+            try {
+                const storedUser = JSON.parse(localStorage.getItem("user"));
+                if (storedUser) {
+                    // Si necesitas más datos del usuario, puedes hacer una petición adicional
+                    const userDetails = await apiFetch(`/users/${storedUser.id}`, {
+                        method: "GET",
+                    });
+                    setUser({...storedUser, ...userDetails});
+                }
+            } catch (error) {
+                console.error("Error al obtener detalles del usuario:", error);
+                const storedUser = JSON.parse(localStorage.getItem("user"));
+                if (storedUser) {
+                    setUser(storedUser);
+                }
+            }
+        };
+        
+        fetchUserDetails();
     }, []);
 
+    // Fetch de las playlists del usuario
     useEffect(() => {
         const fetchUserPlaylists = async () => {
             try {
                 const data = await apiFetch(`/playlists/users/${user_Id}/playlists`, {
                     method: "GET",
                 });
-                setUserPlaylists(data);
+                // Ordenar por más recientes primero
+                const sortedPlaylists = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                setUserPlaylists(sortedPlaylists);
             } catch (error) {
                 console.error("Error al obtener las playlists del usuario:", error);
             }
@@ -52,7 +77,9 @@ const Library = () => {
                 const userId = user ? user.id : null;
                 if (userId) {
                     const data = await apiFetch(`/playlists/liked/${userId}`);
-                    setLikedPlaylists(data);
+                    // Ordenar por más recientes primero
+                    const sortedPlaylists = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    setLikedPlaylists(sortedPlaylists);
                 }
             } catch (error) {
                 console.error("Error al obtener playlists con like:", error);
@@ -83,32 +110,36 @@ const Library = () => {
         }
     }, [user]);
 
-    const sortPlaylists = (type, setFunction, option) => {
-        setFunction(option);
-        let sortedPlaylists = type === "user" ? [...userPlaylists] : [...likedPlaylists];
+    // Comprobar si hay desbordamiento para mostrar botones de carrusel
+    useEffect(() => {
+        const checkOverflow = () => {
+            const checkContainerOverflow = (ref) => {
+                if (ref.current) {
+                    return ref.current.scrollWidth > ref.current.clientWidth;
+                }
+                return false;
+            };
 
-        switch (option) {
-            case "alphabetical":
-                sortedPlaylists.sort((a, b) => a.name.localeCompare(b.name));
-                break;
-            case "recent":
-                sortedPlaylists.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                break;
-            case "popular":
-                sortedPlaylists.sort((a, b) => b.likes - a.likes);
-                break;
-            default:
-                break;
-        }
+            setOverflowStates({
+                likedSongs: checkContainerOverflow(likedSongsRef),
+                userPlaylists: checkContainerOverflow(userPlaylistsRef),
+                likedPlaylists: checkContainerOverflow(likedPlaylistsRef)
+            });
+        };
 
-        type === "user" ? setUserPlaylists(sortedPlaylists) : setLikedPlaylists(sortedPlaylists);
-    };
+        // Comprobar inicialmente y después de cualquier cambio en el tamaño de la ventana
+        checkOverflow();
+        window.addEventListener('resize', checkOverflow);
+
+        return () => {
+            window.removeEventListener('resize', checkOverflow);
+        };
+    }, [userPlaylists, likedPlaylists, likedSongPlaylist]);
 
     // Función para redirigir a la página de detalles de la playlist
     const handlePlaylistClick = (playlistId) => {
         navigate(`/playlist/${playlistId}`);
     };
-
 
     // Funciones para controlar el modal de "Crear Playlist"
     const openPlaylistModal = () => {
@@ -121,8 +152,7 @@ const Library = () => {
 
     const handleCreatePlaylist = async (playlistData) => {
         try {
-
-            const newPlaylist = await apiFetch("/playlists", {  // Try different endpoint
+            const newPlaylist = await apiFetch("/playlists", {
                 method: "POST",
                 body: {
                     name: playlistData.title,
@@ -132,8 +162,9 @@ const Library = () => {
                 },
             });
 
-            // Agregar la nueva playlist al estado local
+            // Agregar la nueva playlist al estado local y mantener ordenado por más recientes
             setUserPlaylists([newPlaylist, ...userPlaylists]);
+            
             // Cerrar el modal
             closePlaylistModal();
 
@@ -144,97 +175,165 @@ const Library = () => {
         }
     };
 
+    // Funciones para controlar el carrusel
+    const scrollContainer = (containerRef, direction) => {
+        if (!containerRef.current) return;
+        
+        const scrollAmount = 500; // Cantidad de scroll en píxeles
+        const currentPosition = containerRef.current.scrollLeft;
+        
+        containerRef.current.scrollTo({
+            left: direction === 'next' 
+                ? currentPosition + scrollAmount 
+                : currentPosition - scrollAmount,
+            behavior: 'smooth'
+        });
+    };
 
     return (
         <div className="library-content">
-            {user && <h1 className="library-title">Bienvenido a tu biblioteca, {user.nickname}!</h1>}
+            {/* Título principal con nombre de usuario */}
+            <h1 className="library-title">
+                Tu Colección Musical, <span className="user-name-highlight">{user?.name || user?.nickname || 'Usuario'}!</span>
+            </h1>
 
             {/* Sección: Canciones que te han gustado */}
             <div className="library-section-header">
                 <h2>Canciones que te han gustado</h2>
             </div>
-            <div className="scroll-container">
-                <div className="library-playlists">
-                    {likedSongPlaylist ? (
-                        <div key={likedSongPlaylist.id} className="playlist-wrapper">
-                            <div className="library-playlist-card"
-                                 onClick={() => handlePlaylistClick(likedSongPlaylist.id)}>
-                                <img
-                                    src={getImageUrl(likedSongPlaylist.front_page) || "/default-playlist.jpg"}
-                                    alt={likedSongPlaylist.name}
-                                    className="library-playlist-image"
-                                />
+            <div className="scroll-section">
+                {overflowStates.likedSongs && (
+                    <button 
+                        className="carousel-control carousel-prev" 
+                        onClick={() => scrollContainer(likedSongsRef, 'prev')}
+                    >
+                        <FaChevronLeft className="carousel-control-icon" />
+                    </button>
+                )}
+                
+                <div className="scroll-container" ref={likedSongsRef}>
+                    <div className="library-playlists">
+                        {likedSongPlaylist ? (
+                            <div className="playlist-wrapper">
+                                <div className="library-playlist-card"
+                                     onClick={() => handlePlaylistClick(likedSongPlaylist.id)}>
+                                    <img
+                                        src={getImageUrl(likedSongPlaylist.front_page) || "/default-playlist.jpg"}
+                                        alt={likedSongPlaylist.name}
+                                        className="library-playlist-image"
+                                    />
+                                </div>
+                                <div onClick={() => handlePlaylistClick(likedSongPlaylist.id)}>
+                                    <p className="library-playlist-title">{likedSongPlaylist.name}</p>
+                                </div>
                             </div>
-                            <div onClick={() => handlePlaylistClick(likedSongPlaylist.id)}>
-                                <p className="library-playlist-title">{likedSongPlaylist.name}</p>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="empty-message">No tienes una playlist 'Me Gusta'.</div>
-                    )}
+                        ) : (
+                            <div className="empty-message">No tienes una playlist 'Me Gusta'.</div>
+                        )}
+                    </div>
                 </div>
+                
+                {overflowStates.likedSongs && (
+                    <button 
+                        className="carousel-control carousel-next" 
+                        onClick={() => scrollContainer(likedSongsRef, 'next')}
+                    >
+                        <FaChevronRight className="carousel-control-icon" />
+                    </button>
+                )}
             </div>
 
             {/* Sección: Tus Playlists */}
             <div className="library-section-header">
                 <h2>Tus Playlists</h2>
-                <div className="sort-options">
-                    <button onClick={() => sortPlaylists("user", setSortUserPlaylists, "recent")}>Recientes</button>
-                    <button onClick={() => sortPlaylists("user", setSortUserPlaylists, "alphabetical")}>Alfabético</button>
-                    <button onClick={() => sortPlaylists("user", setSortUserPlaylists, "popular")}>Populares</button>
-                </div>
                 {/* Botón para crear nueva playlist */}
                 <div className="create-playlist">
                     <button className="create-playlist-button" onClick={openPlaylistModal}>
-                        <svg width="20" height="20" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className="create-playlist-icon">
-                            <circle cx="32" cy="32" r="32" fill="#333333"/>
-                            <path d="M44 20V38C44 40.2091 42.2091 42 40 42C37.7909 42 36 40.2091 36 38C36 35.7909 37.7909 34 40 34C40.6839 34 41.3306 34.1554 41.9 34.4335V24L26 27V41C26 43.2091 24.2091 45 22 45C19.7909 45 18 43.2091 18 41C18 38.7909 19.7909 37 22 37C22.6839 37 23.3306 37.1554 23.9 37.4335V22L44 20Z" fill="#1DB954" stroke="#1DB954" stroke-width="1"/>
-                        </svg>
+                        <FaPlus className="create-playlist-icon" />
                         <span>Crear Playlist</span>
                     </button>
                 </div>
             </div>
-            <div className="scroll-container">
-                <div className="library-playlists">
-                    {userPlaylists.length > 0 ? userPlaylists.map(playlist => (
-                        <div key={playlist.id} className="library-playlist-card" onClick={() => handlePlaylistClick(playlist.id)}>
-                            <img
-                                src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
-                                alt={playlist.name}
-                                className="library-playlist-image"
-                            />
-                            <p className="library-playlist-title">{playlist.name}</p>
-                        </div>
-                    )) : <div className="empty-message">No tienes playlists creadas.</div>}
+            <div className="scroll-section">
+                {overflowStates.userPlaylists && (
+                    <button 
+                        className="carousel-control carousel-prev" 
+                        onClick={() => scrollContainer(userPlaylistsRef, 'prev')}
+                    >
+                        <FaChevronLeft className="carousel-control-icon" />
+                    </button>
+                )}
+                
+                <div className="scroll-container" ref={userPlaylistsRef}>
+                    <div className="library-playlists">
+                        {userPlaylists.length > 0 ? userPlaylists.map(playlist => (
+                            <div key={playlist.id} className="playlist-wrapper">
+                                <div className="library-playlist-card" onClick={() => handlePlaylistClick(playlist.id)}>
+                                    <img
+                                        src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
+                                        alt={playlist.name}
+                                        className="library-playlist-image"
+                                    />
+                                </div>
+                                <div onClick={() => handlePlaylistClick(playlist.id)}>
+                                    <p className="library-playlist-title">{playlist.name}</p>
+                                </div>
+                            </div>
+                        )) : <div className="empty-message">No tienes playlists creadas.</div>}
+                    </div>
                 </div>
+                
+                {overflowStates.userPlaylists && (
+                    <button 
+                        className="carousel-control carousel-next" 
+                        onClick={() => scrollContainer(userPlaylistsRef, 'next')}
+                    >
+                        <FaChevronRight className="carousel-control-icon" />
+                    </button>
+                )}
             </div>
 
             {/* Sección: Playlists que te han gustado */}
             <div className="library-section-header">
                 <h2>Playlists que te han gustado</h2>
-                <div className="sort-options">
-                    <button onClick={() => sortPlaylists("liked", setSortLikedPlaylists, "recent")}>Recientes</button>
-                    <button onClick={() => sortPlaylists("liked", setSortLikedPlaylists, "alphabetical")}>Alfabético</button>
-                    <button onClick={() => sortPlaylists("liked", setSortLikedPlaylists, "popular")}>Populares</button>
-                </div>
             </div>
-            <div className="scroll-container">
-                <div className="library-playlists">
-                    {likedPlaylists.length > 0 ? likedPlaylists.map(playlist => (
-                        <div key={playlist.id} className="playlist-wrapper">
-                            <div className="library-playlist-card" onClick={() => handlePlaylistClick(playlist.id)}>
-                                <img
-                                    src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
-                                    alt={playlist.name}
-                                    className="library-playlist-image"
-                                />
+            <div className="scroll-section">
+                {overflowStates.likedPlaylists && (
+                    <button 
+                        className="carousel-control carousel-prev" 
+                        onClick={() => scrollContainer(likedPlaylistsRef, 'prev')}
+                    >
+                        <FaChevronLeft className="carousel-control-icon" />
+                    </button>
+                )}
+                
+                <div className="scroll-container" ref={likedPlaylistsRef}>
+                    <div className="library-playlists">
+                        {likedPlaylists.length > 0 ? likedPlaylists.map(playlist => (
+                            <div key={playlist.id} className="playlist-wrapper">
+                                <div className="library-playlist-card" onClick={() => handlePlaylistClick(playlist.id)}>
+                                    <img
+                                        src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
+                                        alt={playlist.name}
+                                        className="library-playlist-image"
+                                    />
+                                </div>
+                                <div onClick={() => handlePlaylistClick(playlist.id)}>
+                                    <p className="library-playlist-title">{playlist.name}</p>
+                                </div>
                             </div>
-                            <div onClick={() => handlePlaylistClick(playlist.id)}>
-                                <p className="library-playlist-title">{playlist.name}</p>
-                            </div>
-                        </div>
-                    )) : <div className="empty-message">No has dado like a ninguna playlist.</div>}
+                        )) : <div className="empty-message">No has dado like a ninguna playlist.</div>}
+                    </div>
                 </div>
+                
+                {overflowStates.likedPlaylists && (
+                    <button 
+                        className="carousel-control carousel-next" 
+                        onClick={() => scrollContainer(likedPlaylistsRef, 'next')}
+                    >
+                        <FaChevronRight className="carousel-control-icon" />
+                    </button>
+                )}
             </div>
 
             {/* Renderizar el modal de crear playlist si está activo */}
