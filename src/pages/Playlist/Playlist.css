@@ -183,7 +183,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: 9999;
 }
 
 .popup-content {
@@ -598,8 +598,8 @@
 }
 
 
-/* Estilos para el icono de búsqueda y la barra de búsqueda */
-.search-button {
+/* Estilos para el icono de búsqueda y la barra de búsqueda de canciones - nombres únicos */
+.playlist-song-search-button {
     background: none;
     border: none;
     cursor: pointer;
@@ -609,62 +609,64 @@
     transition: all 0.2s ease;
     font-size: 22px;
     color: white;
+    opacity: 0.8;
 }
 
-.search-button:hover {
+.playlist-song-search-button:hover {
     color: #0399b6;
     transform: scale(1.05);
+    opacity: 1;
 }
 
-.search-container {
+.playlist-song-search-container {
     position: relative;
     display: flex;
     align-items: center;
     overflow: hidden;
     width: 0;
-    transition: width 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); /* Transición más suave */
     margin-right: 10px;
 }
 
-.search-container.expanded {
+.playlist-song-search-container.expanded {
     width: 250px;
 }
 
-.search-input {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
+.playlist-song-search-input {
+    background: transparent; /* Eliminamos el fondo oscuro */
+    border: none; /* Quitamos el borde */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4); /* Solo borde inferior */
     color: white;
-    padding: 8px 16px 8px 40px;
+    padding: 8px 16px 8px 34px;
     width: 100%;
     font-size: 14px;
     outline: none;
     transition: all 0.2s ease;
 }
 
-.search-input:focus {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: #0399b6;
-    box-shadow: 0 0 0 2px rgba(3, 153, 182, 0.2);
+.playlist-song-search-input:focus {
+    background: transparent; /* Sin fondo al hacer focus */
+    border-bottom: 1px solid #0399b6; /* Solo cambiamos el color del borde inferior */
+    box-shadow: none; /* Eliminamos la sombra */
 }
 
-.search-input::placeholder {
+.playlist-song-search-input::placeholder {
     color: rgba(255, 255, 255, 0.6);
 }
 
-.search-icon-inside {
+.playlist-song-search-icon-inside {
     position: absolute;
-    left: 12px;
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
-    color: rgba(255, 255, 255, 0.6);
+    color: #0399b6; /* Icono del mismo color que el tema */
     font-size: 16px;
     pointer-events: none;
 }
 
-.clear-search {
+.playlist-song-search-clear {
     position: absolute;
-    right: 12px;
+    right: 8px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
@@ -676,21 +678,141 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.2s;
+    transition: all 0.2s;
+    opacity: 0.7;
+    width: 16px;
+    height: 16px;
 }
 
-.clear-search:hover {
+.playlist-song-search-clear:hover {
     color: #fff;
+    opacity: 1;
 }
 
-/* Mensaje cuando no hay resultados */
-.no-results {
+/* Mensaje cuando no hay resultados - estilo mejorado */
+.playlist-no-results {
     text-align: center;
     padding: 20px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.7);
     width: 100%;
     font-style: italic;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(3, 153, 182, 0.05); /* Fondo muy sutil */
     border-radius: 8px;
     margin: 10px 0;
+    border: 1px dashed rgba(3, 153, 182, 0.2); /* Borde punteado sutil */
+}
+
+/* Estilos para el botón de ordenación y su menú desplegable */
+.playlist-sort-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.07);
+    margin-left: auto;
+    margin-bottom: 10px;
+}
+
+.playlist-sort-button:hover {
+    background: rgba(3, 153, 182, 0.3);
+    color: white;
+}
+
+.playlist-sort-button .sort-icon {
+    font-size: 16px;
+    transition: transform 0.2s ease;
+}
+
+.playlist-sort-button.active {
+    background: rgba(3, 153, 182, 0.4);
+    color: white;
+}
+
+.playlist-sort-button.active .sort-icon {
+    transform: rotate(180deg);
+}
+
+.playlist-sort-menu {
+    position: absolute;
+    right: 40px;
+    background: linear-gradient(145deg, #182235 0%, #263044 100%);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    width: 220px;
+    z-index: 100;
+    transform-origin: top right;
+    animation: sortMenuFadeIn 0.2s ease forwards;
+    border: 1px solid rgba(3, 153, 182, 0.15);
+}
+
+@keyframes sortMenuFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.playlist-sort-option {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.85);
+    border-left: 3px solid transparent;
+}
+
+.playlist-sort-option:hover {
+    background: rgba(3, 153, 182, 0.15);
+    color: white;
+    border-left-color: rgba(3, 153, 182, 0.8);
+}
+
+.playlist-sort-option.active {
+    background: rgba(3, 153, 182, 0.25);
+    color: white;
+    border-left-color: #0399b6;
+}
+
+.playlist-sort-option .sort-check {
+    margin-left: auto;
+    color: #0399b6;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.playlist-sort-option.active .sort-check {
+    opacity: 1;
+}
+
+.playlist-sort-order {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    justify-content: space-between;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.playlist-sort-order-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.playlist-sort-order .order-icon {
+    transition: transform 0.3s;
+}
+
+.playlist-sort-order .order-icon.descending {
+    transform: rotate(180deg);
 }

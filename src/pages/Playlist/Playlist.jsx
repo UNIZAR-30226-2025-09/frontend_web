@@ -1,4 +1,4 @@
-import {FaHeart, FaEllipsisH, FaPlay, FaPause, FaRandom} from "react-icons/fa";
+import {FaHeart, FaEllipsisH, FaPlay, FaPause, FaRandom, FaSearch, FaTimes} from "react-icons/fa";
 import { useEffect, useState } from "react";
 import {useOutletContext, useParams, useNavigate} from "react-router-dom";
 import { PlayerProvider} from "../../components/Player/PlayerContext.jsx";
@@ -840,8 +840,8 @@ const PlaylistContent = () => {
                                             autoFocus
                                         />
                                         {searchTerm && (
-                                            <button
-                                                className="clear-search"
+                                            <button 
+                                                className="clear-search" 
                                                 onClick={() => setSearchTerm('')}
                                             >
                                                 <FaTimes />
@@ -937,11 +937,12 @@ const PlaylistContent = () => {
                                             )}
                                         </div>
                                     </div>
-                                )) : (
+                                ))
+                            ) : (
                                 <div className="no-results">
                                     No se encontraron canciones que coincidan con la búsqueda
                                 </div>
-                                )}
+                            )}
                         </div>
                     </div>
                 </div>
