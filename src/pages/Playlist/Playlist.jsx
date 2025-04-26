@@ -44,6 +44,45 @@ const PlaylistContent = () => {
     const navigate = useNavigate();
     const[showCollabModal, setShowCollabModal] = useState(false);
 
+    const [showSharePopup, setShowSharePopup] = useState(false);
+    const [shareSearch, setShareSearch] = useState("");
+    const [selectedFriends, setSelectedFriends] = useState([]);
+    const [friendsList, setFriendsList] = useState([]);
+
+    const [searchVisible, setSearchVisible] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredSongs, setFilteredSongs] = useState([]);
+
+    useEffect(() => {
+        if (!playlist) return;
+
+        if (!searchTerm.trim()) {
+            setFilteredSongs(playlist.songs);
+            return;
+        }
+
+        const filtered = playlist.songs.filter(song =>
+            song.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (song.album?.name && song.album.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+
+        setFilteredSongs(filtered);
+    }, [searchTerm, playlist]);
+
+    // Inicializa las canciones filtradas cuando se carga la playlist
+    useEffect(() => {
+        if (playlist) {
+            setFilteredSongs(playlist.songs);
+        }
+    }, [playlist]);
+
+    const toggleSearch = () => {
+        setSearchVisible(!searchVisible);
+        if (searchVisible) {
+            setSearchTerm('');
+        }
+    };
+
     const options = [
         playlist?.user_id && playlist.user_id === user_Id ? { label: "Eliminar Playlist" } : null,
         playlist?.user_id && playlist.user_id === user_Id ? { label: `Hacer ${playlist?.type === "public" ? "privada" : "pública"}` } : null,
@@ -453,7 +492,30 @@ const PlaylistContent = () => {
                 alert("Solo puedes invitar colaboradores a playlists de tipo 'typeP: playlist'.");
             }
 
-        } else {
+
+        } else if (option.label === "Copiar enlace") {
+            const url = `${window.location.origin}/playlist/${playlistId}`;
+            await navigator.clipboard.writeText(url);
+            alert("¡Enlace copiado al portapapeles!");
+        } else if (option.label === "Compartir con amigos") {
+            // Carga la lista de amigos solo si aún no la tienes
+            if (friendsList.length === 0) {
+                try {
+                    const data = await apiFetch('/social/getFriendsList', {
+                        method: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    setFriendsList(data.friends || []);
+                } catch (e) {
+                    alert("Error al cargar amigos");
+                }
+            }
+            setShowSharePopup(true);
+        }
+        else
+        {
             // Aquí manejas las demás opciones
             console.log("Opción no manejada:", option);
         }
@@ -557,186 +619,334 @@ const PlaylistContent = () => {
     };
 
     return (
-        <div className="layout">
-            {/* Columna derecha: contenido de la playlist */}
-            <div className="box">
-                <div className="play-cont">
-                    <div className={`${playlist?.user_id && playlist.user_id === user_Id ? 'image' : 'imagenoedit'}`} onClick={handleEditToggle} style={{cursor: "pointer"}}>
-                        <img
-                            src={getImageUrl(playlist.front_page)}  // Usa getImageUrl aquí para generar la URL completa
-                            width="275"
-                            alt="Playlist Cover"
-                            onError={(e) => (e.target.src = "/default-playlist.jpg")} // Si la imagen falla, muestra la imagen por defecto
-                        />
-                    </div>
-                    <div className="playlist-info">
-                        {playlist?.user_id && playlist.user_id === user_Id && isEditing ? (
-                            <div className="popup-overlay">
-                                <div className="popup-content">
-                                    <label htmlFor="title">Título de la Playlist</label>
-                                    <input
-                                        id="title"
-                                        type="text"
-                                        value={newTitle}
-                                        onChange={(e) => setNewTitle(e.target.value)}
-                                        className="edit-input"
-                                    />
-
-                                    <label htmlFor="description">Descripción</label>
-                                    <textarea
-                                        id="description"
-                                        value={newDescription}
-                                        onChange={(e) => setNewDescription(e.target.value)}
-                                        className="edit-input"
-                                    />
-
-                                    <button className="save-btn" onClick={handleSaveChanges}>Guardar</button>
-                                    <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancelar</button>
+        <>
+            {showSharePopup && (
+                <div className="popup-overlay">
+                    <div className="popup-content playlist-share-popup">
+                        <div className="playlist-popup-header">
+                            <h3>Compartir playlist con amigos</h3>
+                        </div>
+                        <div className="playlist-search-container">
+                            <span className="playlist-search-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </span>
+                            <input
+                                type="text"
+                                placeholder="Buscar amigo..."
+                                value={shareSearch}
+                                onChange={e => setShareSearch(e.target.value)}
+                                className="playlist-edit-input"
+                            />
+                            {shareSearch && (
+                                <button
+                                    className="playlist-clear-search"
+                                    onClick={() => setShareSearch('')}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                        <div className="playlist-friends-list">
+                            {friendsList.filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase())).length > 0 ? (
+                                friendsList
+                                    .filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase()))
+                                    .map(f => (
+                                        <label key={f.friendId} className="playlist-friend-item">
+                                            <div className="playlist-checkbox-wrapper">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`playlist-friend-${f.friendId}`}
+                                                    checked={selectedFriends.includes(f.friendId)}
+                                                    onChange={e => {
+                                                        if (e.target.checked) {
+                                                            setSelectedFriends(prev => [...prev, f.friendId]);
+                                                        } else {
+                                                            setSelectedFriends(prev => prev.filter(id => id !== f.friendId));
+                                                        }
+                                                    }}
+                                                />
+                                                <span className="playlist-custom-checkbox"></span>
+                                            </div>
+                                            {f.user_picture ? (
+                                                <img src={getImageUrl(f.user_picture)} alt={f.nickname} className="playlist-friend-avatar" />
+                                            ) : (
+                                                <span className="playlist-friend-initials">{f.nickname[0]}</span>
+                                            )}
+                                            <span className="playlist-friend-name">{f.nickname}</span>
+                                            {selectedFriends.includes(f.friendId) && (
+                                                <span className="playlist-selected-badge">✓</span>
+                                            )}
+                                        </label>
+                                    ))
+                            ) : (
+                                <div className="playlist-friends-empty">
+                                    {shareSearch
+                                        ? "No se encontraron amigos con ese nombre"
+                                        : "No tienes amigos para compartir esta playlist"}
                                 </div>
-                            </div>
-                        ) : (
-                            <>
-                                <p className="text-gray-300 text-sm uppercase">Lista</p>
-                                <h1>{playlist.name}</h1>
-                                <p>{playlist.description}</p>
-                                <p>
-                                    {playlist.owner?.nickname || "Desconocido"} •
-                                    Guardada {playlist.likes || 0} veces •
-                                    Total --  {playlist.songs?.length} canciones
-                                </p>
-
-                                {/* Sistema de valoración */}
-                                <div className="rating-section">
-                                    <p>Valoración promedio: {averageRating} / 5</p>
-                                    <Rating
-                                        playlistId={playlistId}
-                                        userId={user_Id}
-                                        initialRating={0} // Puedes ajustar esto si tienes la valoración inicial del usuario
-                                        onRatingUpdate={(newRating) => setAverageRating(newRating)}
-                                    />
-                                </div>
-                            </>
-                        )}
+                            )}
+                        </div>
+                        <div className="playlist-popup-actions">
+                            <button
+                                className="playlist-share-btn"
+                                onClick={async () => {
+                                    try {
+                                        for (const friendId of selectedFriends) {
+                                            await apiFetch('/chat/send', {
+                                                method: 'POST',
+                                                headers: {
+                                                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                                                },
+                                                body: {
+                                                    user2_id: friendId,
+                                                    message: `Te comparto esta playlist: ${playlist.name}`,
+                                                    shared_content: {
+                                                        type: 'playlist',
+                                                        id: playlist.id,
+                                                        name: playlist.name,
+                                                        image: playlist.front_page ? playlist.front_page : null,
+                                                        url: `${window.location.origin}/playlist/${playlist.id}`
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        setShowSharePopup(false);
+                                        setSelectedFriends([]);
+                                        setShareSearch("");
+                                        alert("Playlist compartida por chat!");
+                                    } catch (error) {
+                                        alert("Hubo un error al compartir");
+                                    }
+                                }}
+                            >
+                                Enviar
+                            </button>
+                            <button
+                                className="playlist-cancel-btn"
+                                onClick={() => setShowSharePopup(false)}
+                            >
+                                Cancelar
+                            </button>
+                        </div>
                     </div>
                 </div>
+            )}
 
-                <div className="playlist-actions">
-                    {/* Botón principal grande con solo el ícono */}
-                    <div className="rep-cont">
-                        <button
-                            className="play-btn"
-                            onClick={() => currentSong?.type !== "anuncio" && handlePlaySongs(playlist.songs, isPlaying)}
-                        >
-                            {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ? <FaPause/> : <FaPlay/>}
-                        </button>
-
-                        <button className="shuffle-btn" onClick={toggleShuffle}>
-                            <FaRandom className={`shuffle-icon ${isShuffling ? "active" : ""}`}/>
-                        </button>
-                        <div className="popup-wrapper ">
-                            <OptionsPopup
-                                trigger={<FaEllipsisH className="icon"/>}
-                                options={options}
-                                position="bottom-right"
-                                submenuPosition="right"
-                                onOptionSelect={handleOptionSelect}
+            <div className="layout">
+                {/* Columna derecha: contenido de la playlist */}
+                <div className="box">
+                    <div className="play-cont">
+                        <div className={`${playlist?.user_id && playlist.user_id === user_Id ? 'image' : 'imagenoedit'}`} onClick={handleEditToggle} style={{cursor: "pointer"}}>
+                            <img
+                                src={getImageUrl(playlist.front_page)}  // Usa getImageUrl aquí para generar la URL completa
+                                width="275"
+                                alt="Playlist Cover"
+                                onError={(e) => (e.target.src = "/default-playlist.jpg")} // Si la imagen falla, muestra la imagen por defecto
                             />
+                        </div>
+                        <div className="playlist-info">
+                            {playlist?.user_id && playlist.user_id === user_Id && isEditing ? (
+                                <div className="popup-overlay">
+                                    <div className="popup-content">
+                                        <label htmlFor="title">Título de la Playlist</label>
+                                        <input
+                                            id="title"
+                                            type="text"
+                                            value={newTitle}
+                                            onChange={(e) => setNewTitle(e.target.value)}
+                                            className="edit-input"
+                                        />
+
+                                        <label htmlFor="description">Descripción</label>
+                                        <textarea
+                                            id="description"
+                                            value={newDescription}
+                                            onChange={(e) => setNewDescription(e.target.value)}
+                                            className="edit-input"
+                                        />
+
+                                        <button className="save-btn" onClick={handleSaveChanges}>Guardar</button>
+                                        <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancelar</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <p className="text-gray-300 text-sm uppercase">Lista</p>
+                                    <h1>{playlist.name}</h1>
+                                    <p>{playlist.description}</p>
+                                    <p>
+                                        {playlist.owner?.nickname || "Desconocido"} •
+                                        Guardada {playlist.likes || 0} veces •
+                                        Total --  {playlist.songs?.length} canciones
+                                    </p>
+
+                                    {/* Sistema de valoración */}
+                                    <div className="rating-section">
+                                        <p>Valoración promedio: {averageRating} / 5</p>
+                                        <Rating
+                                            playlistId={playlistId}
+                                            userId={user_Id}
+                                            initialRating={0} // Puedes ajustar esto si tienes la valoración inicial del usuario
+                                            onRatingUpdate={(newRating) => setAverageRating(newRating)}
+                                        />
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
 
-                    <div className="actions-right">
-                        <button className="shuffle-btn" onClick={toggleLike}>
-                            <FaHeart
-                                className={`icon heart-icon ${isLiked ? "liked" : ""}`}
-                            />
-                        </button>
-                    </div>
-                </div>
-                <div className="song-header">
-                    <span># / Play</span>
-                    <span>Portada</span>
-                    <span>Título</span>
-                    <span>Álbum</span>
-                    <span>Fecha Añadida</span>
-                    <span>Duración</span>
-                </div>
-                <div className="song-cont">
-                    {/* Cabecera: 6 columnas (#/Play, Portada, Título, Álbum, Fecha, Duración) */}
+                    <div className="playlist-actions">
+                        {/* Botón principal grande con solo el ícono */}
+                        <div className="rep-cont">
+                            <button
+                                className="play-btn"
+                                onClick={() => currentSong?.type !== "anuncio" && handlePlaySongs(playlist.songs, isPlaying)}
+                            >
+                                {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ? <FaPause/> : <FaPlay/>}
+                            </button>
 
-                    <div className="song-list">
-                        {playlist.songs.map((song, index) => (
-                            <div key={song.id || index} className="song-item">
-                                {/* Columna 1: (# / botón al hover) */}
-                                <div className="song-action">
-                                    <span className="song-index">{index + 1}</span>
-                                    <button
-                                        className="play-icon"
-                                        onClick={() => handlePlaySong(song, index, playlist.songs)}
-                                    >
-                                        <FaPlay/>
-                                    </button>
-                                </div>
-
-                                {/* Columna 2: Portada */}
-                                <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>
-
-                                {/* Columna 3: Título */}
-                                <span className="song-title" onClick={() => redirectToSong(song.id)}>{song.name}</span>
-
-                                {/* Columna 4: Álbum */}
-                                <span className="song-artist">
-                                  {song.album?.name || "Sin álbum"}
-                                </span>
-
-                                {/* Columna 5: Fecha */}
-                                <span className="song-date">
-                                  {song.song_playlist?.date || "Fecha desconocida"}
-                                </span>
-
-                                {/* Columna 6: Duración (min:seg) */}
-                                <span className="song-duration">
-                                  {formatDuration(song.duration)}
-                                </span>
-
-                                {/* Contenedor de opciones (tres puntos) que aparece al hacer hover */}
-                                <div className="song-options">
-                                    <OptionsPopup
-                                        trigger={<FaEllipsisH className="song-options-icon"/>}
-                                        options={[
-                                            {
-                                                label: "Agregar a playlist",
-                                                submenu: agregarAFavoritosSubmenu,
-                                            },
-                                            playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
-                                            {
-                                                label: song.liked ?  "Eliminar de favoritos" : "Agregar a favoritos" ,
-                                            },
-                                            {label: "Ver detalles"},
-                                        ].filter(option => option != null)}
-                                        position="bottom-right"
-                                        submenuPosition="left"
-                                        onOptionSelect={(option, idx) => handleSongOptionSelect(option, idx, song)}
-                                    />
-                                    {showCreateModal && (
-                                        <CreatePlaylistModal
-                                            onSubmit={handleCreatePlaylist}
-                                            onClose={() => setShowCreateModal(false)}
-                                        />
-                                    )}
-                                </div>
+                            <button className="shuffle-btn" onClick={toggleShuffle}>
+                                <FaRandom className={`shuffle-icon ${isShuffling ? "active" : ""}`}/>
+                            </button>
+                            <div className="popup-wrapper ">
+                                <OptionsPopup
+                                    trigger={<FaEllipsisH className="icon"/>}
+                                    options={options}
+                                    position="bottom-right"
+                                    submenuPosition="right"
+                                    onOptionSelect={handleOptionSelect}
+                                />
                             </div>
-                        ))}
+                        </div>
+
+                        <div className="actions-right">
+
+                            <div className={`search-container ${searchVisible ? 'expanded' : ''}`}>
+                                {searchVisible && (
+                                    <>
+                                        <FaSearch className="search-icon-inside" />
+                                        <input
+                                            type="text"
+                                            className="search-input"
+                                            placeholder="Buscar en esta playlist..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            autoFocus
+                                        />
+                                        {searchTerm && (
+                                            <button
+                                                className="clear-search"
+                                                onClick={() => setSearchTerm('')}
+                                            >
+                                                <FaTimes />
+                                            </button>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+
+                            {/* Botón de búsqueda */}
+                            <button className="search-button" onClick={toggleSearch}>
+                                <FaSearch className="icon" />
+                            </button>
+
+                            <button className="shuffle-btn" onClick={toggleLike}>
+                                <FaHeart
+                                    className={`icon heart-icon ${isLiked ? "liked" : ""}`}
+                                />
+                            </button>
+                        </div>
+                    </div>
+                    <div className="song-header">
+                        <span># / Play</span>
+                        <span>Portada</span>
+                        <span>Título</span>
+                        <span>Álbum</span>
+                        <span>Fecha Añadida</span>
+                        <span>Duración</span>
+                    </div>
+                    <div className="song-cont">
+                        {/* Cabecera: 6 columnas (#/Play, Portada, Título, Álbum, Fecha, Duración) */}
+
+                        <div className="song-list">
+                            {filteredSongs.length > 0 ? (
+                                filteredSongs.map((song, index) => (
+                                    <div key={song.id || index} className="song-item">
+                                        {/* Columna 1: (# / botón al hover) */}
+                                        <div className="song-action">
+                                            <span className="song-index">{index + 1}</span>
+                                            <button
+                                                className="play-icon"
+                                                onClick={() => handlePlaySong(song, index, playlist.songs)}
+                                            >
+                                                <FaPlay/>
+                                            </button>
+                                        </div>
+
+                                        {/* Columna 2: Portada */}
+                                        <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>
+
+                                        {/* Columna 3: Título */}
+                                        <span className="song-title" onClick={() => redirectToSong(song.id)}>{song.name}</span>
+
+                                        {/* Columna 4: Álbum */}
+                                        <span className="song-artist">
+                                        {song.album?.name || "Sin álbum"}
+                                        </span>
+
+                                        {/* Columna 5: Fecha */}
+                                        <span className="song-date">
+                                        {song.song_playlist?.date || "Fecha desconocida"}
+                                        </span>
+
+                                        {/* Columna 6: Duración (min:seg) */}
+                                        <span className="song-duration">
+                                        {formatDuration(song.duration)}
+                                        </span>
+
+                                        {/* Contenedor de opciones (tres puntos) que aparece al hacer hover */}
+                                        <div className="song-options">
+                                            <OptionsPopup
+                                                trigger={<FaEllipsisH className="song-options-icon"/>}
+                                                options={[
+                                                    {
+                                                        label: "Agregar a playlist",
+                                                        submenu: agregarAFavoritosSubmenu,
+                                                    },
+                                                    playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
+                                                    {
+                                                        label: song.liked ? "Eliminar de favoritos" : "Agregar a favoritos",
+                                                    },
+                                                    {label: "Ver detalles"},
+                                                ].filter(option => option != null)}
+                                                position="bottom-right"
+                                                submenuPosition="left"
+                                                onOptionSelect={(option, idx) => handleSongOptionSelect(option, idx, song)}
+                                            />
+                                            {showCreateModal && (
+                                                <CreatePlaylistModal
+                                                    onSubmit={handleCreatePlaylist}
+                                                    onClose={() => setShowCreateModal(false)}
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
+                                )) : (
+                                <div className="no-results">
+                                    No se encontraron canciones que coincidan con la búsqueda
+                                </div>
+                                )}
+                        </div>
                     </div>
                 </div>
             </div>
-            {showCollabModal && (
-                <Collaborators
-                    playlistId={playlistId}
-                    onClose={() => setShowCollabModal(false)}
-                />
-            )}
-        </div>
-
+        </>
     );
 };
 
