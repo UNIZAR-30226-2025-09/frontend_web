@@ -2,14 +2,18 @@ import {FaHeart, FaEllipsisH, FaPlay, FaPause, FaRandom, FaSearch, FaTimes} from
 import { useEffect, useState } from "react";
 import {useOutletContext, useParams, useNavigate} from "react-router-dom";
 import { PlayerProvider} from "../../components/Player/PlayerContext.jsx";
+import Collaborators from "../../components/Collaborators/Collaborators.jsx";
 import "./Playlist.css"; // Layout y estilos generales
 import "../../components/SongItem/SongItem.css"; // Estilos de la lista de canciones
+import "../../components/Collaborators/Collaborators.css";
 import {apiFetch} from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 import CreatePlaylistModal from "../../components/PlaylistModal/PlaylistModal.jsx";
 import OptionsPopup from "../../components/PopUpSelection/OptionsPopup.jsx";
 import Rating from '../../components/Rating/Rating.jsx';
 import axios from "axios";
+
+"#utils/apiFetch.js"
 
 // Convierte segundos a m:ss
 function formatDuration(seconds) {
@@ -38,6 +42,7 @@ const PlaylistContent = () => {
     const { currentSong, setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying,
             isPlaying, setPlaylistActive, playlistActive, setSongActive } = useOutletContext();
     const navigate = useNavigate();
+    const[showCollabModal, setShowCollabModal] = useState(false);
 
     const [showSharePopup, setShowSharePopup] = useState(false);
     const [shareSearch, setShareSearch] = useState("");
@@ -50,27 +55,27 @@ const PlaylistContent = () => {
 
     useEffect(() => {
         if (!playlist) return;
-        
+
         if (!searchTerm.trim()) {
             setFilteredSongs(playlist.songs);
             return;
         }
-        
-        const filtered = playlist.songs.filter(song => 
-            song.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+
+        const filtered = playlist.songs.filter(song =>
+            song.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (song.album?.name && song.album.name.toLowerCase().includes(searchTerm.toLowerCase()))
         );
-        
+
         setFilteredSongs(filtered);
     }, [searchTerm, playlist]);
-    
+
     // Inicializa las canciones filtradas cuando se carga la playlist
     useEffect(() => {
         if (playlist) {
             setFilteredSongs(playlist.songs);
         }
     }, [playlist]);
-    
+
     const toggleSearch = () => {
         setSearchVisible(!searchVisible);
         if (searchVisible) {
@@ -81,7 +86,10 @@ const PlaylistContent = () => {
     const options = [
         playlist?.user_id && playlist.user_id === user_Id ? { label: "Eliminar Playlist" } : null,
         playlist?.user_id && playlist.user_id === user_Id ? { label: `Hacer ${playlist?.type === "public" ? "privada" : "pública"}` } : null,
-        { label: "Invitar Colaboradores" },
+        playlist?.typeP === "playlist" ? {
+            label: "Invitar Colaboradores",
+            action: () => setShowCollabModal(true),
+        } : null,
         {
             label: "Compartir",
             submenu: [
@@ -445,39 +453,46 @@ const PlaylistContent = () => {
                     console.error("Error al eliminar la playlist:", error);
                 }
             }
-        } else if (option.label === "Hacer privada")
-        {
+        } else if (option.label === "Hacer privada") {
             try {
                 const response = await apiFetch(`/playlists/${playlistId}`, {
                     method: "PUT",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
                     },
-                    body: { type: "private" }
+                    body: { type: "private" },
                 });
 
                 console.log("Playlist actualizada a privada:", response);
                 window.location.reload();
             } catch (error) {
-                console.error("Error al eliminar la playlist:", error);
+                console.error("Error al actualizar la playlist:", error);
             }
-        }
-        else if (option.label === "Hacer pública")
-        {
+        } else if (option.label === "Hacer pública") {
             try {
                 const response = await apiFetch(`/playlists/${playlistId}`, {
                     method: "PUT",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
                     },
-                    body: { type: "public" }
+                    body: { type: "public" },
                 });
 
-                console.log("Playlist actualizada a privada:", response);
+                console.log("Playlist actualizada a pública:", response);
                 window.location.reload();
             } catch (error) {
-                console.error("Error al eliminar la playlist:", error);
+                console.error("Error al actualizar la playlist:", error);
             }
+        } else if (option.label === "Invitar Colaboradores") {
+            if (playlist?.typeP === "playlist") {
+                setShowCollabModal(true); // Abre el modal
+                console.log("Abriendo modal para invitar colaboradores");
+            } else {
+                console.log("No se puede invitar colaboradores a esta playlist porque no es del tipo permitido");
+                alert("Solo puedes invitar colaboradores a playlists de tipo 'typeP: playlist'.");
+            }
+
+
         } else if (option.label === "Copiar enlace") {
             const url = `${window.location.origin}/playlist/${playlistId}`;
             await navigator.clipboard.writeText(url);
@@ -505,7 +520,6 @@ const PlaylistContent = () => {
             console.log("Opción no manejada:", option);
         }
     };
-
 
     const handleSongOptionSelect = async (option, idx, song) => {
         console.log("Opción seleccionada:", option, idx, song);
@@ -603,7 +617,7 @@ const PlaylistContent = () => {
             setShowCreateModal(false);
         }
     };
-    
+
     return (
         <>
             {showSharePopup && (
@@ -627,8 +641,8 @@ const PlaylistContent = () => {
                                 className="playlist-edit-input"
                             />
                             {shareSearch && (
-                                <button 
-                                    className="playlist-clear-search" 
+                                <button
+                                    className="playlist-clear-search"
                                     onClick={() => setShareSearch('')}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -813,13 +827,13 @@ const PlaylistContent = () => {
 
                         <div className="actions-right">
 
-                            <div className={`playlist-song-search-container ${searchVisible ? 'expanded' : ''}`}>
+                            <div className={`search-container ${searchVisible ? 'expanded' : ''}`}>
                                 {searchVisible && (
                                     <>
-                                        <FaSearch className="playlist-song-search-icon-inside" />
+                                        <FaSearch className="search-icon-inside" />
                                         <input
                                             type="text"
-                                            className="playlist-song-search-input"
+                                            className="search-input"
                                             placeholder="Buscar en esta playlist..."
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -827,7 +841,7 @@ const PlaylistContent = () => {
                                         />
                                         {searchTerm && (
                                             <button 
-                                                className="playlist-song-search-clear" 
+                                                className="clear-search" 
                                                 onClick={() => setSearchTerm('')}
                                             >
                                                 <FaTimes />
@@ -838,7 +852,7 @@ const PlaylistContent = () => {
                             </div>
 
                             {/* Botón de búsqueda */}
-                            <button className="playlist-song-search-button" onClick={toggleSearch}>
+                            <button className="search-button" onClick={toggleSearch}>
                                 <FaSearch className="icon" />
                             </button>
 
@@ -907,7 +921,7 @@ const PlaylistContent = () => {
                                                     },
                                                     playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
                                                     {
-                                                        label: song.liked ?  "Eliminar de favoritos" : "Agregar a favoritos" ,
+                                                        label: song.liked ? "Eliminar de favoritos" : "Agregar a favoritos",
                                                     },
                                                     {label: "Ver detalles"},
                                                 ].filter(option => option != null)}
@@ -925,7 +939,7 @@ const PlaylistContent = () => {
                                     </div>
                                 ))
                             ) : (
-                                <div className="playlist-no-results">
+                                <div className="no-results">
                                     No se encontraron canciones que coincidan con la búsqueda
                                 </div>
                             )}

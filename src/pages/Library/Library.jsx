@@ -12,6 +12,9 @@ const Library = () => {
     const [likedSongPlaylist, setLikedSongPlaylist] = useState(null); // Playlist "Me Gusta"
     const [likedPlaylists, setLikedPlaylists] = useState([]);
     const [userPlaylists, setUserPlaylists] = useState([]);
+
+
+    // Estado para mostrar modal de nueva playlist
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
     const [overflowStates, setOverflowStates] = useState({
         likedSongs: false,
@@ -67,6 +70,24 @@ const Library = () => {
 
         if (user_Id) {
             fetchUserPlaylists();
+        }
+    }, [user_Id]);
+
+    // NUEVO: Fetch de las playlists colaborativas
+    useEffect(() => {
+        const fetchCollaborativePlaylists = async () => {
+            try {
+                const data = await apiFetch(`/collaborators/playlists-for-user/${user_Id}`, {
+                    method: "GET",
+                });
+                setCollaborativePlaylists(data);
+            } catch (error) {
+                console.error("Error al obtener las playlists colaborativas:", error);
+            }
+        };
+
+        if (user_Id) {
+            fetchCollaborativePlaylists();
         }
     }, [user_Id]);
 
@@ -159,6 +180,7 @@ const Library = () => {
                     description: playlistData.description,
                     user_id: user_Id,
                     type: "private",
+                    typeP: "playlist",
                 },
             });
 
@@ -291,6 +313,31 @@ const Library = () => {
                         <FaChevronRight className="carousel-control-icon" />
                     </button>
                 )}
+            </div>
+
+            {/* NUEVA SECCIÓN: Playlists Colaborativas */}
+            <div className="library-section-header">
+                <h2>Playlists Colaborativas</h2>
+                
+            </div>
+            <div className="scroll-container">
+                <div className="library-playlists">
+                    {collaborativePlaylists.length > 0 ? collaborativePlaylists.map(playlist => (
+                        <div key={playlist.id} className="playlist-wrapper">
+                            <div className="library-playlist-card collaborative" onClick={() => handlePlaylistClick(playlist.id)}>
+                                <div className="collaborative-badge">Colaborador</div>
+                                <img
+                                    src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
+                                    alt={playlist.name}
+                                    className="library-playlist-image"
+                                />
+                            </div>
+                            <div onClick={() => handlePlaylistClick(playlist.id)}>
+                                <p className="library-playlist-title">{playlist.name}</p>
+                            </div>
+                        </div>
+                    )) : <div className="empty-message">No estás colaborando en ninguna playlist.</div>}
+                </div>
             </div>
 
             {/* Sección: Playlists que te han gustado */}

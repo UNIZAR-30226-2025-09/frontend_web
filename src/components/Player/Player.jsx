@@ -12,7 +12,8 @@ import SynchronizedLyrics from "../SynchronizedLyrics/SynchronizedLyrics";
 import { parseLRC } from "../../utils/parseLRC";
 function Player() {
     const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs,
-            isPlaying, setIsPlaying, setSongs, playlistActive, setPlaylistActive, setSongActive } = usePlayer();
+            isPlaying, setIsPlaying, setSongs, playlistActive, setPlaylistActive, setSongActive,
+            dailySkips, setDailySkips} = usePlayer();
     const [currTime, setCurrTime] = useState({ min: 0, sec: 0 });
     const [totalTime, setTotalTime] = useState({ min: 0, sec: 0 });
     const [seconds, setSeconds] = useState(0);
@@ -23,6 +24,7 @@ function Player() {
     const intervalRef = useRef(null);
     const [lyrics, setLyrics] = useState([]); // New state for lyrics
     const [showLyrics, setShowLyrics] = useState(false); // Toggle for showing/hiding lyrics
+    const [premium, setPremium] = useState(false);
 
     const user = JSON.parse(localStorage.getItem('user'));
     const userId = user ? user.id : null; // Evitar errores si el usuario no está logueado
@@ -36,6 +38,32 @@ function Player() {
             ? currentSong.url_mp3
             : `http://localhost:5001/${currentSong.url_mp3.replace(/^\/?/, "")}`
         : null;
+
+    // Funcion para obtener los daily_skips del usuario
+    const obtenerDailySkips = async() => {
+        const token = localStorage.getItem("token");  // Asumimos que el token JWT está en el localStorage
+
+        if (!token) {
+            console.error("Token no proporcionado");
+            return;
+        }
+
+        const response = await apiFetch(`/user/${userId}`, {
+            method: "GET",
+        });
+
+        // Verificar el tipo de respuesta
+        console.log('Response:', response);
+
+        const result = response;
+
+        console.log("Cambio dailySkips", result, result.dailySkips);
+
+        setDailySkips(result.dailySkips);
+        setPremium(result.is_premium);
+
+        console.log(dailySkips);
+    };
 
     // Función para actualizar el estilo favorito del usuario
     const updateUserFavoriteStyle = async () => {
@@ -74,6 +102,12 @@ function Player() {
     useEffect(() => {
         console.log("🎵 Player detecta cambio de playing:", isPlaying);
     }, [isPlaying]);
+
+    useEffect(() => {
+        obtenerDailySkips();
+        console.log("Obteiendo daily skips del usuario", dailySkips);
+    }, [currentSong, userId]);
+
     const prevTime = useRef(0);
 
     const getLastPlaybackState = async () => {
@@ -415,16 +449,46 @@ function Player() {
         console.log("Reproduciendo desde flecha anterior");
     };
 
+    // FUncion para actualizar los dailyskips
+    const updateDailySkips = async () => {
+        try{
+            const response = await apiFetch(`/user/use-daily-skip/${userId}`, {
+                method: "POST",
+            });
+
+            console.log("Última posición de reproducción actualizada:", response);
+        } catch (error) {
+            console.error("Error al actualizar el daily skip:", error);
+        }
+    };
+
+    useEffect(() => {
+        updateDailySkips();
+        console.log("Actualizacion de los skips diarrios");
+    },[dailySkips]);
+
     // Ir a la canción siguiente
     const handleNext = () => {
         if (!songs.length) return;
         const nextIndex = (currentIndex + 1) % songs.length;
         const nextSong = songs[nextIndex];
 
-        setCurrentIndex(nextIndex);
-        setCurrentSong(nextSong);
-        setIsPlaying(true);
-        setSeconds(0);
+        if(!premium){
+            if(dailySkips !== 0){
+                setCurrentIndex(nextIndex);
+                setCurrentSong(nextSong);
+                setIsPlaying(true);
+                setSeconds(0);
+                setDailySkips(dailySkips-1);
+                console.log("Cambiando daily SKIPS boton handle next:", dailySkips);
+            }
+        }
+        else{
+            setCurrentIndex(nextIndex);
+            setCurrentSong(nextSong);
+            setIsPlaying(true);
+            setSeconds(0);
+        }
 
         // Pass the new song ID directly
         updateLastPlaybackState(true, nextSong.id);
