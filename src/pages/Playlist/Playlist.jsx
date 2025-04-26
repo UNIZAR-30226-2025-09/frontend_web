@@ -937,16 +937,23 @@ const PlaylistContent = () => {
                                             )}
                                         </div>
                                     </div>
-                                ))
-                            ) : (
+                                )) : (
                                 <div className="no-results">
                                     No se encontraron canciones que coincidan con la búsqueda
                                 </div>
-                            )}
+                                )}
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Añadir el modal de colaboradores aquí, fuera del renderizado condicional de las canciones */}
+            {showCollabModal && (
+                <Collaborators
+                    playlistId={playlistId}
+                    onClose={() => setShowCollabModal(false)}
+                />
+            )}
         </>
     );
 };
