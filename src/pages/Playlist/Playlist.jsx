@@ -937,11 +937,12 @@ const PlaylistContent = () => {
                                             )}
                                         </div>
                                     </div>
-                                )) : (
+                                ))
+                            ) : (
                                 <div className="no-results">
                                     No se encontraron canciones que coincidan con la búsqueda
                                 </div>
-                                )}
+                            )}
                         </div>
                     </div>
                 </div>
