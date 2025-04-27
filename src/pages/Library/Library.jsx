@@ -12,20 +12,22 @@ const Library = () => {
     const [likedSongPlaylist, setLikedSongPlaylist] = useState(null); // Playlist "Me Gusta"
     const [likedPlaylists, setLikedPlaylists] = useState([]);
     const [userPlaylists, setUserPlaylists] = useState([]);
-
+    const [collaborativePlaylists, setCollaborativePlaylists] = useState([]);
 
     // Estado para mostrar modal de nueva playlist
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
     const [overflowStates, setOverflowStates] = useState({
         likedSongs: false,
         userPlaylists: false,
-        likedPlaylists: false
+        likedPlaylists: false,
+        collaborativePlaylists: false
     });
 
     // Referencias para los contenedores de scroll
     const likedSongsRef = useRef(null);
     const userPlaylistsRef = useRef(null);
     const likedPlaylistsRef = useRef(null);
+    const collaborativePlaylistsRef = useRef(null);
 
     const user_Id = JSON.parse(localStorage.getItem('user')).id;
 
@@ -144,7 +146,8 @@ const Library = () => {
             setOverflowStates({
                 likedSongs: checkContainerOverflow(likedSongsRef),
                 userPlaylists: checkContainerOverflow(userPlaylistsRef),
-                likedPlaylists: checkContainerOverflow(likedPlaylistsRef)
+                likedPlaylists: checkContainerOverflow(likedPlaylistsRef),
+                collaborativePlaylists: checkContainerOverflow(collaborativePlaylistsRef) 
             });
         };
 
@@ -315,29 +318,48 @@ const Library = () => {
                 )}
             </div>
 
-            {/* NUEVA SECCIÓN: Playlists Colaborativas */}
+            {/* SECCIÓN: Playlists Colaborativas */}
             <div className="library-section-header">
                 <h2>Playlists Colaborativas</h2>
-                
             </div>
-            <div className="scroll-container">
-                <div className="library-playlists">
-                    {collaborativePlaylists.length > 0 ? collaborativePlaylists.map(playlist => (
-                        <div key={playlist.id} className="playlist-wrapper">
-                            <div className="library-playlist-card collaborative" onClick={() => handlePlaylistClick(playlist.id)}>
-                                <div className="collaborative-badge">Colaborador</div>
-                                <img
-                                    src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
-                                    alt={playlist.name}
-                                    className="library-playlist-image"
-                                />
+            <div className="scroll-section">
+                {overflowStates.collaborativePlaylists && (
+                    <button 
+                        className="carousel-control carousel-prev" 
+                        onClick={() => scrollContainer(collaborativePlaylistsRef, 'prev')}
+                    >
+                        <FaChevronLeft className="carousel-control-icon" />
+                    </button>
+                )}
+                
+                <div className="scroll-container" ref={collaborativePlaylistsRef}>
+                    <div className="library-playlists">
+                        {collaborativePlaylists.length > 0 ? collaborativePlaylists.map(playlist => (
+                            <div key={playlist.id} className="playlist-wrapper">
+                                <div className="library-playlist-card collaborative" onClick={() => handlePlaylistClick(playlist.id)}>
+                                    <div className="collaborative-badge">Colaborador</div>
+                                    <img
+                                        src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
+                                        alt={playlist.name}
+                                        className="library-playlist-image"
+                                    />
+                                </div>
+                                <div onClick={() => handlePlaylistClick(playlist.id)}>
+                                    <p className="library-playlist-title">{playlist.name}</p>
+                                </div>
                             </div>
-                            <div onClick={() => handlePlaylistClick(playlist.id)}>
-                                <p className="library-playlist-title">{playlist.name}</p>
-                            </div>
-                        </div>
-                    )) : <div className="empty-message">No estás colaborando en ninguna playlist.</div>}
+                        )) : <div className="empty-message">No estás colaborando en ninguna playlist.</div>}
+                    </div>
                 </div>
+                
+                {overflowStates.collaborativePlaylists && (
+                    <button 
+                        className="carousel-control carousel-next" 
+                        onClick={() => scrollContainer(collaborativePlaylistsRef, 'next')}
+                    >
+                        <FaChevronRight className="carousel-control-icon" />
+                    </button>
+                )}
             </div>
 
             {/* Sección: Playlists que te han gustado */}

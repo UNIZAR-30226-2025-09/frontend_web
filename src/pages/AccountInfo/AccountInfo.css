@@ -34,12 +34,12 @@ body {
 }
 
 .logo-account {
-    height: 48px; /* Aumentado de 38px */
-    width: 48px; /* Aumentado de 38px */
-    min-width: 48px;
-    min-height: 48px;
-    max-width: 48px;
-    max-height: 48px;
+    height: 56px; /* Aumentado de 38px */
+    width: 56px; /* Aumentado de 38px */
+    min-width: 56px;
+    min-height: 56px;
+    max-width: 56x;
+    max-height: 56px;
     object-fit: contain;
     background: rgba(30, 40, 60, 0.9);
     border-radius: 50%;

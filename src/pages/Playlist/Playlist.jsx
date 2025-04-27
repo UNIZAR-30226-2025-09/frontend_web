@@ -827,13 +827,13 @@ const PlaylistContent = () => {
 
                         <div className="actions-right">
 
-                            <div className={`search-container ${searchVisible ? 'expanded' : ''}`}>
+                            <div className={`playlist-song-search-container ${searchVisible ? 'expanded' : ''}`}>
                                 {searchVisible && (
                                     <>
                                         <FaSearch className="search-icon-inside" />
                                         <input
                                             type="text"
-                                            className="search-input"
+                                            className="playlist-song-search-input"
                                             placeholder="Buscar en esta playlist..."
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -841,7 +841,7 @@ const PlaylistContent = () => {
                                         />
                                         {searchTerm && (
                                             <button 
-                                                className="clear-search" 
+                                                className="playlist-song-search-clear" 
                                                 onClick={() => setSearchTerm('')}
                                             >
                                                 <FaTimes />
@@ -852,7 +852,7 @@ const PlaylistContent = () => {
                             </div>
 
                             {/* Botón de búsqueda */}
-                            <button className="search-button" onClick={toggleSearch}>
+                            <button className="playlist-song-search-button" onClick={toggleSearch}>
                                 <FaSearch className="icon" />
                             </button>
 
@@ -939,7 +939,7 @@ const PlaylistContent = () => {
                                     </div>
                                 ))
                             ) : (
-                                <div className="no-results">
+                                <div className="playlist-no-results">
                                     No se encontraron canciones que coincidan con la búsqueda
                                 </div>
                             )}
