@@ -1,0 +1,271 @@
+[33mcommit 40a33f81eab0bce7902afa9bed09c6fa6e0f6f62[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mrodrigo[m[33m)[m
+Author: 872715 <872715@unizar.es>
+Date:   Sun Apr 27 15:25:57 2025 +0200
+
+    Comprobar Rama
+
+[33mcommit 76312dfbebd71aac3a7631941e7ee40dc8f23b68[m[33m ([m[1;31morigin/rodrigo[m[33m)[m
+Author: 872715 <872715@unizar.es>
+Date:   Mon Apr 14 22:02:58 2025 +0200
+
+    Mejora estilo footer.css
+
+[33mcommit 8b03a64a0d11fcc546f909805ce56de5c3f2a959[m
+Author: 872715 <872715@unizar.es>
+Date:   Fri Apr 11 15:23:09 2025 +0200
+
+    Actualizando rama
+
+[33mcommit ffd076308074c2f3997c9580b1fe1fc3305fe268[m
+Merge: 3eed233 a4daf00
+Author: Dim8DGH <125869180+Dim8DGH@users.noreply.github.com>
+Date:   Sun Apr 13 20:13:25 2025 +0200
+
+    Merge pull request #103 from UNIZAR-30226-2025-09/marioc-david
+    
+    Marioc david
+
+[33mcommit a4daf00dc83f994419777f098fed8d18fd90cb93[m
+Author: 870421 <870421@unizar.es>
+Date:   Sun Apr 13 14:35:25 2025 +0200
+
+    Add rating system to Playlist component with average rating display
+
+[33mcommit eac2728ab5f5671c74c93500ff61ca04984f1c3a[m
+Author: 870421 <870421@unizar.es>
+Date:   Sat Apr 12 10:32:22 2025 +0200
+
+    refactor AccountInfo component layout and improve subscription management buttons
+
+[33mcommit 1665eb32ac0ea472511132c816f9a4deee251cf1[m
+Author: Dim8DGH <868573@unizar.es>
+Date:   Sat Apr 12 09:46:37 2025 +0200
+
+    mejoras carrusel y reinsercion de scrolling
+
+[33mcommit 3eed233c2f4c6981148a7cbe1024698e826d9001[m
+Merge: 344a282 94f70ad
+Author: diego33454 <164555877+diego33454@users.noreply.github.com>
+Date:   Fri Apr 11 15:19:12 2025 +0200
+
+    Merge pull request #102 from UNIZAR-30226-2025-09/rodrigo
+    
+    mi cuenta hecha, register arreglado los estilos
+
+[33mcommit 94f70ad62aed908d73ab3f57074bce9ad48567fb[m
+Merge: cca8990 5e7bfe3
+Author: 872715 <872715@unizar.es>
+Date:   Fri Apr 11 14:48:14 2025 +0200
+
+    Merge remote-tracking branch 'origin/rodrigo' into rodrigo
+
+[33mcommit cca8990f2e2f0f93c2f943eb146e4ab34fec2266[m
+Author: 872715 <872715@unizar.es>
+Date:   Fri Apr 11 14:47:57 2025 +0200
+
+    Arreglo de nombre de archivos y sus retoques
+
+[33mcommit 5e7bfe330e12838fc3fc6d0389dbb96b5364f791[m
+Merge: 77189ad 344a282
+Author: sandiapeluda24 <872715@unizar.es>
+Date:   Fri Apr 11 14:20:38 2025 +0200
+
+    Merge branch 'main' into rodrigo
+
+[33mcommit 344a282e56a7bb540c78230448d79a8e5cbfc9ae[m
+Merge: 9010f4a f8b0e5f
+Author: sandiapeluda24 <872715@unizar.es>
+Date:   Fri Apr 11 14:19:21 2025 +0200
+
+    Merge pull request #99 from UNIZAR-30226-2025-09/alejos-valen
+    
+    Cambios ultima cancion
+
+[33mcommit f8b0e5f0028a43c129edc6d0e93e4db4cc4cbbae[m
+Merge: 858c76d 9010f4a
+Author: sandiapeluda24 <872715@unizar.es>
+Date:   Fri Apr 11 14:18:37 2025 +0200
+
+    Merge branch 'main' into alejos-valen
+
+[33mcommit 77189ad319241c6897ee09c3dcc77a85d2023273[m
+Author: 872715 <872715@unizar.es>
+Date:   Fri Apr 11 14:11:42 2025 +0200
+
+    AccountInfo hecho, barra de progreso mejorada, y arreglo de estilos
+
+[33mcommit 9010f4a86419bc7e69b24df9888e7a317b9a8fa0[m
+Merge: b76da96 528efa6
+Author: diego33454 <164555877+diego33454@users.noreply.github.com>
+Date:   Fri Apr 11 10:25:06 2025 +0200
+
+    Merge pull request #98 from UNIZAR-30226-2025-09/marioc-david
+    
+    Marioc david
+
+[33mcommit 858c76d9864b1da2c89a8c47a5b0af3441e88db8[m
+Author: diego33454 <164555877+diego33454@users.noreply.github.com>
+Date:   Fri Apr 11 10:23:46 2025 +0200
+
+    Cambios ultima cancion
+
+[33mcommit 528efa68ae3da9f5064dbc168dfdd8216bb436fb[m
+Merge: 067adc2 c3f49c6
+Author: 870421 <870421@unizar.es>
+Date:   Thu Apr 10 18:14:40 2025 +0200
+
+    Merge branches 'marioc-david' and 'marioc-david' of https://github.com/UNIZAR-30226-2025-09/frontend_web into marioc-david
+
+[33mcommit 067adc24074538cb87d7f2e4a5c90eab7069cf81[m
+Author: 870421 <870421@unizar.es>
+Date:   Thu Apr 10 18:13:22 2025 +0200
+
+    Añadir Forgot Password y Reset Password funcionalidad
+
+[33mcommit c3f49c68731cdf719fbd13b186f0a1b552939337[m
+Author: Dim8DGH <868573@unizar.es>
+Date:   Thu Apr 10 16:14:01 2025 +0200
+
+    mejoras carrusel y buscador pt2
+
+[33mcommit b76da96cb1eaa99c9a19d837469a62f98133bea2[m
+Merge: a93db14 70cc721
+Author: Abdelbassat Chiguer Benhari <871208@unizar.es>
+Date:   Thu Apr 10 13:25:00 2025 +0200
+
+    Merge pull request #97 from UNIZAR-30226-2025-09/marioc-david
+    
+    Marioc david
+
+[33mcommit 70cc7214592f9de5b62744ae00aacd0dd5ec9f13[m
+Merge: 50eaf90 a93db14
+Author: Dim8DGH <868573@unizar.es>
+Date:   Thu Apr 10 13:23:04 2025 +0200
+
+    Merge branch 'main' of https://github.com/UNIZAR-30226-2025-09/frontend_web
+
+[33mcommit 50eaf9094599ec0039b47523aeb5f8fb8eeabbe5[m
+Author: Dim8DGH <868573@unizar.es>
+Date:   Thu Apr 10 13:06:31 2025 +0200
+
+    mejoras carrusel y buscador
+
+[33mcommit 72ee717c05605ea8697ce3862a9917e725333d20[m
+Merge: ce35600 9df1715
+Author: Dim8DGH <868573@unizar.es>
+Date:   Thu Apr 10 12:50:02 2025 +0200
+
+    Merge branch 'marioc-david' of https://github.com/UNIZAR-30226-2025-09/frontend_web
+    
+    # Conflicts:
+    #       src/layout/MainLayout/MainLayout.jsx
+    #       src/pages/Home/Home.jsx
+
+[33mcommit faa858797c8f5d48d551a09ca8970da232527fb2[m
+Merge: bd5ca5c 61d2972
+Author: 872715 <872715@unizar.es>
+Date:   Thu Apr 10 12:49:28 2025 +0200
+
+    Merge remote-tracking branch 'origin/rodrigo' into rodrigo
+    
+    # Conflicts:
+    #       src/pages/AccountInfo/AccountInfo.jsx
+
+[33mcommit bd5ca5cedbd1820aea2ee3dd842108b361c379e9[m
+Author: 872715 <872715@unizar.es>
+Date:   Thu Apr 10 12:47:19 2025 +0200
+
+    Errores arreglados
+
+[33mcommit ce35600b8537a718dd4874c863a4d8f0cba9a728[m
+Author: Dim8DGH <868573@unizar.es>
+Date:   Thu Apr 10 12:44:31 2025 +0200
+
+    mejoras carrusel y buscador
+
+[33mcommit ca2dabc656bc0314b3c1b4851fc769cd61bb94f5[m
+Author: 872715 <872715@unizar.es>
+Date:   Thu Apr 10 11:25:19 2025 +0200
+
+    Mejoras estilo cuenta y botones
+    
+    # Conflicts:
+    #       src/pages/AccountInfo/AccountInfo.jsx
+
+[33mcommit a1fbe0260ce4b80708bd7cee053fce749bad9902[m
+Author: 872715 <872715@unizar.es>
+Date:   Thu Apr 3 13:35:35 2025 +0200
+
+    A
+    Pagina de contacto y mejora paginas del footer
+
+[33mcommit 61d29723b4bf571c643b5faede3739c5e2705c22[m
+Author: 872715 <872715@unizar.es>
+Date:   Thu Apr 10 11:25:19 2025 +0200
+
+    Mejoras estilo cuenta y botones
+
+[33mcommit a93db14059ebf128b786026485381f79b0f05347[m
+Merge: b67b883 9df1715
+Author: diego33454 <164555877+diego33454@users.noreply.github.com>
+Date:   Wed Apr 9 17:18:34 2025 +0200
+
+    Merge pull request #96 from UNIZAR-30226-2025-09/marioc-david
+    
+    Marioc david
+
+[33mcommit 9df1715e14ba5a9073ba3c33f037a0330db2dd25[m
+Author: 870421 <870421@unizar.es>
+Date:   Tue Apr 8 18:01:55 2025 +0200
+
+    cambios en recomendaciones
+
+[33mcommit 6f7d4a69f15e08d4f72761e324b0a6e43370b11a[m
+Author: 870421 <870421@unizar.es>
+Date:   Tue Apr 8 16:36:50 2025 +0200
+
+    recomendaciones + nueva pantalla register
+
+[33mcommit 7bae061ec6630118f288d79a3cd618d0b9ef0d91[m
+Author: 872715 <872715@unizar.es>
+Date:   Thu Apr 3 13:35:35 2025 +0200
+
+    A
+    Pagina de contacto y mejora paginas del footer
+
+[33mcommit c5bd797e2217ae6a1fccfe585825b0ef7564a947[m
+Author: Dim8DGH <868573@unizar.es>
+Date:   Mon Apr 7 18:42:20 2025 +0200
+
+    primer prototipo del carrusel
+
+[33mcommit 46c8d2fae31cf8d8faac535d759fa0ebe3f781d9[m
+Author: 870421 <870421@unizar.es>
+Date:   Mon Apr 7 13:07:23 2025 +0200
+
+    estilo fav usuario
+
+[33mcommit b67b883894f5c467aa790f89f850f82f73fed704[m
+Merge: 3b66fb0 fd7d7dd
+Author: diego33454 <164555877+diego33454@users.noreply.github.com>
+Date:   Fri Apr 4 17:01:43 2025 +0200
+
+    Merge pull request #94 from UNIZAR-30226-2025-09/marioc-david
+    
+    Marioc david
+
+[33mcommit fd7d7dd0f6a24459952354c46143e6e479f97d68[m
+Author: diego33454 <164555877+diego33454@users.noreply.github.com>
+Date:   Fri Apr 4 17:00:23 2025 +0200
+
+    Update AccountInfo.jsx
+
+[33mcommit acb0d46b09d7cd1ab20887301b5f5e6bc318fffc[m
+Merge: 93b3368 3b66fb0
+Author: diego33454 <164555877+diego33454@users.noreply.github.com>
+Date:   Fri Apr 4 16:54:59 2025 +0200
+
+    Merge branch 'main' into marioc-david
+
+[33mcommit 3b66fb0dd94638c01177cb6feeb80c1fc9cca0f7[m
+Merg
