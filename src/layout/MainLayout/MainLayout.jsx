@@ -17,7 +17,7 @@ const MainLayout = () => {
     const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs, setSongs, isPlaying,
             setIsPlaying, playlistActive, setPlaylistActive, songActive, setSongActive } = usePlayer();
     const [showLoginPopup, setShowLoginPopup] = useState(false);  // Estado para mostrar el popup
-
+    
     const setCurrentSongWrapper = (song) => {
         console.log("Recibiendo nueva canción en MainLayout:", song);
         setCurrentSong(song);

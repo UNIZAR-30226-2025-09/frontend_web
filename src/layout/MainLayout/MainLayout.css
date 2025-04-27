@@ -283,7 +283,255 @@ html, body {
     }
 }
 
+/* Estilo para los indicadores/puntos de navegación - añadir al final del archivo */
+.main-content .carousel-indicators button,
+.main-content .pagination-dot,
+.main-content .slick-dots li button,
+.main-content [role="tablist"] [aria-selected="true"],
+.main-content .dot {
+    background-color: #21a1f1 !important; /* Azul representativo de Vibra */
+}
+
+/* Para puntos activos si tienen una clase específica */
+.main-content .carousel-indicators .active,
+.main-content .pagination-dot.active,
+.main-content .slick-dots li.slick-active button,
+.main-content .dot.active {
+    background-color: #1b82c3 !important; /* Azul más oscuro para puntos activos */
+}
 
 
+/* Sobrescribe específicamente los puntos de navegación del carrusel */
+.main-content span[style*="background-color: rgb(30, 215, 96)"],
+.main-content button[style*="background-color: rgb(30, 215, 96)"],
+.main-content li[style*="background-color: rgb(30, 215, 96)"],
+.main-content div[style*="background-color: rgb(30, 215, 96)"],
+.main-content [style*="background-color: #1ed760"],
+.main-content [style*="background-color: #1db954"],
+.main-content [class*="active"][class*="dot"],
+.main-content [class*="indicator"][class*="active"],
+.swiper-pagination-bullet-active,
+.main-content [role="tab"][aria-selected="true"] {
+    background-color: #21a1f1 !important;
+}
 
+/* Estilo para el dot actual (activo) */
+.main-content [aria-current="true"],
+.main-content [data-active="true"],
+.main-content [aria-selected="true"] {
+    background-color: #21a1f1 !important;
+}
 
+/* Sobrescribir cualquier SVG o path que pueda estar usando el color verde */
+.main-content svg circle,
+.main-content svg path[fill="#1ed760"],
+.main-content svg path[fill="rgb(30, 215, 96)"] {
+    fill: #21a1f1 !important;
+}
+
+/* Estilo para los puntos en hover (cuando se pasa el ratón por encima) */
+.main-content .carousel-indicators button:hover,
+.main-content .pagination-dot:hover,
+.main-content .slick-dots li button:hover,
+.main-content [role="tablist"] button:hover,
+.main-content .dot:hover,
+.main-content span:hover,
+.main-content button:hover[role="tab"],
+.main-content li:hover button {
+    background-color: #79e2ff !important; /* Azul claro para el hover */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Específicamente para sobrescribir cualquier color verde en hover */
+.main-content [style*="background-color: rgb(30, 215, 96)"]:hover,
+.main-content [style*="background-color: #1ed760"]:hover,
+.main-content [style*="background-color: #1db954"]:hover {
+    background-color: #79e2ff !important;
+}
+
+/* Para puntos de navegación inline */
+.main-content span:hover[style],
+.main-content button:hover[style],
+.main-content div:hover[style] {
+    background-color: #79e2ff !important;
+}
+
+/* Solución específica para el hover de los puntos de navegación */
+.main-content [aria-label="Seleccionar página"] button:hover,
+.main-content [aria-label="Select a slide to show"] button:hover,
+.main-content [role="tablist"] [role="tab"]:hover,
+.main-content [class*="pagination"] button:hover,
+.main-content button[data-testid*="dot"]:hover,
+.main-content button[data-testid*="indicator"]:hover,
+.main-content .slick-dots li:hover button,
+.main-content .dot:hover,
+.main-content [data-index]:hover {
+    background-color: #79e2ff !important;
+}
+
+/* Sobrescribir cualquier estilo inline en hover */
+.main-content *:hover[style*="background-color: rgb(30, 215, 96)"],
+.main-content *:hover[style*="background-color: #1ed760"],
+.main-content *:hover[style*="background-color: #1db954"] {
+    background-color: #79e2ff !important;
+}
+
+/* Selectores extremadamente específicos para los puntos en hover */
+.main-content span:hover,
+.main-content button:hover,
+.main-content [role="tab"]:hover {
+    background-color: #79e2ff !important;
+}
+
+/* Sobrescribir estilos que se apliquen durante el hover */
+@media (hover: hover) {
+    .main-content span[role="button"]:hover,
+    .main-content li button:hover,
+    .main-content [class*="indicator"]:hover {
+        background-color: #79e2ff !important;
+    }
+}
+
+/* Contenedor de Artistas Populares con navegación */
+.artists-container {
+    position: relative;
+    width: 100%;
+    margin: 20px 0;
+    padding-bottom: 40px; /* Espacio para los puntos de navegación */
+}
+
+.artists-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.artists-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+.artists-slider {
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+.artists-row {
+    display: flex;
+    transition: transform 0.4s ease;
+    gap: 20px;
+    width: 100%;
+    padding: 0 10px;
+}
+
+.artist-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 0 0 auto;
+    width: 150px;
+    text-align: center;
+}
+
+.artist-image {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.artist-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(33, 161, 241, 0.4);
+}
+
+.artist-name {
+    margin-top: 10px;
+    color: white;
+    font-weight: 600;
+}
+
+/* Flechas de navegación para los artistas */
+.artists-nav-arrows {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    z-index: 10;
+    padding: 0 10px;
+}
+
+.artists-arrow {
+    background: #21a1f1; /* Color azul de Vibra */
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, background 0.3s ease;
+    box-shadow: 0px 3px 8px rgba(33, 161, 241, 0.5);
+}
+
+.artists-arrow:hover {
+    background: #1b82c3;
+    transform: scale(1.1);
+}
+
+/* Puntos de navegación para artistas */
+.artists-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.artists-pagination-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.artists-pagination-dot.active {
+    background-color: #21a1f1; /* Azul representativo de Vibra */
+}
+
+.artists-pagination-dot:hover {
+    background-color: #79e2ff; /* Azul claro para el hover */
+}
+
+/* Botón Ver Todos */
+.view-all-button {
+    background: transparent;
+    color: #21a1f1;
+    border: 1px solid #21a1f1;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.view-all-button:hover {
+    background: rgba(33, 161, 241, 0.1);
+    transform: scale(1.05);
+}

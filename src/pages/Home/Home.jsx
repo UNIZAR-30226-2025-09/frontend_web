@@ -6,15 +6,32 @@ import "./Home.css";
 import { apiFetch } from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 const logo = "/vibrablanco.png";
+// Reemplaza la definición existente de CustomDot
+
 function CustomDot({ onClick, active }) {
     return (
         <button
             className={`custom-dot ${active ? "active" : ""}`}
             onClick={onClick}
             aria-label="Punto de navegación de carrusel"
+            style={{ 
+                display: 'inline-block',
+                visibility: 'visible',
+                opacity: 1,
+                background: active ? "#21a1f1" : "#a7a7a7",
+                width: "10px",
+                height: "10px",
+                borderRadius: "50%",
+                margin: "0 5px",
+                padding: 0,
+                border: "none",
+                outline: "none",
+                boxShadow: "none"
+            }}
         />
     );
 }
+
 
 const Home = () => {
     const navigate = useNavigate();
@@ -252,40 +269,62 @@ const Home = () => {
 
 
             {/* Nueva Sección de Artistas - FIXED */}
-            <h1 onClick={() => setActive("artists")}>Artistas Populares</h1>
-            <div
-                className="scroll-container"
-                ref={artistsRef}
-                onMouseDown={(e) => handleMouseDown(e, artistsRef)}
-                onMouseMove={(e) => handleMouseMove(e, artistsRef)}
-                onMouseUp={() => handleMouseUp(artistsRef)}
-                onMouseLeave={() => handleMouseUp(artistsRef)}
-            >
-                <div className="home-artists">
-                    {popularArtists.length > 0 ? (
-                        popularArtists.map((artist) => {
-                            const artistImage = getImageUrl(artist.photo, "/default-artist.jpg");
+{/* ARTISTAS POPULARES */}
+<h1 onClick={() => setActive("artists")}>Artistas Populares</h1>
 
-                            return (
-                                <div key={artist.id} className="artist-wrapper" onClick={(e) => handleArtistClick(artist.id, e)}>
-                                    <div className="home-artist-card">
-                                        <img
-                                            src={artistImage}
-                                            alt={artist.name}
-                                            className="artist-image"
-                                            onError={(e) => e.target.src = "/default-artist.jpg"}
-                                        />
-                                    </div>
-                                    <p className="artist-title">{artist.name}</p>
-                                </div>
-                            );
-                        })
-                    ) : (
-                        <p>Cargando artistas...</p>
-                    )}
+            <div className="artists-carousel-container">
+            <Carousel
+        responsive={responsive}
+        autoPlay={false}
+        swipeable={true}
+        draggable={true}
+        showDots={true}
+        renderDotsOutside={true} // Añadido para mostrar puntos fuera
+        infinite={true}
+        partialVisible={false}
+        customDot={<CustomDot />}
+        beforeChange={(previousSlide, nextSlide) => setCurrentSlide(nextSlide)}
+        containerClass="carousel-container"
+        itemClass="carousel-item"
+        dotListClass="custom-dot-list"
+        removeArrowOnDeviceType={[]}
+        arrows={true} // Asegurar que las flechas estén visibles
+    >
+                {popularArtists.length > 0 ? (
+                  [...popularArtists]
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, 10)
+                    .map((artist) => {
+                      const artistImage = getImageUrl(artist.photo, "/default-artist.jpg");
+
+                      return (
+                        <div key={artist.id} className="artist-wrapper" onClick={(e) => handleArtistClick(artist.id, e)}>
+                          <div className="home-artist-card artist-hover">
+                            <img
+                              src={artistImage}
+                              alt={artist.name}
+                              className="artist-image"
+                              onError={(e) => (e.target.src = "/default-artist.jpg")}
+                            />
+                          </div>
+                          <p className="artist-title">{artist.name}</p>
+                        </div>
+                      );
+                    })
+                ) : (
+                  <p>Cargando artistas...</p>
+                )}
+                
+                {/* Slide extra para "Ver todos" */}
+                <div className="artist-wrapper" onClick={() => navigate("/artists")}>
+                  <div className="home-artist-card artist-hover" style={{ background: "#1b82c3", fontSize: "1.2rem", fontWeight: "bold", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    Ver todos
+                  </div>
                 </div>
+              </Carousel>
             </div>
-        </div>
+
+        </div> 
     );
 };
 
