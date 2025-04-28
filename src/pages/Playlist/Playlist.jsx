@@ -886,73 +886,71 @@ const PlaylistContent = () => {
                     {/* Cabecera: 6 columnas (#/Play, Portada, Título, Álbum, Fecha, Duración) */}
 
                     <div className="song-list">
-                        {sortedSongs.map((song, index) => (
-                            <div key={song.id || index} className="song-item">
-                                {/* Columna 1: (# / botón al hover) */}
-                                <div className="song-action">
-                                    <span className="song-index">{index + 1}</span>
-                                    <button
-                                        className="play-icon"
-                                        onClick={() => handlePlaySong(song, index, playlist.songs)}
-                                    >
-                                        <FaPlay/>
-                                    </button>
-                                    
-                                {/* Columna 2: Portada */}
-                                <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>
+    {sortedSongs.map((song, index) => (
+        <div key={song.id || index} className="song-item">
+            {/* Columna 1: (# / botón al hover) */}
+            <div className="song-action">
+                <span className="song-index">{index + 1}</span>
+                <button
+                    className="play-icon"
+                    onClick={() => handlePlaySong(song, index, playlist.songs)}
+                >
+                    <FaPlay/>
+                </button>
+            </div>
+            
+            {/* Columna 2: Portada */}
+            <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>
 
-                                {/* Columna 3: Título */}
-                                <span className="song-title" onClick={() => redirectToSong(song.id)}>{song.name}</span>
+            {/* Columna 3: Título */}
+            <span className="song-title" onClick={() => redirectToSong(song.id)}>{song.name}</span>
 
-                                {/* Columna 4: Álbum */}
-                                <span className="song-artist">
-                                  {song.album?.name || "Sin álbum"}
-                                </span>
+            {/* Columna 4: Álbum */}
+            <span className="song-artist">
+                {song.album?.name || "Sin álbum"}
+            </span>
 
-                                {/* Columna 5: Fecha */}
-                                <span className="song-date">
-                                  {song.song_playlist?.date || "Fecha desconocida"}
-                                </span>
+            {/* Columna 5: Fecha */}
+            <span className="song-date">
+                {song.song_playlist?.date || "Fecha desconocida"}
+            </span>
 
-                                {/* Columna 6: Duración (min:seg) */}
-                                <span className="song-duration">
-                                  {formatDuration(song.duration)}
-                                </span>
+            {/* Columna 6: Duración (min:seg) */}
+            <span className="song-duration">
+                {formatDuration(song.duration)}
+            </span>
 
-                                {/* Contenedor de opciones (tres puntos) que aparece al hacer hover */}
-                                <div className="song-options">
-                                    <OptionsPopup
-                                        trigger={<FaEllipsisH className="song-options-icon"/>}
-                                        options={[
-                                            {
-                                                label: "Agregar a playlist",
-                                                submenu: agregarAFavoritosSubmenu,
-                                            },
-                                            playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
-                                            {
-                                                label: song.liked ? "Eliminar de favoritos" : "Agregar a favoritos",
-                                            },
-                                            {label: "Ver detalles"},
-                                        ].filter(option => option != null)}
-                                        position="bottom-right"
-                                        submenuPosition="left"
-                                        onOptionSelect={(option, idx) => handleSongOptionSelect(option, idx, song)}
-                                    />
-                                    {showCreateModal && (
-                                        <CreatePlaylistModal
-                                            onSubmit={handleCreatePlaylist}
-                                            onClose={() => setShowCreateModal(false)}
-                                        />
-                                        {showCreateModal && (
-                                            <CreatePlaylistModal
-                                                onSubmit={handleCreatePlaylist}
-                                                onClose={() => setShowCreateModal(false)}
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+            {/* Contenedor de opciones (tres puntos) que aparece al hacer hover */}
+            <div className="song-options">
+                <OptionsPopup
+                    trigger={<FaEllipsisH className="song-options-icon"/>}
+                    options={[
+                        {
+                            label: "Agregar a playlist",
+                            submenu: agregarAFavoritosSubmenu,
+                        },
+                        playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
+                        {
+                            label: song.liked ? "Eliminar de favoritos" : "Agregar a favoritos",
+                        },
+                        {label: "Ver detalles"},
+                    ].filter(option => option != null)}
+                    position="bottom-right"
+                    submenuPosition="left"
+                    onOptionSelect={(option, idx) => handleSongOptionSelect(option, idx, song)}
+                />
+            </div>
+            
+            {/* Modal para crear playlist */}
+            {showCreateModal && (
+                <CreatePlaylistModal
+                    onSubmit={handleCreatePlaylist}
+                    onClose={() => setShowCreateModal(false)}
+                />
+            )}
+        </div>
+    ))}
+</div>
                     </div>
                 </div>
             </div>

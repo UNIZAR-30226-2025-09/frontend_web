@@ -335,7 +335,7 @@
     object-fit: cover;
     border-radius: 12px;
     transition: all 0.3s ease;
-
+}
 /* --- POPUP DE COMPARTIR PLAYLIST --- */
 .playlist-share-popup {
     background: linear-gradient(145deg, #182235 0%, #263044 100%);
