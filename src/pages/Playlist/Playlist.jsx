@@ -11,8 +11,6 @@ import OptionsPopup from "../../components/PopUpSelection/OptionsPopup.jsx";
 import Rating from '../../components/Rating/Rating.jsx';
 import axios from "axios";
 
-"#utils/apiFetch.js"
-
 // Convierte segundos a m:ss
 function formatDuration(seconds) {
     if (!seconds) return "0:00";
@@ -43,6 +41,11 @@ const PlaylistContent = () => {
     const { currentSong, setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying,
             isPlaying, setPlaylistActive, playlistActive, setSongActive } = useOutletContext();
     const navigate = useNavigate();
+
+    const [showSharePopup, setShowSharePopup] = useState(false);
+    const [shareSearch, setShareSearch] = useState("");
+    const [selectedFriends, setSelectedFriends] = useState([]);
+    const [friendsList, setFriendsList] = useState([]);
 
     const options = [
         playlist?.user_id && playlist.user_id === user_Id ? { label: "Eliminar Playlist" } : null,
@@ -469,6 +472,26 @@ const PlaylistContent = () => {
             } catch (error) {
                 console.error("Error al eliminar la playlist:", error);
             }
+        } else if (option.label === "Copiar enlace") {
+            const url = `${window.location.origin}/playlist/${playlistId}`;
+            await navigator.clipboard.writeText(url);
+            alert("¡Enlace copiado al portapapeles!");
+        } else if (option.label === "Compartir con amigos") {
+            // Carga la lista de amigos solo si aún no la tienes
+            if (friendsList.length === 0) {
+                try {
+                    const data = await apiFetch('/social/getFriendsList', {
+                        method: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    setFriendsList(data.friends || []);
+                } catch (e) {
+                    alert("Error al cargar amigos");
+                }
+            }
+            setShowSharePopup(true);
         }
         else
         {
@@ -604,6 +627,124 @@ const PlaylistContent = () => {
     };
 
     return (
+      <>
+       {showSharePopup && (
+                <div className="popup-overlay">
+                    <div className="popup-content playlist-share-popup">
+                        <div className="playlist-popup-header">
+                            <h3>Compartir playlist con amigos</h3>
+                        </div>
+                        <div className="playlist-search-container">
+                            <span className="playlist-search-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </span>
+                            <input
+                                type="text"
+                                placeholder="Buscar amigo..."
+                                value={shareSearch}
+                                onChange={e => setShareSearch(e.target.value)}
+                                className="playlist-edit-input"
+                            />
+                            {shareSearch && (
+                                <button 
+                                    className="playlist-clear-search" 
+                                    onClick={() => setShareSearch('')}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                        <div className="playlist-friends-list">
+                            {friendsList.filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase())).length > 0 ? (
+                                friendsList
+                                    .filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase()))
+                                    .map(f => (
+                                        <label key={f.friendId} className="playlist-friend-item">
+                                            <div className="playlist-checkbox-wrapper">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`playlist-friend-${f.friendId}`}
+                                                    checked={selectedFriends.includes(f.friendId)}
+                                                    onChange={e => {
+                                                        if (e.target.checked) {
+                                                            setSelectedFriends(prev => [...prev, f.friendId]);
+                                                        } else {
+                                                            setSelectedFriends(prev => prev.filter(id => id !== f.friendId));
+                                                        }
+                                                    }}
+                                                />
+                                                <span className="playlist-custom-checkbox"></span>
+                                            </div>
+                                            {f.user_picture ? (
+                                                <img src={getImageUrl(f.user_picture)} alt={f.nickname} className="playlist-friend-avatar" />
+                                            ) : (
+                                                <span className="playlist-friend-initials">{f.nickname[0]}</span>
+                                            )}
+                                            <span className="playlist-friend-name">{f.nickname}</span>
+                                            {selectedFriends.includes(f.friendId) && (
+                                                <span className="playlist-selected-badge">✓</span>
+                                            )}
+                                        </label>
+                                    ))
+                            ) : (
+                                <div className="playlist-friends-empty">
+                                    {shareSearch
+                                        ? "No se encontraron amigos con ese nombre"
+                                        : "No tienes amigos para compartir esta playlist"}
+                                </div>
+                            )}
+                        </div>
+                        <div className="playlist-popup-actions">
+                            <button
+                                className="playlist-share-btn"
+                                onClick={async () => {
+                                    try {
+                                        for (const friendId of selectedFriends) {
+                                            await apiFetch('/chat/send', {
+                                                method: 'POST',
+                                                headers: {
+                                                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                                                },
+                                                body: {
+                                                    user2_id: friendId,
+                                                    message: `Te comparto esta playlist: ${playlist.name}`,
+                                                    shared_content: {
+                                                        type: 'playlist',
+                                                        id: playlist.id,
+                                                        name: playlist.name,
+                                                        image: playlist.front_page ? playlist.front_page : null,
+                                                        url: `${window.location.origin}/playlist/${playlist.id}`
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        setShowSharePopup(false);
+                                        setSelectedFriends([]);
+                                        setShareSearch("");
+                                        alert("Playlist compartida por chat!");
+                                    } catch (error) {
+                                        alert("Hubo un error al compartir");
+                                    }
+                                }}
+                            >
+                                Enviar
+                            </button>
+                            <button
+                                className="playlist-cancel-btn"
+                                onClick={() => setShowSharePopup(false)}
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         <div className="layout">
             {/* Columna derecha: contenido de la playlist */}
             <div className="box">
@@ -756,8 +897,7 @@ const PlaylistContent = () => {
                                     >
                                         <FaPlay/>
                                     </button>
-                                </div>
-
+                                    
                                 {/* Columna 2: Portada */}
                                 <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>
 
@@ -803,14 +943,20 @@ const PlaylistContent = () => {
                                             onSubmit={handleCreatePlaylist}
                                             onClose={() => setShowCreateModal(false)}
                                         />
-                                    )}
+                                        {showCreateModal && (
+                                            <CreatePlaylistModal
+                                                onSubmit={handleCreatePlaylist}
+                                                onClose={() => setShowCreateModal(false)}
+                                            />
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

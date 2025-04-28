@@ -28,6 +28,12 @@ const SongContent = () => {
             setIsPlaying, setPlaylistActive, songActive, setSongActive} = useOutletContext();
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [firstPlay, setFirstPlay] = useState(0);
+
+    const [showSharePopup, setShowSharePopup] = useState(false);
+    const [shareSearch, setShareSearch] = useState("");
+    const [selectedFriends, setSelectedFriends] = useState([]);
+    const [friendsList, setFriendsList] = useState([]);
+
     const navigate = useNavigate();
 
     // Función para actualizar el estilo favorito del usuario
@@ -268,6 +274,26 @@ const SongContent = () => {
 
             console.log("Respuesta del servidor:", response.data);
             window.location.reload();
+        } else if (option.label === "Copiar enlace") {
+            const url = `${window.location.origin}/songs/${song.id}`;
+            await navigator.clipboard.writeText(url);
+            alert("¡Enlace copiado al portapapeles!");
+        } else if (option.label === "Compartir con amigos") {
+            // Carga la lista de amigos solo si aún no la tienes
+            if (friendsList.length === 0) {
+                try {
+                    const data = await apiFetch('/social/getFriendsList', {
+                        method: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    setFriendsList(data.friends || []);
+                } catch (e) {
+                    alert("Error al cargar amigos");
+                }
+            }
+            setShowSharePopup(true);
         }
         else
         {
@@ -342,7 +368,13 @@ const SongContent = () => {
                                 {
                                     label: song.liked ?  "Eliminar de favoritos" : "Agregar a favoritos" ,
                                 },
-                                {label: "Ver detalles"},
+                                {
+                                    label: "Compartir",
+                                    submenu: [
+                                        { label: "Copiar enlace" },
+                                        { label: "Compartir con amigos" },
+                                    ],
+                                },
                             ].filter(option => option != null)}
                             position="bottom-right"
                             submenuPosition="right"
@@ -410,6 +442,124 @@ const SongContent = () => {
                     </div>
                 </div>
             </div>
+
+            {showSharePopup && (
+                <div className="popup-overlay">
+                    <div className="popup-content song-share-popup">
+                        <div className="song-popup-header">
+                            <h3>Compartir canción con amigos</h3>
+                        </div>
+                        <div className="song-search-container">
+                            <span className="song-search-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </span>
+                            <input
+                                type="text"
+                                placeholder="Buscar amigo..."
+                                value={shareSearch}
+                                onChange={e => setShareSearch(e.target.value)}
+                                className="song-edit-input"
+                            />
+                            {shareSearch && (
+                                <button 
+                                    className="song-clear-search" 
+                                    onClick={() => setShareSearch('')}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                        <div className="song-friends-list">
+                            {friendsList.filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase())).length > 0 ? (
+                                friendsList
+                                    .filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase()))
+                                    .map(f => (
+                                        <label key={f.friendId} className="song-friend-item">
+                                            <div className="song-checkbox-wrapper">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`song-friend-${f.friendId}`}
+                                                    checked={selectedFriends.includes(f.friendId)}
+                                                    onChange={e => {
+                                                        if (e.target.checked) {
+                                                            setSelectedFriends(prev => [...prev, f.friendId]);
+                                                        } else {
+                                                            setSelectedFriends(prev => prev.filter(id => id !== f.friendId));
+                                                        }
+                                                    }}
+                                                />
+                                                <span className="song-custom-checkbox"></span>
+                                            </div>
+                                            {f.user_picture ? (
+                                                <img src={getImageUrl(f.user_picture)} alt={f.nickname} className="song-friend-avatar" />
+                                            ) : (
+                                                <span className="song-friend-initials">{f.nickname[0]}</span>
+                                            )}
+                                            <span className="song-friend-name">{f.nickname}</span>
+                                            {selectedFriends.includes(f.friendId) && (
+                                                <span className="song-selected-badge">✓</span>
+                                            )}
+                                        </label>
+                                    ))
+                            ) : (
+                                <div className="song-friends-empty">
+                                    {shareSearch
+                                        ? "No se encontraron amigos con ese nombre"
+                                        : "No tienes amigos para compartir esta canción"}
+                                </div>
+                            )}
+                        </div>
+                        <div className="song-popup-actions">
+                            <button
+                                className="song-share-btn"
+                                onClick={async () => {
+                                    try {
+                                        for (const friendId of selectedFriends) {
+                                            await apiFetch('/chat/send', {
+                                                method: 'POST',
+                                                headers: {
+                                                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                                                },
+                                                body: {
+                                                    user2_id: friendId,
+                                                    message: `Te comparto esta canción: ${song.name}`,
+                                                    shared_content: {
+                                                        type: 'song',
+                                                        id: song.id,
+                                                        name: song.name,
+                                                        image: song.photo_video ? song.photo_video : null,
+                                                        url: `${window.location.origin}/songs/${song.id}`
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        setShowSharePopup(false);
+                                        setSelectedFriends([]);
+                                        setShareSearch("");
+                                        alert("Canción compartida por chat!");
+                                    } catch (error) {
+                                        alert("Hubo un error al compartir");
+                                    }
+                                }}
+                            >
+                                Enviar
+                            </button>
+                            <button
+                                className="song-cancel-btn"
+                                onClick={() => setShowSharePopup(false)}
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
