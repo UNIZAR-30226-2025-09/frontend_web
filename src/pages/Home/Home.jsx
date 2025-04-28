@@ -18,12 +18,14 @@ function CustomDot({ onClick, active }) {
 
 const Home = () => {
     const navigate = useNavigate();
-    const { playlistsRef, recommendationsRef, albumsRef, artistsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp, handleAccessWithoutLogin } = useOutletContext(); // Obtener la función del Outlet
-    const [currentSlide, setCurrentSlide] = useState(0);
+    const { recommendationsRef, albumsRef, artistsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp, handleAccessWithoutLogin } = useOutletContext(); // Obtener la función del Outlet
+    const [ setCurrentSlide] = useState(0);
     const [vibraPlaylists, setVibraPlaylists] = useState([]);
     const [popularArtists, setPopularArtists] = useState([]);
     const [recommendedPlaylists, setRecommendedPlaylists] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [recentlyVisited, setRecentlyVisited] = useState([]);
+
 
     // Configuración responsive para el carrusel
     const responsive = {
@@ -125,10 +127,63 @@ const Home = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchRecentlyVisited = async () => {
+            try {
+                const userId = JSON.parse(localStorage.getItem('user')).id;
+                const response = await apiFetch(`/playlists/recent/${userId}`, { method: "GET" });
 
+                let data = Array.isArray(response) ? response : response.data;
+
+                if (Array.isArray(data)) {
+                    // Eliminar duplicados por ID
+                    const uniquePlaylists = data.filter((playlist, index, self) =>
+                        index === self.findIndex((p) => p.id === playlist.id)
+                    );
+                    setRecentlyVisited(uniquePlaylists);
+                }
+            } catch (error) {
+                console.error("Error al obtener playlists recientemente visitadas:", error);
+            }
+        };
+
+        if (localStorage.getItem('user')) {
+            fetchRecentlyVisited();
+        }
+    }, []);
+
+    console.log("Recently Visited: ", recentlyVisited);
 
     return (
         <div className="home-content">
+            {recentlyVisited.length > 0 && (
+                <>
+                    <h1 onClick={() => setActive("recentlyVisited")}>Visitado Recientemente</h1>
+                    <div className="scroll-container">
+                        <div className="home-recommendations recently-visited-grid">
+                            {recentlyVisited.map((playlist) => (
+                                <div key={playlist.id} className="playlist-wrapper">
+                                    <div
+                                        className="home-playlist-card"
+                                        onClick={(e) => handlePlaylistClick(playlist.id, e)}
+                                    >
+                                        <img
+                                            src={getImageUrl(playlist.front_page, "/default-playlist.jpg")}
+                                            alt={playlist.name}
+                                            className="playlist-image"
+                                            onError={(e) => { e.target.src = "/default-playlist.jpg" }}
+                                        />
+                                    </div>
+                                    <div onClick={(e) => handlePlaylistClick(playlist.id, e)}>
+                                        <p className="playlist-title">{playlist.name}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </>
+            )}
+
             {/* Sección de playlists creadas por Vibra */}
             <h1 onClick={() => setActive("playlists")}>Descubre lo mejor de Vibra</h1>
 
