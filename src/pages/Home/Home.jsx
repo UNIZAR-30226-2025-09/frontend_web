@@ -19,8 +19,9 @@ function CustomDot({ onClick, active }) {
 const Home = () => {
     const navigate = useNavigate();
     const { recommendationsRef, albumsRef, artistsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp, handleAccessWithoutLogin } = useOutletContext(); // Obtener la función del Outlet
-    const [ setCurrentSlide] = useState(0);
+    const [currentSlide, setCurrentSlide] = useState(0);
     const [vibraPlaylists, setVibraPlaylists] = useState([]);
+    const [randomArtists, setRandomArtists] = useState([]);
     const [popularArtists, setPopularArtists] = useState([]);
     const [recommendedPlaylists, setRecommendedPlaylists] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -76,8 +77,25 @@ const Home = () => {
             }
         };
 
+        
+        
         fetchArtists();
     }, []);
+
+    useEffect(() => {
+        if (popularArtists.length > 0) {
+            // Copiar el array para no mutar el original
+            const artistsCopy = [...popularArtists];
+            
+            // Barajar aleatoriamente el array de artistas
+            const shuffled = artistsCopy.sort(() => 0.5 - Math.random());
+            
+            // Tomar solo los primeros 10 (o menos si no hay suficientes)
+            const selected = shuffled.slice(0, 10);
+            
+            setRandomArtists(selected);
+        }
+    }, [popularArtists]);
 
     useEffect(() => {
         const fetchRecommendedPlaylists = async () => {
@@ -306,41 +324,67 @@ const Home = () => {
             </div>
 
 
-            {/* Nueva Sección de Artistas - FIXED */}
-            <h1 onClick={() => setActive("artists")}>Artistas Populares</h1>
-            <div
-                className="scroll-container"
-                ref={artistsRef}
-                onMouseDown={(e) => handleMouseDown(e, artistsRef)}
-                onMouseMove={(e) => handleMouseMove(e, artistsRef)}
-                onMouseUp={() => handleMouseUp(artistsRef)}
-                onMouseLeave={() => handleMouseUp(artistsRef)}
-            >
-                <div className="home-artists">
-                    {popularArtists.length > 0 ? (
-                        popularArtists.map((artist) => {
-                            const artistImage = getImageUrl(artist.photo, "/default-artist.jpg");
+{/* Nueva Sección de Artistas - FIXED */}
+<h1 onClick={() => setActive("artists")}>Artistas Populares</h1>
 
-                            return (
-                                <div key={artist.id} className="artist-wrapper" onClick={(e) => handleArtistClick(artist.id, e)}>
-                                    <div className="home-artist-card">
-                                        <img
-                                            src={artistImage}
-                                            alt={artist.name}
-                                            className="artist-image"
-                                            onError={(e) => e.target.src = "/default-artist.jpg"}
-                                        />
-                                    </div>
-                                    <p className="artist-title">{artist.name}</p>
-                                </div>
-                            );
-                        })
-                    ) : (
-                        <p>Cargando artistas...</p>
-                    )}
+{popularArtists.length > 0 ? (
+    <div className="carousel-container">
+        <Carousel
+            responsive={responsive}
+            autoPlay={false}
+            swipeable={true}
+            draggable={true}
+            showDots={true}
+            infinite={true}
+            partialVisible={false}
+            customDot={<CustomDot />}
+            beforeChange={(previousSlide, nextSlide) => setCurrentSlide(nextSlide)}
+            containerClass="carousel-container"
+            itemClass="carousel-item"
+            dotListClass="custom-dot-list"
+        >
+            {/* Solo mostrar 10 artistas aleatorios */}
+            {randomArtists.map((artist) => {
+                const artistImage = getImageUrl(artist.photo, "/default-artist.jpg");
+                return (
+                    <div key={artist.id} className="artist-wrapper" onClick={(e) => handleArtistClick(artist.id, e)}>
+                        <div className="home-artist-card">
+                            <img
+                                src={artistImage}
+                                alt={artist.name}
+                                className="artist-image"
+                                onError={(e) => e.target.src = "/default-artist.jpg"}
+                            />
+                        </div>
+                        <p className="artist-title">{artist.name}</p>
+                    </div>
+                );
+            })}
+            {/* Botón "Ver todos" al final del carrusel */}
+            <div 
+    className="artist-wrapper see-all-text-link" 
+    onClick={(e) => {
+        // Verificar si hay un token, si no, mostrar el popup
+        if (!localStorage.getItem("token")) {
+            e.preventDefault();
+            handleAccessWithoutLogin(e);
+        } else {
+            // Si hay token, navegar normalmente
+            navigate("/everyArtist");
+        }
+    }}
+>
+    <div className="see-all-text-container">
+        <span>Ver todos</span>
+    </div>
+</div>
+        </Carousel>
+    </div>
+) : (
+    <p>Cargando artistas...</p>
+)}
                 </div>
-            </div>
-        </div>
+
     );
 };
 
