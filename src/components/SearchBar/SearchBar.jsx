@@ -4,10 +4,28 @@ import PropTypes from 'prop-types';
 import { FaSearch, FaTimes } from 'react-icons/fa';
 import debounce from 'lodash.debounce';
 import './SearchBar.css';
+import {useLocation} from "react-router-dom";
 
 const SearchBar = ({ onSearch }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const searchInputRef = useRef(null);
+    const location = useLocation();
+
+    // Limpiar búsqueda solo al navegar fuera de las páginas de búsqueda
+    useEffect(() => {
+        // Si no estamos en la página de búsqueda o resultados, limpiar el campo
+        if (!location.pathname.includes('/search') &&
+            !location.pathname.includes('/artist') &&
+            !location.pathname.includes('/playlist') &&
+            !location.pathname.includes('/songs')) {
+            // Solo limpia si hay algo que limpiar
+            if (searchQuery !== '') {
+                setSearchQuery('');
+                // No llames a onSearch si no hay búsqueda actual
+                onSearch('');
+            }
+        }
+    }, [location.pathname, onSearch, searchQuery]);
 
     // Creamos una función 'debounced' para no disparar onSearch en cada pulsación exacta.
     // En su lugar, esperamos 300ms tras la última tecla antes de llamar a onSearch(query).
