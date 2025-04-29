@@ -89,19 +89,21 @@ function EditAccountInfo() {
         });
     };
 
+    // Actualiza la función handleImageUpload para corregir la vista previa
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
 
         if (!file) return;
 
+        // Crear y mostrar la vista previa inmediatamente
+        const tempPreviewUrl = URL.createObjectURL(file);
+        setProfileImageShow(tempPreviewUrl);
+
+        // Comprimir la imagen para el envío
         new Compressor(file, {
             quality: 0.6,
             success(result) {
                 setProfileImage(result);
-
-                // Mostrar una vista previa de la imagen seleccionada
-                const previewUrl = URL.createObjectURL(result);
-                setProfileImageShow(previewUrl);
             },
             error(err) {
                 console.error("Error al comprimir la imagen", err);
@@ -109,27 +111,77 @@ function EditAccountInfo() {
         });
     };
 
+    // Función para generar un avatar con iniciales cuando no hay imagen (copiada de AccountInfo)
+    const generateAvatarColor = (name) => {
+        if (!name) return { background: "#4f74ff", initial: "U" };
+        
+        // Generar un color basado en el nombre
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        
+        // Lista de colores vibrantes para los avatares
+        const colors = [
+            "#FF5722", "#E91E63", "#9C27B0", "#673AB7", 
+            "#3F51B5", "#2196F3", "#03A9F4", "#00BCD4", 
+            "#009688", "#4CAF50", "#8BC34A", "#CDDC39", 
+            "#FFC107", "#FF9800", "#795548", "#607D8B"
+        ];
+        
+        const colorIndex = Math.abs(hash) % colors.length;
+        const background = colors[colorIndex];
+        
+        // Obtener la inicial en mayúscula
+        const initial = name.charAt(0).toUpperCase();
+        
+        return { background, initial };
+    };
+
+    // Renderizar el avatar basado en si hay imagen de perfil o no
+    const renderAvatar = () => {
+        if (profileImageShow) {
+            return (
+                <img
+                    src={profileImageShow.startsWith('data:') ? profileImageShow : getImageUrl(profileImageShow)}
+                    alt="Foto de perfil"
+                    className="profile-img"
+                />
+            );
+        } else {
+            const storedUser = JSON.parse(localStorage.getItem('user'));
+            const name = storedUser?.name || storedUser?.nickname || 'Usuario';
+            const { background, initial } = generateAvatarColor(name);
+            
+            return (
+                <div className="avatar-initial" style={{ background }}>
+                    {initial}
+                </div>
+            );
+        }
+    };
+
     return (
         <>
             <div className="header">
-                <div className="logo-container">
+                <div className="logo-account-container" onClick={() => { navigate(`/`) }}>
                     <img
                         src="/vibrablanco.png"
                         alt="Vibra Logo"
-                        className="logo"
-                        onClick={() => { navigate(`/`) }}
+                        className="logo-account"
+                        style={{ 
+                            height: "48px",
+                            width: "48px",
+                            background: 'rgba(30, 40, 60, 0.9)',
+                            borderRadius: '50%',
+                            padding: '8px'
+                        }}
                     />
                     <span className="logo-text">Vibra</span>
                 </div>
                 <div className="profile-container">
                     <div className="profile-picture">
-                        <img
-                            src={profileImageShow ?
-                                (profileImageShow.startsWith('data:') ? profileImageShow : getImageUrl(profileImageShow))
-                                : '/default-profile.png'}
-                            alt="Foto de perfil"
-                            className="profile-img"
-                        />
+                        {renderAvatar()}
                     </div>
                 </div>
             </div>
@@ -169,11 +221,52 @@ function EditAccountInfo() {
                         {/* Vista previa de la imagen */}
                         {profileImageShow && (
                             <div className="profile-preview">
-                                <img
-                                    src={profileImageShow.startsWith('data:') ? profileImageShow : getImageUrl(profileImageShow)}
-                                    alt="Vista previa"
-                                    className="profile-preview-img"
-                                />
+                                {profileImageShow ? (
+                                    <img
+                                        src={profileImageShow.startsWith('data:') || profileImageShow.startsWith('blob:') 
+                                            ? profileImageShow 
+                                            : getImageUrl(profileImageShow)}
+                                        alt="Vista previa"
+                                        className="profile-preview-img"
+                                        style={{ 
+                                            width: '150px', 
+                                            height: '150px',
+                                            objectFit: 'cover',
+                                            borderRadius: '50%',
+                                            border: '2px solid #4f74ff'
+                                        }}
+                                    />
+                                ) : (
+                                    <div className="profile-preview-img" style={{ 
+                                        width: '150px',
+                                        height: '150px',
+                                        display: 'flex',
+                                        alignItems: 'center', 
+                                        justifyContent: 'center',
+                                        background: generateAvatarColor(userInfo.nickname).background,
+                                        fontSize: '48px',
+                                        fontWeight: 'bold',
+                                        color: 'white',
+                                        borderRadius: '50%'
+                                    }}>
+                                        {userInfo.nickname ? userInfo.nickname.charAt(0).toUpperCase() : 'U'}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        {!profileImageShow && (
+                            <div className="profile-preview">
+                                <div className="profile-preview-img" style={{ 
+                                    display: 'flex',
+                                    alignItems: 'center', 
+                                    justifyContent: 'center',
+                                    background: generateAvatarColor(userInfo.nickname).background,
+                                    fontSize: '48px',
+                                    fontWeight: 'bold',
+                                    color: 'white'
+                                }}>
+                                    {userInfo.nickname ? userInfo.nickname.charAt(0).toUpperCase() : 'U'}
+                                </div>
                             </div>
                         )}
                     </div>
