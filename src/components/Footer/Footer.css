@@ -23,41 +23,70 @@
 
 .footer-section {
     flex: 1;
-    min-width: 0; /* para evitar desbordamientos */
+    min-width: 250px; /* Ancho mínimo para mejor visualización */
     max-width: 33.33%;
     padding: 0 1rem;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra los elementos horizontalmente */
 }
-
-
 
 .footer-section h3 {
     font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    color: #fff; /* Títulos en blanco */
+    margin-bottom: 1rem; /* Aumentado el espacio inferior */
+    color: #fff;
+    position: relative;
+    display: inline-block; /* Para que el pseudo-elemento funcione correctamente */
+    padding-bottom: 0.5rem; /* Espacio para la línea decorativa */
+}
+
+/* Añadir una línea decorativa bajo los títulos */
+.footer-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, #2196f3, transparent);
+    border-radius: 2px;
 }
 
 .footer-section p {
     font-size: 0.875rem;
     color: #ddd; /* Texto más claro para facilitar la lectura */
 }
-
 .footer-section ul {
     list-style: none;
     padding: 0;
+    width: 100%;
+    max-width: 200px; /* Limitar el ancho para mejor centrado */
 }
 
+* Mejora en la sección de contacto */
+.footer-section p {
+    font-size: 0.875rem;
+    color: #ddd;
+    margin: 0.4rem 0; /* Espaciado más consistente */
+    width: 100%;
+    text-align: center;
+}
 .footer-section ul li {
     margin: 0.5rem 0;
 }
 
 
+/* Asegurar que el copyright y redes sociales estén bien alineados */
 .footer-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     font-size: 0.875rem;
-    color: #ddd; /* Color de texto en pie de página más claro */
+    color: #ddd;
     margin-top: 1rem;
 }
-
 .footer-socials {
     margin-top: 1rem;
 }
@@ -103,3 +132,15 @@
     transform: scale(1.05); /* efecto visual sin cambiar el flujo del layout */
 }
 
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .footer-section {
+        max-width: 100%;
+        margin-bottom: 2rem;
+    }
+}
