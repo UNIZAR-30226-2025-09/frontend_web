@@ -19,12 +19,13 @@
     border: 3px solid #1eaddc; /* color base */
     transition: box-shadow 0.2s;
     position: relative;    /* Para ubicar íconos en la misma línea */
+    overflow: hidden;
 }
 
 /* Al hacer clic o foco dentro, resaltamos borde y sombra */
 .search-box:focus-within {
     border: 3px solid #1eaddc;
-    box-shadow: 0 0 0 3px rgba(30, 173, 220, 0.3);
+    box-shadow: none;
 }
 
 /* Input */

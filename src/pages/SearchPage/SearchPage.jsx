@@ -22,13 +22,6 @@ const SearchPage = () => {
     // Obtener funciones del contexto para el reproductor
     const { handleAccessWithoutLogin } = useOutletContext();
 
-    // Función para reproducir canciones
-
-
-
-
-
-
     // Cargar resultados cuando cambia la consulta
     useEffect(() => {
         if (!query.trim()) {
@@ -172,7 +165,6 @@ const SearchPage = () => {
 
         switch (result.type) {
             case 'song':
-
                 navigate(`/songs/${result.id}`);
                 break;
             case 'artist':
@@ -185,8 +177,6 @@ const SearchPage = () => {
                 break;
         }
     };
-
-
 
     const mainResult = getMainResult();
     const hasResults = filteredSongs.length > 0 || filteredArtists.length > 0 || filteredPlaylists.length > 0;
@@ -205,18 +195,6 @@ const SearchPage = () => {
     const limitedArtists = activeCategory === 'todo' ? filteredArtists.slice(0, 4) : filteredArtists;
     const limitedPlaylists = activeCategory === 'todo' ? filteredPlaylists.filter(p => !p.esAlbum).slice(0, 4) : filteredPlaylists.filter(p => !p.esAlbum);
     const limitedAlbums = activeCategory === 'todo' ? albumPlaylists.slice(0, 4) : albumPlaylists;
-
-    // Función para agrupar artistas en pares (2 por fila)
-    const groupArtistsInPairs = (artists) => {
-        const pairs = [];
-        for (let i = 0; i < artists.length; i += 2) {
-            pairs.push(artists.slice(i, i + 2));
-        }
-        return pairs;
-    };
-
-    // Agrupar artistas en pares para el layout 2x2
-    const artistPairs = groupArtistsInPairs(activeCategory === 'todo' ? limitedArtists : filteredArtists);
 
     return (
         <div className="search-page">
@@ -258,12 +236,6 @@ const SearchPage = () => {
                         >
                             Álbumes
                         </button>
-                        <button
-                            className={`filter-button ${activeCategory === 'podcasts' ? 'active' : ''}`}
-                            onClick={() => setActiveCategory('podcasts')}
-                        >
-                            Pódcasts y programas
-                        </button>
                     </div>
 
                     <div className="search-results-content">
@@ -275,10 +247,10 @@ const SearchPage = () => {
                                 </p>
                             </div>
                         ) : (
-                            <div className="results-layout">
-                                {/* Columna izquierda con Resultado principal y Artistas */}
-                                <div className="results-left">
-                                    {/* Resultado principal */}
+                            <div className={`results-layout ${activeCategory !== 'todo' ? 'single-column' : ''}`}>
+                                {/* Columna izquierda con todos los resultados si hay un filtro activo diferente de "todo" */}
+                                <div className={`results-left ${activeCategory !== 'todo' ? 'full-width' : ''}`}>
+                                    {/* Resultado principal solo se muestra en "todo" */}
                                     {mainResult && activeCategory === 'todo' && (
                                         <div className="section">
                                             <h2 className="section-title">Resultado principal</h2>
@@ -302,117 +274,201 @@ const SearchPage = () => {
                                         </div>
                                     )}
 
-                                    {/* Artistas - Layout 2x2 */}
+                                    {/* Artistas */}
                                     {filteredArtists.length > 0 && showArtists && (
                                         <div className="artists-section">
                                             <h2 className="section-title">Artistas</h2>
                                             <div className="artists-grid-2x2">
-                                                {artistPairs.map((pair, rowIndex) => (
-                                                    <div key={`row-${rowIndex}`} className="artists-row">
-                                                        {pair.map((artist) => (
+                                                {(activeCategory === 'todo' ? limitedArtists : filteredArtists).map((artist) => (
+                                                    <div
+                                                        key={artist.id}
+                                                        className="artists-item"
+                                                        onClick={() => handleArtistClick(artist.id)}
+                                                    >
+                                                        <div className="artists-image">
+                                                            <img
+                                                                src={getImageUrl(artist.photo) || "/artist-placeholder.jpg"}
+                                                                alt={artist.name}
+                                                            />
+                                                        </div>
+                                                        <div className="artist-info-container">
+                                                            <p className="artists-name">{artist.name}</p>
+                                                            <p className="artists-type">Artista</p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Si hay un filtro específico, todos los elementos se muestran en la columna izquierda */}
+                                    {activeCategory !== 'todo' && (
+                                        <>
+                                            {/* Canciones */}
+                                            {filteredSongs.length > 0 && showSongs && (
+                                                <div className="section">
+                                                    <h2 className="section-title">Canciones</h2>
+                                                    <div className="songs-list">
+                                                        {filteredSongs.map((song) => (
                                                             <div
-                                                                key={artist.id}
-                                                                className="artists-item"
-                                                                onClick={() => handleArtistClick(artist.id)}
+                                                                key={song.id}
+                                                                className="songs-item"
+                                                                onClick={() => navigate(`/songs/${song.id}`)}
                                                             >
-                                                                <div className="artists-image">
-                                                                    <img
-                                                                        src={getImageUrl(artist.photo) || "/artist-placeholder.jpg"}
-                                                                        alt={artist.name}
-                                                                    />
+                                                                <div className="songs-item-content">
+                                                                    <div className="songs-image">
+                                                                        <img
+                                                                            src={getImageUrl(song.photo_video) || "/song-placeholder.jpg"}
+                                                                            alt={song.name}
+                                                                        />
+                                                                    </div>
+                                                                    <div className="songs-info">
+                                                                        <p className="songs-name">{song.name}</p>
+                                                                        <p className="songs-artist">{song.artist}</p>
+                                                                    </div>
                                                                 </div>
-                                                                <p className="artists-name">{artist.name}</p>
-                                                                <p className="artists-type">Artista</p>
                                                             </div>
                                                         ))}
                                                     </div>
-                                                ))}
-                                            </div>
-                                        </div>
+                                                </div>
+                                            )}
+
+                                            {/* Playlists (mostrando solo las que NO son álbumes) */}
+                                            {filteredPlaylists.filter(p => !p.esAlbum).length > 0 && showPlaylists && (
+                                                <div className="section">
+                                                    <h2 className="section-title">Playlists</h2>
+                                                    <div className="playlists-grid">
+                                                        {filteredPlaylists.filter(p => !p.esAlbum).map((playlist) => (
+                                                            <div
+                                                                key={playlist.id}
+                                                                className="playlists-item"
+                                                                onClick={(e) => handlePlaylistClick(playlist.id, e)}
+                                                            >
+                                                                <div className="playlists-image">
+                                                                    <img
+                                                                        src={getImageUrl(playlist.imageUrl) || "/playlist-placeholder.jpg"}
+                                                                        alt={playlist.title}
+                                                                    />
+                                                                </div>
+                                                                <p className="playlists-title">{playlist.title}</p>
+                                                                <p className="playlists-type">Playlist</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Álbumes (mostrando solo las playlists que SÍ son álbumes) */}
+                                            {albumPlaylists.length > 0 && showAlbums && (
+                                                <div className="section">
+                                                    <h2 className="section-title">Álbumes</h2>
+                                                    <div className="playlists-grid">
+                                                        {albumPlaylists.map((album) => (
+                                                            <div
+                                                                key={album.id}
+                                                                className="playlists-item"
+                                                                onClick={(e) => handlePlaylistClick(album.id, e)}
+                                                            >
+                                                                <div className="playlists-image">
+                                                                    <img
+                                                                        src={getImageUrl(album.imageUrl) || "/playlist-placeholder.jpg"}
+                                                                        alt={album.title}
+                                                                    />
+                                                                </div>
+                                                                <p className="playlists-title">{album.title}</p>
+                                                                <p className="playlists-type">Álbum</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
                                     )}
                                 </div>
 
-                                {/* Columna derecha con Canciones, Playlists y Álbumes */}
-                                <div className="results-right">
-                                    {/* Canciones */}
-                                    {filteredSongs.length > 0 && showSongs && (
-                                        <div className="section">
-                                            <h2 className="section-title">Canciones</h2>
-                                            <div className="songs-list">
-                                                {(activeCategory === 'todo' ? limitedSongs : filteredSongs).map((song) => (
-                                                    <div
-                                                        key={song.id}
-                                                        className="songs-item"
-                                                        onClick={() => navigate(`/songs/${song.id}`)}
-                                                    >
-                                                        <div className="songs-item-content">
-                                                            <div className="songs-image">
+                                {/* Columna derecha solo visible si la categoría es "todo" */}
+                                {activeCategory === 'todo' && (
+                                    <div className="results-right">
+                                        {/* Canciones */}
+                                        {filteredSongs.length > 0 && showSongs && (
+                                            <div className="section">
+                                                <h2 className="section-title">Canciones</h2>
+                                                <div className="songs-list">
+                                                    {limitedSongs.map((song) => (
+                                                        <div
+                                                            key={song.id}
+                                                            className="songs-item"
+                                                            onClick={() => navigate(`/songs/${song.id}`)}
+                                                        >
+                                                            <div className="songs-item-content">
+                                                                <div className="songs-image">
+                                                                    <img
+                                                                        src={getImageUrl(song.photo_video) || "/song-placeholder.jpg"}
+                                                                        alt={song.name}
+                                                                    />
+                                                                </div>
+                                                                <div className="songs-info">
+                                                                    <p className="songs-name">{song.name}</p>
+                                                                    <p className="songs-artist">{song.artist}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Playlists (mostrando solo las que NO son álbumes) */}
+                                        {filteredPlaylists.filter(p => !p.esAlbum).length > 0 && showPlaylists && (
+                                            <div className="section">
+                                                <h2 className="section-title">Playlists</h2>
+                                                <div className="playlists-grid">
+                                                    {limitedPlaylists.map((playlist) => (
+                                                        <div
+                                                            key={playlist.id}
+                                                            className="playlists-item"
+                                                            onClick={(e) => handlePlaylistClick(playlist.id, e)}
+                                                        >
+                                                            <div className="playlists-image">
                                                                 <img
-                                                                    src={getImageUrl(song.photo_video) || "/song-placeholder.jpg"}
-                                                                    alt={song.name}
+                                                                    src={getImageUrl(playlist.imageUrl) || "/playlist-placeholder.jpg"}
+                                                                    alt={playlist.title}
                                                                 />
                                                             </div>
-                                                            <div className="songs-info">
-                                                                <p className="songs-name">{song.name}</p>
-                                                                <p className="songs-artist">{song.artist}</p>
+                                                            <p className="playlists-title">{playlist.title}</p>
+                                                            <p className="playlists-type">Playlist</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Álbumes (mostrando solo las playlists que SÍ son álbumes) */}
+                                        {albumPlaylists.length > 0 && showAlbums && (
+                                            <div className="section">
+                                                <h2 className="section-title">Álbumes</h2>
+                                                <div className="playlists-grid">
+                                                    {limitedAlbums.map((album) => (
+                                                        <div
+                                                            key={album.id}
+                                                            className="playlists-item"
+                                                            onClick={(e) => handlePlaylistClick(album.id, e)}
+                                                        >
+                                                            <div className="playlists-image">
+                                                                <img
+                                                                    src={getImageUrl(album.imageUrl) || "/playlist-placeholder.jpg"}
+                                                                    alt={album.title}
+                                                                />
                                                             </div>
+                                                            <p className="playlists-title">{album.title}</p>
+                                                            <p className="playlists-type">Álbum</p>
                                                         </div>
-                                                    </div>
-                                                ))}
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
-
-                                    {/* Playlists (mostrando solo las que NO son álbumes) */}
-                                    {filteredPlaylists.filter(p => !p.esAlbum).length > 0 && showPlaylists && (
-                                        <div className="section">
-                                            <h2 className="section-title">Playlists</h2>
-                                            <div className="playlists-grid">
-                                                {limitedPlaylists.map((playlist) => (
-                                                    <div
-                                                        key={playlist.id}
-                                                        className="playlists-item"
-                                                        onClick={(e) => handlePlaylistClick(playlist.id, e)}
-                                                    >
-                                                        <div className="playlists-image">
-                                                            <img
-                                                                src={getImageUrl(playlist.imageUrl) || "/playlist-placeholder.jpg"}
-                                                                alt={playlist.title}
-                                                            />
-                                                        </div>
-                                                        <p className="playlists-title">{playlist.title}</p>
-                                                        <p className="playlists-type">Playlist</p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Álbumes (mostrando solo las playlists que SÍ son álbumes) */}
-                                    {albumPlaylists.length > 0 && showAlbums && (
-                                        <div className="section">
-                                            <h2 className="section-title">Álbumes</h2>
-                                            <div className="playlists-grid">
-                                                {(activeCategory === 'todo' ? limitedAlbums : albumPlaylists).map((album) => (
-                                                    <div
-                                                        key={album.id}
-                                                        className="playlists-item"
-                                                        onClick={(e) => handlePlaylistClick(album.id, e)}
-                                                    >
-                                                        <div className="playlists-image">
-                                                            <img
-                                                                src={getImageUrl(album.imageUrl) || "/playlist-placeholder.jpg"}
-                                                                alt={album.title}
-                                                            />
-                                                        </div>
-                                                        <p className="playlists-title">{album.title}</p>
-                                                        <p className="playlists-type">Álbum</p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

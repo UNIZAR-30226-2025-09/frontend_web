@@ -948,13 +948,15 @@ const PlaylistContent = () => {
                 </div>
             </div>
 
-            {/* Añadir el modal de colaboradores aquí, fuera del renderizado condicional de las canciones */}
+            {/*el modal de colaboradores  */}
+
             {showCollabModal && (
                 <Collaborators
                     playlistId={playlistId}
                     onClose={() => setShowCollabModal(false)}
                 />
             )}
+
         </>
     );
 };

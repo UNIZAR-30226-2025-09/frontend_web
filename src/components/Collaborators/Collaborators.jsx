@@ -4,15 +4,19 @@ import { apiFetch } from "#utils/apiFetch";
 const Collaborators = ({ playlistId, onClose }) => {
     const [friends, setFriends] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadingInvite, setLoadingInvite] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
-        const fetchFriends = async () => {
+        const fetchFriendsAndCollaborators = async () => {
             try {
                 setLoading(true);
                 const token = localStorage.getItem("token");
-                const response = await apiFetch("/social/getFriendsList", {
+
+                // Get friends list
+                const friendsResponse = await apiFetch("/social/getFriendsList", {
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -20,22 +24,41 @@ const Collaborators = ({ playlistId, onClose }) => {
                     },
                 });
 
-                console.log("Amigos obtenidos:", response.friends || []);
-                setFriends(response.friends || []);
+                // Get current collaborators
+                const collaboratorsResponse = await apiFetch(`/collaborators/${playlistId}/collaborators`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                console.log("Amigos obtenidos:", friendsResponse.friends || []);
+                console.log("Colaboradores actuales:", collaboratorsResponse || []);
+
+                const allFriends = friendsResponse.friends || [];
+                const currentCollaborators = collaboratorsResponse || [];
+
+                // Filter out friends who are already collaborators
+                const availableFriends = allFriends.filter(friend =>
+                    !currentCollaborators.some(collab => collab.user_id === friend.friendId)
+                );
+
+                setFriends(availableFriends);
             } catch (error) {
-                console.error("Error al obtener la lista de amigos:", error);
+                console.error("Error al obtener la lista de amigos o colaboradores:", error);
                 setErrorMessage("Error al cargar amigos. Inténtalo de nuevo.");
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchFriends();
-    }, []);
+        fetchFriendsAndCollaborators();
+    }, [playlistId]);
 
     const inviteFriend = async (friendId) => {
         try {
-            setLoading(true);
+            setLoadingInvite(true);
             const token = localStorage.getItem("token");
 
             console.log("Enviando invitación con datos:", {
@@ -74,9 +97,14 @@ const Collaborators = ({ playlistId, onClose }) => {
             setErrorMessage("Error al invitar al amigo como colaborador.");
             setTimeout(() => setErrorMessage(""), 3000);
         } finally {
-            setLoading(false);
+            setLoadingInvite(false);
         }
     };
+
+    // Filter friends based on search term
+    const filteredFriends = friends.filter(friend =>
+        friend.nickname.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="modal-overlay">
@@ -91,30 +119,46 @@ const Collaborators = ({ playlistId, onClose }) => {
                     <div className="error-message">{errorMessage}</div>
                 )}
 
+                {/* Buscador de amigos */}
+                <div className="search-container">
+                    <input
+                        type="text"
+                        placeholder="Buscar amigos..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="search-input"
+                    />
+                </div>
+
                 {loading ? (
                     <p>Cargando...</p>
                 ) : (
                     <ul className="friends-list">
-                        {friends.length > 0 ? (
-                            friends.map((friend) => (
+                        {filteredFriends.length > 0 ? (
+                            filteredFriends.map((friend) => (
                                 <li key={friend.friendId} className="friend-item">
                                     <img
                                         src={friend.user_picture || "/default-avatar.jpg"}
                                         alt={friend.nickname}
                                         className="friend-avatar"
+                                        onError={(e) => {e.target.src = "/default-avatar.jpg"}}
                                     />
                                     <span>{friend.nickname}</span>
                                     <button
                                         className="invite-btn"
                                         onClick={() => inviteFriend(friend.friendId)}
-                                        disabled={loading}
+                                        disabled={loadingInvite}
                                     >
-                                        {loading ? "Enviando..." : "Invitar"}
+                                        {loadingInvite ? "Enviando..." : "Invitar"}
                                     </button>
                                 </li>
                             ))
                         ) : (
-                            <p>No tienes amigos en tu lista o todos ya son colaboradores.</p>
+                            <p>
+                                {searchTerm
+                                    ? "No se encontraron amigos con ese nombre"
+                                    : "No tienes amigos en tu lista o todos ya son colaboradores."}
+                            </p>
                         )}
                     </ul>
                 )}
