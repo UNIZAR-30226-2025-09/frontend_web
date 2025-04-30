@@ -7,15 +7,10 @@
     align-items: flex-start;
 }
 
-/* 🔹 Texto principal con animaciones */
+/* Ajustar el espacio entre las secciones principales */
 .home-content h1 {
-    font-size: 1.4rem; /* 🔥 Aumentado ligeramente */
-    font-weight: bold;
-    color: white;
-    margin-bottom: 10px;
-    text-align: left;
-    cursor: pointer;
-    transition: color 0.3s ease, transform 0.2s ease;
+    margin-bottom: 5px; /* Reducido de 10px */
+    margin-top: 15px; /* Asegura espacio adecuado entre secciones */
 }
 
 /* 🔹 Animación al pasar el ratón por el título */
@@ -155,30 +150,24 @@
     cursor: pointer;
     flex-shrink: 0;
 }
-/* Contenedor principal del carrusel */
+
+/* Ajustar el padding y margin del contenedor de carousel */
 .carousel-container {
-    position: relative; /* Asegúrate de que este contenedor sea el referente para posicionar los puntos */
-    width: 100%;
-    overflow: hidden;
+    position: relative !important;
+    width: 100% !important;
+    margin: 20px 0 30px 0 !important; /* Reducido el margen inferior */
+    padding-bottom: 30px !important; /* Reducido de 60px a 30px */
+    overflow: visible !important;
+    /* Quitada la altura mínima que añadía espacio innecesario */
+    min-height: auto;
 }
-
-
 .playlist-wrapper {
     flex: 0 0 auto;
     width: 200px;  /* Ajusta el tamaño según lo necesites */
     scroll-snap-align: center;
 }
 
-/* 🔹 Contenedor principal del carrusel */
-.carousel-container {
-    display: flex;
-    align-items: center;
-    position: relative; /* Necesario para posicionar elementos absolutos como dots */
-    margin: 20px 0;
-    width: 100%;
-    overflow: hidden; /* Evita que el contenido desborde */
-    padding-bottom: 30px;
-}
+
 
 /* 🔹 Carrusel de elementos */
 .carousel {
@@ -234,32 +223,11 @@
     z-index: 10;
 }
 
-/* Aseguramos que los estilos de react-multi-carousel también estén configurados */
-.react-multi-carousel-dot-list {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    justify-content: center;
-    list-style: none;
-    z-index: 10;
-}
 
-.react-multi-carousel-dot--active button {
-    background-color: #1db954 !important;
-    transform: scale(1.2);
-}
 
-.react-multi-carousel-dot button {
-    width: 10px;
-    height: 10px;
-    border: none;
-    background-color: #a7a7a7;
-    border-radius: 50%;
-    cursor: pointer;
-    outline: none;
-}
+
+
+
 /* 🔹 Imagen de los Artistas (Circular) */
 .artist-image {
     width: 100%;
@@ -365,7 +333,7 @@
     gap: 10px;
 }
 
-.login-banner .banner-login-button {
+.login-banner .login-button {
     background-color: white;
     color: #1b82c3;
     padding: 10px 16px;
@@ -378,7 +346,7 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.login-banner .banner-login-button:hover {
+.login-banner .login-button:hover {
     background-color: #f1f5f9;
     transform: scale(1.03);
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
@@ -410,4 +378,343 @@
 .home-artists {
     display: inline-flex;
     gap: 15px;
+}
+
+/* Mejorar efecto hover en artista */
+.artist-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.artist-hover:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 4px 15px rgba(33, 161, 241, 0.5);
+}
+
+/* 🔹 Dots de navegación */
+.custom-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #a7a7a7;
+    border: none;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    padding: 0;
+    display: inline-block;
+}
+
+.custom-dot.active {
+    background-color: #21a1f1 !important;
+    transform: scale(1.2);
+}
+
+.custom-dot:hover {
+    background-color: #79e2ff;
+    transform: scale(1.2);
+}
+
+/* Elimina los bordes raros de los botones (remove outline/focus) */
+.custom-dot:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Para que las flechas del carrusel sean visibles */
+.react-multi-carousel-arrow {
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.react-multi-carousel-arrow:hover {
+    background-color: rgba(33, 161, 241, 0.8);
+}
+
+.react-multi-carousel-arrow::before {
+    color: white;
+    font-size: 20px;
+}
+
+/* Estilos definitivos para los dots */
+.custom-dot button, 
+.react-multi-carousel-dot button {
+  width: 10px;
+  height: 10px;
+  background-color: #a7a7a7; /* Gris para no activos */
+  border-radius: 50%;
+  border: none;
+  margin: 0 5px;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.custom-dot.active button, 
+.react-multi-carousel-dot--active button {
+  background-color: #21a1f1 !important; /* Azul para activos */
+  transform: scale(1.2);
+}
+
+.custom-dot button:hover, 
+.react-multi-carousel-dot button:hover {
+  background-color: #79e2ff; /* Azul clarito en hover */
+  transform: scale(1.2);
+}
+
+/* Ajustar el contenedor de artistas */
+.artists-carousel-container {
+    position: relative;
+    width: 100%;
+    margin: 20px 0 20px 0 !important; /* Reducido el margen inferior */
+    padding-bottom: 30px !important; /* Reducido de 60px a 30px */
+    overflow: visible !important;
+}
+
+
+
+/* Navegación por puntos para artistas */
+.artists-dot-list {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+    width: 100%;
+    z-index: 10;
+}
+
+.artists-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #a7a7a7; /* Color por defecto */
+    border: none;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+    display: inline-block;
+}
+
+.artists-dot.active {
+    background-color: #21a1f1 !important; /* Punto activo en azul */
+    transform: scale(1.2);
+}
+
+.artists-dot:hover {
+    background-color: #79e2ff;
+    transform: scale(1.2);
+}
+
+/* Flechas para navegación de artistas */
+.artists-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+}
+
+.artists-arrow:hover {
+    background-color: rgba(33, 161, 241, 0.8);
+}
+
+.artists-arrow-left {
+    left: 10px;
+}
+
+.artists-arrow-right {
+    right: 10px;
+}
+
+.artists-arrow svg {
+    color: white;
+    font-size: 20px;
+}
+
+/* Asegura que el contenedor de artistas tenga scroll invisible pero funcional */
+.home-artists-scroll {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+    scroll-behavior: smooth;
+}
+
+.home-artists-scroll::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+
+
+/* Reposicionar los puntos manteniendo su visibilidad */
+.react-multi-carousel-dot-list {
+    position: absolute !important;
+    bottom: -10px !important; /* Colocados más cerca del contenedor */
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    padding: 5px 0 !important; /* Reducido el padding */
+    z-index: 100 !important;
+    background: transparent !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-top: 0 !important; /* Eliminado el margin top adicional */
+    transform: none !important;
+}
+
+/* Asegurar que cada punto sea visible y bien espaciado */
+.react-multi-carousel-dot {
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    margin: 0 5px !important;
+    padding: 5px !important;
+}
+
+/* Forzamos visibilidad para los botones */
+.react-multi-carousel-dot button {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 10px !important;
+    height: 10px !important;
+    border-radius: 50% !important;
+    border: none !important;
+    margin: 0 5px !important;
+    background: #a7a7a7 !important;
+    padding: 0 !important;
+    /* Agregamos un pequeño outline para hacerlo más visible */
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.2) !important;
+}
+
+/* Estilo para el punto activo */
+.react-multi-carousel-dot--active button {
+    background: #21a1f1 !important; /* Azul para punto activo */
+    transform: scale(1.2) !important;
+}
+
+
+
+/* Asegurar que el contenedor del carrusel tenga suficiente espacio */
+.custom-dot-list {
+    position: absolute !important;
+    bottom: -15px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: flex !important;
+    justify-content: center !important;
+    padding: 10px 0 !important;
+    width: 100% !important;
+    z-index: 100 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Ajustes para el carrusel de artistas populares */
+.carousel-container .artist-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    margin: 0 auto;
+}
+
+.carousel-container .home-artist-card {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.carousel-container .artist-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Asegurar que los puntos aparecen debajo del carrusel */
+.carousel-container .custom-dot-list {
+    bottom: -10px;
+}
+/* Estilos para el botón "Ver todos" en la sección de artistas */
+.see-all-wrapper {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.see-all-wrapper:hover {
+    transform: scale(1.05);
+}
+
+.see-all-card {
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+.see-all-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.see-all-icon span {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: lighter;
+}
+
+/* Estilos para el enlace de texto "Ver todos" en lugar del botón circular */
+.see-all-text-link {
+    cursor: pointer;
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.see-all-text-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 180px; /* Misma altura que las imágenes de los artistas */
+    width: 180px; /* Mismo ancho que las imágenes de los artistas */
+}
+
+.see-all-text-container span {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #21a1f1;
+    text-decoration: underline;
+    transition: all 0.3s ease;
+}
+
+.see-all-text-link:hover .see-all-text-container span {
+    transform: scale(1.1);
+    text-shadow: 0px 0px 8px rgba(33, 161, 241, 0.6);
 }

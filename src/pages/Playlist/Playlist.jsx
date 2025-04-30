@@ -38,6 +38,9 @@ const PlaylistContent = () => {
     const [firstPlay, setFirstPlay] = useState(0);
     const [adds, setAdds] = useState([]);
     const [averageRating, setAverageRating] = useState(0);
+    const [sortOption, setSortOption] = useState(null);
+    const [newImage, setNewImage] = useState(null); // para guardar el archivo subido
+    const [newImagePreview, setNewImagePreview] = useState(null); // para mostrar preview
     const user_Id = JSON.parse(localStorage.getItem('user')).id;  // Asegúrate de que la clave sea la correcta
     const { currentSong, setCurrentSong, setActiveSection, activeSection, setCurrentIndex, setSongs, setIsPlaying,
             isPlaying, setPlaylistActive, playlistActive, setSongActive } = useOutletContext();
@@ -213,12 +216,8 @@ const PlaylistContent = () => {
                     method: "GET"
                 });
 
-
-                console.log("Playlist cargada:", data);
-                console.log("Imagen de portada:", data.front_page); // Aquí verás la URL de la portada
                 setPlaylist(data);
-                console.log("Canciones de la playlist", data.songs);
-                console.log("LIKES: ", data.likes);
+
                 const likeData = await apiFetch(`/playlists/${playlistId}/like?user_id=${user_Id}`, {
                     method: "GET"
                 });
@@ -227,11 +226,24 @@ const PlaylistContent = () => {
                     method: "GET"
                 });
 
-                console.log("Anuncios ", adds);
-
                 setAdds(adds);
-
                 setIsLiked(likeData.isLiked);
+
+                // REGISTRAR VISITA
+                const recordVisit = async () => {
+                    try {
+                        await apiFetch(`/playlists/${playlistId}/visit`, {
+                            method: "POST",
+                            body: { userId: user_Id }
+                        });
+                        console.log("Guardando visita de playlist:", playlistId, "usuario:", user_Id);
+                    } catch (error) {
+                        console.error("Error registrando la visita:", error);
+                    }
+                };
+
+                await recordVisit();
+
             } catch (error) {
                 console.error("Error al obtener la playlist:", error);
             }
@@ -412,13 +424,28 @@ const PlaylistContent = () => {
         setIsEditing(!isEditing);
     };
 
+    const convertFileToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
+
     const handleSaveChanges = async () => {
         try {
             const updatedPlaylist = {
                 ...playlist,
                 name: newTitle || playlist.name,
-                description: newDescription || playlist.description
+                description: newDescription || playlist.description,
             };
+
+            // Si hay imagen nueva, conviértela a base64 y añádela
+            if (newImage) {
+                const base64Image = await convertFileToBase64(newImage);
+                updatedPlaylist.front_page = base64Image;
+            }
 
             const data = await apiFetch(`/playlists/${playlistId}`, {
                 method: "PUT",
@@ -437,6 +464,7 @@ const PlaylistContent = () => {
             console.error("Error al actualizar la playlist:", error);
         }
     };
+
 
     const handleOptionSelect = async (option, index) => {
         console.log("Opción seleccionada:", option, index);
@@ -618,9 +646,37 @@ const PlaylistContent = () => {
         }
     };
 
+    const sortedSongs = [...(playlist?.songs || [])];
+
+    if (sortOption === 'title') {
+        sortedSongs.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortOption === 'artist') {
+        sortedSongs.sort((a, b) => {
+            const artistA = a.album?.name || '';
+            const artistB = b.album?.name || '';
+            return artistA.localeCompare(artistB);
+        });
+    } else if (sortOption === 'date') {
+        sortedSongs.sort((a, b) => {
+            const dateA = new Date(a.song_playlist?.date);
+            const dateB = new Date(b.song_playlist?.date);
+            return dateA - dateB;
+        });
+    }
+
+    const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Mostrar una preview
+        const previewUrl = URL.createObjectURL(file);
+        setNewImagePreview(previewUrl);
+        setNewImage(file);
+    };
+
     return (
-        <>
-            {showSharePopup && (
+      <>
+       {showSharePopup && (
                 <div className="popup-overlay">
                     <div className="popup-content playlist-share-popup">
                         <div className="playlist-popup-header">
@@ -737,56 +793,77 @@ const PlaylistContent = () => {
                     </div>
                 </div>
             )}
+        <div className="layout">
+            {/* Columna derecha: contenido de la playlist */}
+            <div className="box">
+                <div className="play-cont">
+                    <div
+                        className={`${playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id ? 'image' : 'imagenoedit'}`}
+                        onClick={handleEditToggle} style={{cursor: "pointer"}}>
+                        <img
+                            src={`${getImageUrl(playlist.front_page)}?t=${Date.now()}`}
+                            width="275"
+                            alt="Playlist Cover"
+                            onError={(e) => (e.target.src = "/default-playlist.jpg")}
+                        />
+                    </div>
+                    <div className="playlist-info">
+                        {playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id && isEditing ? (
+                            <div className="popup-overlay">
+                                <div className="popup-content">
+                                    <label htmlFor="title">Título de la Playlist</label>
+                                    <input
+                                        id="title"
+                                        type="text"
+                                        value={newTitle}
+                                        onChange={(e) => setNewTitle(e.target.value)}
+                                        className="edit-input"
+                                    />
 
-            <div className="layout">
-                {/* Columna derecha: contenido de la playlist */}
-                <div className="box">
-                    <div className="play-cont">
-                        <div className={`${playlist?.user_id && playlist.user_id === user_Id ? 'image' : 'imagenoedit'}`} onClick={handleEditToggle} style={{cursor: "pointer"}}>
-                            <img
-                                src={getImageUrl(playlist.front_page)}  // Usa getImageUrl aquí para generar la URL completa
-                                width="275"
-                                alt="Playlist Cover"
-                                onError={(e) => (e.target.src = "/default-playlist.jpg")} // Si la imagen falla, muestra la imagen por defecto
-                            />
-                        </div>
-                        <div className="playlist-info">
-                            {playlist?.user_id && playlist.user_id === user_Id && isEditing ? (
-                                <div className="popup-overlay">
-                                    <div className="popup-content">
-                                        <label htmlFor="title">Título de la Playlist</label>
-                                        <input
-                                            id="title"
-                                            type="text"
-                                            value={newTitle}
-                                            onChange={(e) => setNewTitle(e.target.value)}
-                                            className="edit-input"
-                                        />
+                                    <label htmlFor="description">Descripción</label>
+                                    <textarea
+                                        id="description"
+                                        value={newDescription}
+                                        onChange={(e) => setNewDescription(e.target.value)}
+                                        className="edit-input"
+                                    />
 
-                                        <label htmlFor="description">Descripción</label>
-                                        <textarea
-                                            id="description"
-                                            value={newDescription}
-                                            onChange={(e) => setNewDescription(e.target.value)}
-                                            className="edit-input"
-                                        />
+                                    <label htmlFor="playlistImage">Imagen de portada</label>
+                                    <input
+                                        id="playlistImage"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageUpload}
+                                        className="edit-input"
+                                    />
 
-                                        <button className="save-btn" onClick={handleSaveChanges}>Guardar</button>
-                                        <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancelar</button>
-                                    </div>
+                                    {newImagePreview && (
+                                        <div className="image-preview-play">
+                                            <img
+                                                src={newImagePreview}
+                                                alt="Vista previa"
+                                                style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "10px" }}
+                                            />
+                                        </div>
+                                    )}
+
+                                    <button className="save-btn" onClick={handleSaveChanges}>Guardar</button>
+                                    <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancelar</button>
                                 </div>
-                            ) : (
-                                <>
-                                    <p className="text-gray-300 text-sm uppercase">Lista</p>
-                                    <h1>{playlist.name}</h1>
-                                    <p>{playlist.description}</p>
-                                    <p>
-                                        {playlist.owner?.nickname || "Desconocido"} •
-                                        Guardada {playlist.likes || 0} veces •
-                                        Total --  {playlist.songs?.length} canciones
-                                    </p>
+                            </div>
+                        ) : (
+                            <>
+                                <p className="text-gray-300 text-sm uppercase">Lista</p>
+                                <h1>{playlist.name}</h1>
+                                <p>{playlist.description}</p>
+                                <p>
+                                    {playlist.owner?.nickname || "Desconocido"} •
+                                    Guardada {playlist.likes || 0} veces •
+                                    Total -- {playlist.songs?.length} canciones
+                                </p>
 
-                                    {/* Sistema de valoración */}
+                                {/* Sistema de valoración */}
+                                {playlist.typeP !== "Vibra_likedSong" && (
                                     <div className="rating-section">
                                         <p>Valoración promedio: {averageRating} / 5</p>
                                         <Rating
@@ -796,24 +873,27 @@ const PlaylistContent = () => {
                                             onRatingUpdate={(newRating) => setAverageRating(newRating)}
                                         />
                                     </div>
-                                </>
-                            )}
-                        </div>
+                                )}
+                            </>
+                        )}
                     </div>
+                </div>
 
-                    <div className="playlist-actions">
-                        {/* Botón principal grande con solo el ícono */}
-                        <div className="rep-cont">
-                            <button
-                                className="play-btn"
-                                onClick={() => currentSong?.type !== "anuncio" && handlePlaySongs(playlist.songs, isPlaying)}
-                            >
-                                {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ? <FaPause/> : <FaPlay/>}
-                            </button>
+                <div className="playlist-actions">
+                    {/* Botón principal grande con solo el ícono */}
+                    <div className="rep-cont">
+                        <button
+                            className="play-btn"
+                            onClick={() => currentSong?.type !== "anuncio" && handlePlaySongs(playlist.songs, isPlaying)}
+                        >
+                            {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ?
+                                <FaPause/> : <FaPlay/>}
+                        </button>
 
-                            <button className="shuffle-btn" onClick={toggleShuffle}>
-                                <FaRandom className={`shuffle-icon ${isShuffling ? "active" : ""}`}/>
-                            </button>
+                        <button className="shuffle-btn" onClick={toggleShuffle}>
+                            <FaRandom className={`shuffle-icon ${isShuffling ? "active" : ""}`}/>
+                        </button>
+                        {playlist.typeP !== "Vibra_likedSong" && (
                             <div className="popup-wrapper ">
                                 <OptionsPopup
                                     trigger={<FaEllipsisH className="icon"/>}
@@ -823,8 +903,10 @@ const PlaylistContent = () => {
                                     onOptionSelect={handleOptionSelect}
                                 />
                             </div>
-                        </div>
+                        )}
+                    </div>
 
+                    {playlist.typeP !== "Vibra_likedSong" && (
                         <div className="actions-right">
 
                             <div className={`playlist-song-search-container ${searchVisible ? 'expanded' : ''}`}>
@@ -944,6 +1026,91 @@ const PlaylistContent = () => {
                                 </div>
                             )}
                         </div>
+                    )}
+                </div>
+                <div className="song-header">
+                    <span># / Play</span>
+                    <span>Portada</span>
+                    <span>Título</span>
+                    <span>Álbum</span>
+                    <span>Fecha Añadida</span>
+                    <span>Duración</span>
+
+                </div>
+                <div className="sort-buttons">
+                    <button onClick={() => setSortOption('title')}>Ordenar por Título</button>
+                    <button onClick={() => setSortOption('artist')}>Ordenar por Artista</button>
+                    <button onClick={() => setSortOption('date')}>Ordenar por Fecha Añadida</button>
+                </div>
+                <div className="song-cont">
+                    {/* Cabecera: 6 columnas (#/Play, Portada, Título, Álbum, Fecha, Duración) */}
+
+                    <div className="song-list">
+    {sortedSongs.map((song, index) => (
+        <div key={song.id || index} className="song-item">
+            {/* Columna 1: (# / botón al hover) */}
+            <div className="song-action">
+                <span className="song-index">{index + 1}</span>
+                <button
+                    className="play-icon"
+                    onClick={() => handlePlaySong(song, index, playlist.songs)}
+                >
+                    <FaPlay/>
+                </button>
+            </div>
+            
+            {/* Columna 2: Portada */}
+            <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>
+
+            {/* Columna 3: Título */}
+            <span className="song-title" onClick={() => redirectToSong(song.id)}>{song.name}</span>
+
+            {/* Columna 4: Álbum */}
+            <span className="song-artist">
+                {song.album?.name || "Sin álbum"}
+            </span>
+
+            {/* Columna 5: Fecha */}
+            <span className="song-date">
+                {song.song_playlist?.date || "Fecha desconocida"}
+            </span>
+
+            {/* Columna 6: Duración (min:seg) */}
+            <span className="song-duration">
+                {formatDuration(song.duration)}
+            </span>
+
+            {/* Contenedor de opciones (tres puntos) que aparece al hacer hover */}
+            <div className="song-options">
+                <OptionsPopup
+                    trigger={<FaEllipsisH className="song-options-icon"/>}
+                    options={[
+                        {
+                            label: "Agregar a playlist",
+                            submenu: agregarAFavoritosSubmenu,
+                        },
+                        playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
+                        {
+                            label: song.liked ? "Eliminar de favoritos" : "Agregar a favoritos",
+                        },
+                        {label: "Ver detalles"},
+                    ].filter(option => option != null)}
+                    position="bottom-right"
+                    submenuPosition="left"
+                    onOptionSelect={(option, idx) => handleSongOptionSelect(option, idx, song)}
+                />
+            </div>
+            
+            {/* Modal para crear playlist */}
+            {showCreateModal && (
+                <CreatePlaylistModal
+                    onSubmit={handleCreatePlaylist}
+                    onClose={() => setShowCreateModal(false)}
+                />
+            )}
+        </div>
+    ))}
+</div>
                     </div>
                 </div>
             </div>

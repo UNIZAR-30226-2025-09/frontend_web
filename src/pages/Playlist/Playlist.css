@@ -227,7 +227,10 @@
     padding: 8px 15px;
     border-radius: 5px;
     cursor: pointer;
+    display: block;
+    margin: 0 auto;
 }
+
 
 .cancel-btn {
     background-color: #dd1e41;
@@ -269,6 +272,70 @@
     color: white;
 }
 
+/* Botones de ordenacion de las canciones de la playlist */
+.sort-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding-left: 10px;
+}
+
+.sort-buttons button {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    color: #ccc;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.sort-buttons button:hover {
+    background-color: #0399b6; /* Verde tipo Spotify */
+    color: white;
+    border-color: #0399b6;
+}
+
+.sort-buttons button.active {
+    background-color: #0399b6;
+    color: white;
+    border-color: #0399b6;
+}
+
+/* Pop up actualizacion de imagen*/
+
+.image-preview-play {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-preview-play img {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.image-preview-play img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Para ajustar la imagen al marco de la playlist */
+.image img,
+.imagenoedit img {
+    width: 275px;
+    height: 275px;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
 /* --- POPUP DE COMPARTIR PLAYLIST --- */
 .playlist-share-popup {
     background: linear-gradient(145deg, #182235 0%, #263044 100%);

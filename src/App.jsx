@@ -30,6 +30,7 @@ import ForgotPassword from "./pages/Password/ForgotPassword.jsx";
 import ResetPassword from "./pages/Password/ResetPassword.jsx";
 import SearchPage from './pages/SearchPage/SearchPage';
 import Help from "./pages/Help/Help.jsx";
+import EveryArtist from "./pages/EveryArtist/EveryArtist";
 
 import ScrollToTop from "./components/Scroll/ScrollToTop.jsx";
 
@@ -73,6 +74,7 @@ function App() {
                         <Route path="artist/:artistId" element={<Artist />} />
 
                         <Route path="/search" element={<SearchPage />} />
+                        <Route path="everyArtist" element={<EveryArtist />} />
 
                     </Route>
                 </Routes>
