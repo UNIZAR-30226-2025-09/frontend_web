@@ -1,118 +1,572 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&display=swap');
 
-body {
-    background-color: #1e1e1e;
+/* Variables globales - colores de la app */
+:root {
+    --vb-background: #121212;
+    --vb-surface: #1a1a1a;
+    --vb-surface-variant: #242424;
+    --vb-primary: #79e2ff;
+    --vb-primary-hover: #8de9ff;
+    --vb-primary-active: #5adaff;
+    --vb-accent: #4f74ff;
+    --vb-text-primary: rgba(255, 255, 255, 0.95);
+    --vb-text-secondary: rgba(255, 255, 255, 0.7);
+    --vb-text-tertiary: rgba(255, 255, 255, 0.5);
+    --vb-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --vb-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.25);
+    --vb-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3);
+    --vb-gradient: linear-gradient(135deg, #4f74ff, #79e2ff);
+    --vb-gradient-hover: linear-gradient(135deg, #5a7fff, #8de9ff);
+}
+
+/* Estilos base */
+.vb-contacto-wrapper {
     font-family: 'Inter Tight', sans-serif;
+    background-color: var(--vb-background);
+    color: var(--vb-text-primary);
+    line-height: 1.6;
     margin: 0;
     padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.contacto-container {
-    padding: 40px 10% 40px;
-    background-color: #1e1e1e;
-    color: #e0e0e0;
-    line-height: 1.6;
+/* Sección Hero */
+.vb-contacto-hero {
+    position: relative;
+    height: 40vh;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-image: url('https://images.unsplash.com/photo-1516450360452-9312f5e86fc7');
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+    padding: 0 20px;
 }
 
-.contacto-container .logo {
-    display: block;
-    margin: 0 auto 30px;
-    width: 100px !important;
-    height: 100px !important;
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.03);
+.vb-contacto-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 0.95));
+    z-index: 1;
+}
+
+.vb-contacto-logo-container {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 20px;
+}
+
+.vb-contacto-logo {
+    width: 90px;
+    height: 90px;
+    padding: 12px;
+    background: rgba(30, 40, 60, 0.85);
     border-radius: 50%;
-    transition: transform 0.3s ease-in-out;
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
     object-fit: contain;
+    filter: drop-shadow(0 0 10px rgba(121, 226, 255, 0.2));
+    transition: transform 0.3s ease, filter 0.3s ease;
 }
 
-.logo:hover {
+.vb-contacto-logo:hover {
     transform: scale(1.05);
+    filter: drop-shadow(0 0 15px rgba(121, 226, 255, 0.3));
 }
 
-.contacto-title {
-    text-align: center;
-    font-size: 32px;
+.vb-contacto-title {
+    position: relative;
+    z-index: 2;
+    font-size: 3rem;
     font-weight: 700;
-    margin-bottom: 40px;
+    margin: 0;
     color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
 }
 
-.contacto-text {
-    max-width: 900px;
+.vb-contacto-title-line {
+    line-height: 1.2;
+}
+
+.vb-contacto-accent {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--vb-primary);
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+}
+
+/* Contenedor principal */
+.vb-contacto-container {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 40px 5%;
+    max-width: 1400px;
     margin: 0 auto;
-    font-size: 15px;
-    color: #cccccc;
-    text-align: center;
+    gap: 40px;
 }
 
-.contacto-text p {
+/* Panel de información */
+.vb-contacto-info-panel {
+    flex: 1;
+    min-width: 300px;
+    padding: 30px;
+    background: var(--vb-surface);
+    border-radius: 20px;
+    box-shadow: var(--vb-shadow-md);
+    transform: translateY(0);
+    border: 1px solid rgba(79, 116, 255, 0.1);
+}
+
+.vb-contacto-subtitle {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--vb-primary);
+}
+
+.vb-contacto-description {
+    font-size: 1rem;
     margin-bottom: 30px;
+    color: var(--vb-text-secondary);
+    line-height: 1.8;
 }
 
-.contacto-text a {
-    color: #79e2ff;
+.vb-contacto-methods {
+    margin-top: 40px;
+}
+
+.vb-contacto-method {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.vb-contacto-method-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(79, 116, 255, 0.2), rgba(121, 226, 255, 0.2));
+    border-radius: 12px;
+    margin-right: 15px;
+    flex-shrink: 0;
+    color: var(--vb-primary);
+    font-size: 1.2rem;
+}
+
+.vb-contacto-method-text h3 {
+    margin: 0 0 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--vb-text-primary);
+}
+
+.vb-contacto-method-text a {
+    color: var(--vb-primary);
     text-decoration: none;
+    transition: color 0.2s ease;
+    font-weight: 500;
 }
 
-.contacto-text a:hover {
+.vb-contacto-method-text a:hover {
+    color: var(--vb-primary-hover);
     text-decoration: underline;
 }
 
-.contacto-form {
+.vb-contacto-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(121, 226, 255, 0.3), transparent);
+    margin: 30px 0;
+}
+
+.vb-contacto-social h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 15px;
+    color: var(--vb-text-primary);
+}
+
+.vb-contacto-social-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.vb-contacto-social-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(79, 116, 255, 0.2), rgba(121, 226, 255, 0.2));
+    color: var(--vb-primary);
+    transition: all 0.2s ease;
+}
+
+.vb-contacto-social-icon:hover {
+    transform: translateY(-3px);
+    background: var(--vb-gradient);
+    color: var(--vb-background);
+}
+
+/* Panel del formulario */
+.vb-contacto-form-panel {
+    flex: 2;
+    min-width: 300px;
+}
+
+.vb-contacto-form-container {
+    background: var(--vb-surface);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: var(--vb-shadow-md);
+    border: 1px solid rgba(79, 116, 255, 0.1);
+}
+
+.vb-contacto-form-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 30px;
+    color: var(--vb-text-primary);
+}
+
+.vb-contacto-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    max-width: 500px;
-    margin: 0 auto;
-    text-align: left;
+    gap: 20px;
 }
 
-.contacto-form input,
-.contacto-form textarea {
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    font-size: 15px;
+.vb-contacto-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.contacto-form textarea {
+.vb-contacto-form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--vb-text-secondary);
+}
+
+.vb-contacto-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.vb-contacto-input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--vb-accent);
+    font-size: 0.9rem;
+    opacity: 0.6;
+}
+
+.vb-contacto-form input,
+.vb-contacto-form textarea {
+    width: 100%;
+    padding: 14px;
+    padding-left: 45px; /* Espacio para el icono */
+    border-radius: 12px;
+    border: 1px solid rgba(121, 226, 255, 0.2);
+    background-color: rgba(30, 40, 60, 0.5);
+    font-size: 1rem;
+    color: var(--vb-text-primary);
+    transition: all 0.2s ease;
+    font-family: 'Inter Tight', sans-serif;
+}
+
+.vb-contacto-form textarea {
+    padding-left: 14px; /* Sin icono en el textarea */
     resize: vertical;
+    min-height: 120px;
 }
 
-.contacto-form button {
-    background-color: #79e2ff;
-    color: black;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 30px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+.vb-contacto-form input:focus,
+.vb-contacto-form textarea:focus {
+    outline: none;
+    border-color: var(--vb-primary);
+    background-color: rgba(79, 116, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(121, 226, 255, 0.1);
+}
+
+.vb-contacto-button-container {
     margin-top: 10px;
 }
 
-.contacto-form button:hover {
-    background-color: #5ac2e0;
-}
-
-.btn-close {
-    display: block;
-    background-color: #79e2ff;
-    color: black;
+.vb-contacto-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    background: var(--vb-gradient);
+    color: var(--vb-background);
     border: none;
-    padding: 12px 20px;
-    border-radius: 30px;
-    font-size: 16px;
+    border-radius: 12px;
     cursor: pointer;
-    font-weight: bold;
-    width: 200px;
-    margin: 40px auto 0;
-    transition: background-color 0.3s ease;
+    transition: all 0.2s ease;
+    box-shadow: var(--vb-shadow-sm);
 }
 
-.btn-close:hover {
-    background-color: #5ac2e0;
+.vb-contacto-submit:hover {
+    background: var(--vb-gradient-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--vb-shadow-md);
+}
+
+.vb-contacto-submit:active {
+    transform: translateY(0);
+}
+
+/* Estado de loading */
+.vb-contacto-loading {
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+.vb-contacto-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0, 0, 0, 0.3);
+    border-top-color: var(--vb-background);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Mensaje de éxito */
+.vb-contacto-success {
+    text-align: center;
+    padding: 40px 20px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.vb-contacto-success-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.vb-contacto-success h3 {
+    font-size: 1.5rem;
+    margin: 0 0 10px;
+    color: var(--vb-primary);
+}
+
+.vb-contacto-success p {
+    color: var(--vb-text-secondary);
+}
+
+/* Footer */
+.vb-contacto-footer {
+    padding: 30px;
+    text-align: center;
+    background-color: var(--vb-surface-variant);
+}
+
+.vb-contacto-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: var(--vb-surface);
+    color: var(--vb-primary);
+    border: 1px solid rgba(121, 226, 255, 0.3);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.vb-contacto-back:hover {
+    background-color: rgba(121, 226, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Media Queries */
+@media (max-width: 992px) {
+    .vb-contacto-container {
+        flex-direction: column;
+    }
+
+    .vb-contacto-info-panel {
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .vb-contacto-title {
+        font-size: 2.5rem;
+    }
+
+    .vb-contacto-form-container,
+    .vb-contacto-info-panel {
+        padding: 30px 20px;
+    }
+    
+    .vb-contacto-container {
+        padding: 20px 5%;
+    }
+}
+
+@media (max-width: 480px) {
+    .vb-contacto-title {
+        font-size: 2rem;
+    }
+
+    .vb-contacto-hero {
+        min-height: 250px;
+    }
+
+    .vb-contacto-logo {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .vb-contacto-subtitle {
+        font-size: 1.5rem;
+    }
+}
+
+/* Estilos del footer para Contacto.css */
+.vb-contacto-footer {
+    background-color: #1a1a1a;
+    padding: 60px 20px 20px;
+    color: var(--vb-text-secondary);
+    margin-top: 60px; /* Espacio entre el contenido y el footer */
+}
+
+.vb-contacto-footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.vb-contacto-footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.vb-contacto-footer-logo-img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    background: rgba(30, 40, 60, 0.9);
+    border-radius: 50%;
+    padding: 6px;
+}
+
+.vb-contacto-footer-logo span {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--vb-text-primary);
+}
+
+.vb-contacto-footer-links {
+    display: flex;
+    gap: 20px;
+}
+
+.vb-contacto-footer-links a {
+    color: var(--vb-text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.vb-contacto-footer-links a:hover {
+    color: var(--vb-primary);
+}
+
+.vb-contacto-footer-social {
+    display: flex;
+    gap: 15px;
+}
+
+.vb-contacto-footer .vb-contacto-social-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(79, 116, 255, 0.2), rgba(121, 226, 255, 0.2));
+    color: var(--vb-primary);
+    transition: all 0.2s ease;
+}
+
+.vb-contacto-footer .vb-contacto-social-icon:hover {
+    transform: translateY(-3px);
+    background: var(--vb-gradient);
+    color: var(--vb-background);
+}
+
+.vb-contacto-copyright {
+    text-align: center;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+}
+
+/* Media queries para el footer */
+@media (max-width: 768px) {
+    .vb-contacto-footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .vb-contacto-footer-logo {
+        justify-content: center;
+    }
+    
+    .vb-contacto-footer-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .vb-contacto-footer-social {
+        justify-content: center;
+        margin-top: 20px;
+    }
 }

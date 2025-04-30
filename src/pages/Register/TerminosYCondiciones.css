@@ -1,108 +1,342 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800&display=swap');
 
-body {
-    background-color: #1e1e1e;
+/* Variables globales - colores de la app */
+:root {
+    --vb-background: #121212;
+    --vb-surface: #1a1a1a;
+    --vb-surface-variant: #242424;
+    --vb-primary: #79e2ff;
+    --vb-primary-hover: #8de9ff;
+    --vb-primary-active: #5adaff;
+    --vb-accent: #4f74ff;
+    --vb-text-primary: rgba(255, 255, 255, 0.95);
+    --vb-text-secondary: rgba(255, 255, 255, 0.7);
+    --vb-text-tertiary: rgba(255, 255, 255, 0.5);
+    --vb-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --vb-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.25);
+    --vb-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3);
+    --vb-gradient: linear-gradient(135deg, #4f74ff, #79e2ff);
+    --vb-gradient-hover: linear-gradient(135deg, #5a7fff, #8de9ff);
+}
+
+/* Estilos base */
+.vb-terms-wrapper {
     font-family: 'Inter Tight', sans-serif;
+    background-color: var(--vb-background);
+    color: var(--vb-text-primary);
+    line-height: 1.6;
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.terminos-container {
-    padding: 40px 10% 40px;
-    background-color: #1e1e1e;
-    color: #e0e0e0;
-    line-height: 1.6;
+/* Header */
+.vb-terms-header {
+    padding: 60px 20px 30px;
+    text-align: center;
+    background: linear-gradient(to bottom, rgba(18, 18, 18, 0.95), var(--vb-background));
 }
 
+.vb-terms-logo-container {
+    margin-bottom: 20px;
+}
 
-.logo {
-    display: block;
-    margin: 0 auto 50px;
-    width: 160px;
-    height: 160px;
-    padding: 20px;
-    background-color: rgba(255, 255, 255, 0.03);
+.vb-terms-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(30, 40, 60, 0.85);
     border-radius: 50%;
-    transition: transform 0.3s ease-in-out;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+    padding: 10px;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 0 10px rgba(121, 226, 255, 0.2));
     object-fit: contain;
 }
 
-
-
-
-.logo:hover {
+.vb-terms-logo:hover {
     transform: scale(1.05);
+    filter: drop-shadow(0 0 15px rgba(121, 226, 255, 0.3));
 }
 
-.terminos-title {
-    text-align: center;
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 40px;
+.vb-terms-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0;
     color: white;
 }
 
-.terminos-text {
-    max-width: 900px;
+.vb-terms-divider {
+    width: 80px;
+    height: 4px;
+    background: var(--vb-gradient);
+    margin: 15px auto;
+    border-radius: 2px;
+}
+
+.vb-terms-subtitle {
+    font-size: 1rem;
+    color: var(--vb-text-secondary);
+    margin: 10px 0 0;
+}
+
+/* Contenedor principal */
+.vb-terms-container {
+    display: flex;
+    flex: 1;
+    max-width: 1200px;
     margin: 0 auto;
-    font-size: 16px;
-    color: #cccccc;
+    padding: 40px 20px;
+    gap: 40px;
 }
 
-.terminos-text h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-top: 30px;
-    color: #ffffff;
+/* Navegación lateral */
+.vb-terms-nav {
+    position: sticky;
+    top: 40px;
+    width: 250px;
+    height: fit-content;
+    background-color: var(--vb-surface);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--vb-shadow-md);
+    border: 1px solid rgba(79, 116, 255, 0.1);
+    align-self: flex-start;
 }
 
-.terminos-text p,
-.terminos-text li {
+.vb-terms-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.vb-terms-nav li {
     margin-bottom: 15px;
 }
 
-.terminos-text ul {
-    padding-left: 20px;
-}
-
-.terminos-text a {
-    color: #79e2ff;
+.vb-terms-nav a {
+    display: block;
+    color: var(--vb-text-secondary);
     text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
-.terminos-text a:hover {
-    text-decoration: underline;
+.vb-terms-nav a:hover {
+    color: var(--vb-primary);
+    background-color: rgba(121, 226, 255, 0.1);
 }
 
-.btn-close {
-    display: block;
-    background-color: #79e2ff;
-    color: black;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 30px;
-    font-size: 16px;
-    cursor: pointer;
-    font-weight: bold;
-    margin: 50px auto 0;
-    transition: background-color 0.3s ease;
+/* Contenido principal */
+.vb-terms-content {
+    flex: 1;
 }
 
-.btn-close:hover {
-    background-color: #5ac2e0;
+.vb-terms-section {
+    margin-bottom: 50px;
+    background-color: var(--vb-surface);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--vb-shadow-md);
+    border: 1px solid rgba(79, 116, 255, 0.1);
 }
 
-.terminos-container .logo {
-    display: block;
-    margin: 0 auto 30px;
-    width: 100px !important;
-    height: 100px !important;
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.03);
+.vb-terms-section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.vb-terms-icon {
+    font-size: 1.8rem;
+    margin-right: 15px;
+    color: var(--vb-primary);
+}
+
+.vb-terms-section h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--vb-text-primary);
+}
+
+.vb-terms-text {
+    color: var(--vb-text-secondary);
+}
+
+.vb-terms-text p {
+    margin-bottom: 20px;
+}
+
+.vb-terms-text strong {
+    color: var(--vb-primary);
+    font-weight: 600;
+}
+
+.vb-terms-list {
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
+
+.vb-terms-list li {
+    margin-bottom: 10px;
+}
+
+/* Footer */
+.vb-terms-footer {
+    background-color: var(--vb-surface);
+    padding: 40px 20px 20px;
+    margin-top: 40px;
+}
+
+.vb-terms-footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+.vb-terms-footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.vb-terms-footer-logo-img {
+    width: 40px;
+    height: 40px;
+    background: rgba(30, 40, 60, 0.9);
     border-radius: 50%;
-    transition: transform 0.3s ease-in-out;
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+    padding: 6px;
     object-fit: contain;
 }
 
+.vb-terms-footer-logo span {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--vb-text-primary);
+}
+
+.vb-terms-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.vb-terms-footer-links a {
+    color: var(--vb-text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.vb-terms-footer-links a:hover {
+    color: var(--vb-primary);
+}
+
+.vb-terms-copyright {
+    max-width: 1200px;
+    margin: 30px auto 0;
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    color: var(--vb-text-tertiary);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .vb-terms-title {
+        font-size: 2rem;
+    }
+
+    .vb-terms-container {
+        flex-direction: column;
+    }
+
+    .vb-terms-nav {
+        position: relative;
+        width: 100%;
+        top: 0;
+        margin-bottom: 30px;
+    }
+
+    .vb-terms-nav ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .vb-terms-nav li {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .vb-terms-header {
+        padding: 40px 20px 20px;
+    }
+    
+    .vb-terms-footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .vb-terms-footer-logo {
+        justify-content: center;
+    }
+    
+    .vb-terms-footer-links {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .vb-terms-logo {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .vb-terms-title {
+        font-size: 1.8rem;
+    }
+    
+    .vb-terms-section {
+        padding: 20px;
+    }
+    
+    .vb-terms-section h2 {
+        font-size: 1.5rem;
+    }
+    
+    .vb-terms-nav a {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Añadir a tu archivo TerminosYCondiciones.css */
+.vb-terms-nav a {
+    display: flex;
+    align-items: center;
+    color: var(--vb-text-secondary);
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.vb-terms-nav-icon {
+    margin-right: 10px;
+    color: var(--vb-primary);
+    font-size: 0.9rem;
+}
+
+.vb-terms-nav a:hover {
+    color: var(--vb-primary);
+    background-color: rgba(121, 226, 255, 0.1);
+}

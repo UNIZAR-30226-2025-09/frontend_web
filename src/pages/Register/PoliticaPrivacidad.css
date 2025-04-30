@@ -1,92 +1,401 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800&display=swap');
 
-body {
-    background-color: #1e1e1e;
+/* Variables globales - colores de la app */
+:root {
+    --vb-background: #121212;
+    --vb-surface: #1a1a1a;
+    --vb-surface-variant: #242424;
+    --vb-primary: #79e2ff;
+    --vb-primary-hover: #8de9ff;
+    --vb-primary-active: #5adaff;
+    --vb-accent: #4f74ff;
+    --vb-text-primary: rgba(255, 255, 255, 0.95);
+    --vb-text-secondary: rgba(255, 255, 255, 0.7);
+    --vb-text-tertiary: rgba(255, 255, 255, 0.5);
+    --vb-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --vb-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.25);
+    --vb-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3);
+    --vb-gradient: linear-gradient(135deg, #4f74ff, #79e2ff);
+    --vb-gradient-hover: linear-gradient(135deg, #5a7fff, #8de9ff);
+}
+
+/* Estilos base */
+.vb-privacy-wrapper {
     font-family: 'Inter Tight', sans-serif;
+    background-color: var(--vb-background);
+    color: var(--vb-text-primary);
+    line-height: 1.6;
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.politica-container {
-    padding: 40px 10% 40px;
-    background-color: #1e1e1e;
-    color: #e0e0e0;
-    line-height: 1.6;
+/* Header */
+.vb-privacy-header {
+    padding: 60px 20px 30px;
+    text-align: center;
+    background: linear-gradient(to bottom, rgba(18, 18, 18, 0.95), var(--vb-background));
 }
 
-.politica-container .logo {
-    display: block;
-    margin: 0 auto 30px;
-    width: 100px !important;
-    height: 100px !important;
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.03);
+.vb-privacy-logo-container {
+    margin-bottom: 20px;
+}
+
+.vb-privacy-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(30, 40, 60, 0.85);
     border-radius: 50%;
-    transition: transform 0.3s ease-in-out;
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+    padding: 10px;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 0 10px rgba(121, 226, 255, 0.2));
     object-fit: contain;
 }
 
-.logo:hover {
+.vb-privacy-logo:hover {
     transform: scale(1.05);
+    filter: drop-shadow(0 0 15px rgba(121, 226, 255, 0.3));
 }
 
-.politica-title {
-    text-align: center;
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 40px;
+.vb-privacy-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0;
     color: white;
 }
 
-.politica-text {
-    max-width: 900px;
+.vb-privacy-divider {
+    width: 80px;
+    height: 4px;
+    background: var(--vb-gradient);
+    margin: 15px auto;
+    border-radius: 2px;
+}
+
+.vb-privacy-subtitle {
+    font-size: 1rem;
+    color: var(--vb-text-secondary);
+    margin: 10px 0 0;
+}
+
+/* Contenedor principal */
+.vb-privacy-container {
+    display: flex;
+    flex: 1;
+    max-width: 1200px;
     margin: 0 auto;
-    font-size: 15px;
-    color: #cccccc;
+    padding: 40px 20px;
+    gap: 40px;
 }
 
-.politica-text h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-top: 30px;
-    color: #ffffff;
+/* Navegación lateral */
+.vb-privacy-nav {
+    position: sticky;
+    top: 40px;
+    width: 250px;
+    height: fit-content;
+    background-color: var(--vb-surface);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--vb-shadow-md);
+    border: 1px solid rgba(79, 116, 255, 0.1);
+    align-self: flex-start;
 }
 
-.politica-text p,
-.politica-text li {
+.vb-privacy-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.vb-privacy-nav li {
     margin-bottom: 15px;
 }
 
-.politica-text ul {
-    padding-left: 20px;
-}
-
-.politica-text a {
-    color: #79e2ff;
+.vb-privacy-nav a {
+    display: flex;
+    align-items: center;
+    color: var(--vb-text-secondary);
     text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
-.politica-text a:hover {
+.vb-privacy-nav-icon {
+    margin-right: 10px;
+    color: var(--vb-primary);
+    font-size: 0.9rem;
+}
+
+.vb-privacy-nav a:hover {
+    color: var(--vb-primary);
+    background-color: rgba(121, 226, 255, 0.1);
+}
+
+/* Contenido principal */
+.vb-privacy-content {
+    flex: 1;
+}
+
+.vb-privacy-section {
+    margin-bottom: 50px;
+    background-color: var(--vb-surface);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--vb-shadow-md);
+    border: 1px solid rgba(79, 116, 255, 0.1);
+}
+
+.vb-privacy-section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.vb-privacy-icon {
+    font-size: 1.8rem;
+    margin-right: 15px;
+    color: var(--vb-primary);
+}
+
+.vb-privacy-section h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--vb-text-primary);
+}
+
+.vb-privacy-text {
+    color: var(--vb-text-secondary);
+}
+
+.vb-privacy-text h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 25px 0 15px;
+    color: var(--vb-text-primary);
+}
+
+.vb-privacy-text p {
+    margin-bottom: 20px;
+    line-height: 1.7;
+}
+
+.vb-privacy-text strong {
+    color: var(--vb-primary);
+    font-weight: 600;
+}
+
+.vb-privacy-list {
+    padding-left: 20px;
+    margin-bottom: 25px;
+}
+
+.vb-privacy-list li {
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.vb-privacy-text a {
+    color: var(--vb-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.vb-privacy-text a:hover {
     text-decoration: underline;
 }
 
-.btn-close {
-    display: block;
-    background-color: #79e2ff;
-    color: black;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 30px;
-    font-size: 16px;
-    cursor: pointer;
-    font-weight: bold;
-    width: 200px;
-    margin: 40px auto 0;
-    transition: background-color 0.3s ease;
+.vb-privacy-note {
+    background: rgba(79, 116, 255, 0.1);
+    border-left: 4px solid var(--vb-primary);
+    padding: 15px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 20px 0;
 }
 
+.vb-privacy-note p {
+    margin: 0;
+    font-style: italic;
+}
 
-.btn-close:hover {
-    background-color: #5ac2e0;
+.vb-privacy-cta {
+    margin-top: 40px;
+    padding: 25px;
+    background: linear-gradient(135deg, rgba(79, 116, 255, 0.15), rgba(121, 226, 255, 0.15));
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(79, 116, 255, 0.2);
+}
+
+.vb-privacy-cta h3 {
+    font-size: 1.3rem;
+    margin-top: 0;
+}
+
+.vb-privacy-button {
+    display: inline-block;
+    padding: 12px 25px;
+    background: var(--vb-gradient);
+    color: #000000; /* Color oscuro para mejor contraste */
+    font-weight: 700; /* Aumentado el peso de la fuente */
+    border-radius: 30px;
+    text-decoration: none;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+    box-shadow: var(--vb-shadow-sm);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.1); /* Ligero efecto de sombra para mejorar legibilidad */
+}
+
+.vb-privacy-button:hover {
+    background: var(--vb-gradient-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--vb-shadow-md);
+    text-decoration: none;
+    color: #000000; /* Mantener el mismo color al hacer hover */
+}
+
+/* Footer */
+.vb-privacy-footer {
+    background-color: var(--vb-surface);
+    padding: 40px 20px 20px;
+    margin-top: 40px;
+}
+
+.vb-privacy-footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+.vb-privacy-footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.vb-privacy-footer-logo-img {
+    width: 40px;
+    height: 40px;
+    background: rgba(30, 40, 60, 0.9);
+    border-radius: 50%;
+    padding: 6px;
+    object-fit: contain;
+}
+
+.vb-privacy-footer-logo span {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--vb-text-primary);
+}
+
+.vb-privacy-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.vb-privacy-footer-links a {
+    color: var(--vb-text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.vb-privacy-footer-links a:hover {
+    color: var(--vb-primary);
+}
+
+.vb-privacy-copyright {
+    max-width: 1200px;
+    margin: 30px auto 0;
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    color: var(--vb-text-tertiary);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .vb-privacy-title {
+        font-size: 2rem;
+    }
+
+    .vb-privacy-container {
+        flex-direction: column;
+    }
+
+    .vb-privacy-nav {
+        position: relative;
+        width: 100%;
+        top: 0;
+        margin-bottom: 30px;
+    }
+
+    .vb-privacy-nav ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .vb-privacy-nav li {
+        margin-bottom: 0;
+        flex: 1;
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 768px) {
+    .vb-privacy-header {
+        padding: 40px 20px 20px;
+    }
+    
+    .vb-privacy-section {
+        padding: 25px 20px;
+    }
+    
+    .vb-privacy-footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .vb-privacy-footer-logo {
+        justify-content: center;
+    }
+    
+    .vb-privacy-footer-links {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .vb-privacy-logo {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .vb-privacy-title {
+        font-size: 1.8rem;
+    }
+    
+    .vb-privacy-section h2 {
+        font-size: 1.5rem;
+    }
+    
+    .vb-privacy-nav a {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+    
+    .vb-privacy-icon {
+        font-size: 1.5rem;
+    }
 }

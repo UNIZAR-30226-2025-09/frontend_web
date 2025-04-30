@@ -31,12 +31,14 @@ import ResetPassword from "./pages/Password/ResetPassword.jsx";
 import SearchPage from './pages/SearchPage/SearchPage';
 import Help from "./pages/Help/Help.jsx";
 
+import ScrollToTop from "./components/Scroll/ScrollToTop.jsx";
 
 function App() {
 
     return (
         <PlayerProvider>
             <Router>
+                <ScrollToTop /> {/* Componente para resetear el scroll */}
                 <Routes>
                     {/* Rutas sin layout */}
                     <Route path="/login" element={<Login />} />

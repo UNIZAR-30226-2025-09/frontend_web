@@ -1,9 +1,11 @@
+// Importa el icono adicional para la cruz
 import { useState, useEffect } from "react";
 import { apiFetch } from "#utils/apiFetch";
 import "./EditAccountInfo.css";
 import Compressor from 'compressorjs';
 import { getImageUrl } from "#utils/getImageUrl";
 import { useNavigate } from "react-router-dom";
+import { FaTimes } from "react-icons/fa"; // Importamos el icono de cruz
 
 function EditAccountInfo() {
     const userId = JSON.parse(localStorage.getItem('user')).id;
@@ -12,6 +14,7 @@ function EditAccountInfo() {
     const [profileImageShow, setProfileImageShow] = useState(null);
     const [userInfo, setUserInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    const [imageChanged, setImageChanged] = useState(false); // Para rastrear si la imagen fue cambiada
     const navigate = useNavigate();
 
     // Cargar información del usuario
@@ -48,6 +51,9 @@ function EditAccountInfo() {
             if (profileImage) {
                 const base64Image = await convertFileToBase64(profileImage);
                 body.profileImage = base64Image;
+            } else if (imageChanged && !profileImage) {
+                // Si la imagen fue eliminada
+                body.profileImage = null;
             }
 
             // Enviar la solicitud de actualización
@@ -98,6 +104,7 @@ function EditAccountInfo() {
         // Crear y mostrar la vista previa inmediatamente
         const tempPreviewUrl = URL.createObjectURL(file);
         setProfileImageShow(tempPreviewUrl);
+        setImageChanged(true);
 
         // Comprimir la imagen para el envío
         new Compressor(file, {
@@ -109,6 +116,19 @@ function EditAccountInfo() {
                 console.error("Error al comprimir la imagen", err);
             }
         });
+    };
+
+    // Nueva función para eliminar la imagen seleccionada
+    const handleRemoveImage = () => {
+        setProfileImage(null);
+        setProfileImageShow(null);
+        setImageChanged(true);
+        
+        // Resetear el input de archivo
+        const fileInput = document.getElementById('profileImage');
+        if (fileInput) {
+            fileInput.value = '';
+        }
     };
 
     // Función para generar un avatar con iniciales cuando no hay imagen (copiada de AccountInfo)
@@ -218,10 +238,10 @@ function EditAccountInfo() {
                             className="form-input"
                         />
                         
-                        {/* Vista previa de la imagen */}
+                        {/* Vista previa de la imagen con botón para eliminar */}
                         {profileImageShow && (
                             <div className="profile-preview">
-                                {profileImageShow ? (
+                                <div className="profile-preview-container">
                                     <img
                                         src={profileImageShow.startsWith('data:') || profileImageShow.startsWith('blob:') 
                                             ? profileImageShow 
@@ -236,22 +256,15 @@ function EditAccountInfo() {
                                             border: '2px solid #4f74ff'
                                         }}
                                     />
-                                ) : (
-                                    <div className="profile-preview-img" style={{ 
-                                        width: '150px',
-                                        height: '150px',
-                                        display: 'flex',
-                                        alignItems: 'center', 
-                                        justifyContent: 'center',
-                                        background: generateAvatarColor(userInfo.nickname).background,
-                                        fontSize: '48px',
-                                        fontWeight: 'bold',
-                                        color: 'white',
-                                        borderRadius: '50%'
-                                    }}>
-                                        {userInfo.nickname ? userInfo.nickname.charAt(0).toUpperCase() : 'U'}
-                                    </div>
-                                )}
+                                    <button 
+                                        type="button"
+                                        onClick={handleRemoveImage}
+                                        className="remove-image-btn"
+                                        title="Eliminar imagen"
+                                    >
+                                        <FaTimes />
+                                    </button>
+                                </div>
                             </div>
                         )}
                         {!profileImageShow && (
@@ -263,7 +276,10 @@ function EditAccountInfo() {
                                     background: generateAvatarColor(userInfo.nickname).background,
                                     fontSize: '48px',
                                     fontWeight: 'bold',
-                                    color: 'white'
+                                    color: 'white',
+                                    width: '150px',
+                                    height: '150px',
+                                    borderRadius: '50%'
                                 }}>
                                     {userInfo.nickname ? userInfo.nickname.charAt(0).toUpperCase() : 'U'}
                                 </div>
