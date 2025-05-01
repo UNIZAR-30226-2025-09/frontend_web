@@ -32,12 +32,14 @@ import SearchPage from './pages/SearchPage/SearchPage';
 import Help from "./pages/Help/Help.jsx";
 import EveryArtist from "./pages/EveryArtist/EveryArtist";
 
+import ScrollToTop from "./components/Scroll/ScrollToTop.jsx";
 
 function App() {
 
     return (
         <PlayerProvider>
             <Router>
+                <ScrollToTop /> {/* Componente para resetear el scroll */}
                 <Routes>
                     {/* Rutas sin layout */}
                     <Route path="/login" element={<Login />} />

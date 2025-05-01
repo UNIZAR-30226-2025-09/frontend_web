@@ -15,15 +15,43 @@
     gap: 24px;
 }
 
+/* Cuando se selecciona un filtro específico, usar una sola columna */
+.results-layout.single-column {
+    flex-direction: column;
+}
 
+.results-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+}
 
-/* En pantallas pequeñas, cambia a una columna */
+/* Hacer que la columna izquierda ocupe todo el ancho cuando hay un filtro específico */
+.results-left.full-width {
+    width: 100%;
+}
+
+.results-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.results-right .section {
+    margin-bottom: 16px;
+    width: 100%;
+}
+
 @media (max-width: 768px) {
     .results-layout {
         flex-direction: column;
     }
 }
-/* Estilos para el spinner de carga */
+
 .loading-container {
     display: flex;
     flex-direction: column;
@@ -47,7 +75,6 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Pestañas de filtro */
 .filter-tabs {
     display: flex;
     gap: 8px;
@@ -78,34 +105,15 @@
     color: black;
 }
 
-/* Contenedor de resultados */
 .search-results-content {
     display: flex;
     gap: 24px;
+    width: 100%;
 }
 
-/* Diseño en dos columnas: izquierda y derecha */
-.results-left {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.results-right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.results-right .section {
-    margin-bottom: 16px;
-}
-
-/* Sección y título de sección */
 .section {
     margin-bottom: 32px;
+    width: 100%;
 }
 
 .section-title {
@@ -113,13 +121,13 @@
     font-weight: 700;
     margin-bottom: 16px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
 }
 
-/* Resultado principal */
 .main-result {
     margin-bottom: 24px;
+    width: 100%;
 }
 
 .main-result-card {
@@ -130,7 +138,8 @@
     overflow: hidden;
     cursor: pointer;
     transition: background-color 0.3s;
-    width: 430px;
+    width: 100%;
+    max-width: 430px;
 }
 
 .main-result-card:hover {
@@ -165,21 +174,22 @@
     margin: 0;
 }
 
-/* Lista de canciones */
 .songs-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    width: 100%;
 }
 
 .songs-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 8px;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s;
+    width: 100%;
 }
 
 .songs-item:hover {
@@ -189,6 +199,7 @@
 .songs-item-content {
     display: flex;
     align-items: center;
+    width: 100%;
 }
 
 .songs-image {
@@ -210,54 +221,47 @@
     flex-direction: column;
 }
 
-.songs-name {
-    font-weight: 500;
+.songs-name, .songs-artist, .songs-duration {
     margin: 0;
+    text-align: left;
+}
+
+.songs-artist, .songs-duration {
+    color: #a7a7a7;
+    font-size: 14px;
 }
 
 .songs-artist {
-    color: #a7a7a7;
-    font-size: 14px;
-    margin: 4px 0 0 0;
+    margin-top: 4px;
 }
 
-.songs-duration {
-    color: #a7a7a7;
-    font-size: 14px;
-}
-
-/* Grid de artistas y playlists */
-.artists-grid,
-.playlists-grid {
+.artists-grid, .playlists-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 24px;
     margin-top: 16px;
+    justify-content: start;
+    width: 100%;
 }
 
-.artists-item,
 .playlists-item {
     background-color: #181818;
     border-radius: 8px;
     padding: 16px;
     cursor: pointer;
     transition: background-color 0.3s;
+    text-align: left;
 }
 
-.artists-item:hover,
 .playlists-item:hover {
     background-color: #282828;
 }
 
-.artists-image,
 .playlists-image {
     width: 100%;
     aspect-ratio: 1/1;
     overflow: hidden;
     margin-bottom: 16px;
-}
-
-.playlists-image {
     border-radius: 8px;
 }
 
@@ -275,45 +279,43 @@
     text-overflow: ellipsis;
 }
 
-
 .playlists-type {
     color: #a7a7a7;
     font-size: 14px;
     margin: 0;
 }
-/* Agregar estos estilos a tu archivo SearchPage.css */
 
-/* Grid 2x2 para artistas */
+/* Estilos para artistas en formato de lista vertical */
 .artists-grid-2x2 {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 100%;
 }
 
-.artists-row {
-    display: flex;
-    justify-content: flex-start;
-    gap: 20px;
-}
-
+/* Cada artista se muestra como una fila horizontal */
 .artists-item {
+    display: flex;
+    align-items: center;
+    background-color: #181818;
+    border-radius: 8px;
+    padding: 12px;
     cursor: pointer;
-    width: calc(50% - 10px);
-    max-width: 200px;
-    text-align: center;
-    transition: transform 0.2s;
+    width: 100%;
+    transition: background-color 0.3s;
 }
 
 .artists-item:hover {
-    transform: scale(1.05);
+    background-color: #282828;
 }
 
 .artists-image {
-    width: 100%;
-    aspect-ratio: 1/1;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     overflow: hidden;
-    margin-bottom: 10px;
+    margin-right: 16px;
+    flex-shrink: 0;
 }
 
 .artists-image img {
@@ -322,40 +324,33 @@
     object-fit: cover;
 }
 
+.artist-info-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .artists-name {
     font-weight: bold;
-    margin: 5px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 16px;
+    margin: 0;
+    text-align: left;
 }
 
 .artists-type {
-    color: #b3b3b3;
-    font-size: 0.9rem;
+    color: #a7a7a7;
+    font-size: 14px;
+    margin-top: 4px;
+    text-align: left;
 }
 
-/* Estilo responsivo */
-@media (max-width: 768px) {
-    .artists-row {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .artists-item {
-        width: 80%;
-        max-width: 150px;
-        margin-bottom: 15px;
-    }
-}
-/* Mensaje sin resultados */
 .no-results {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     height: 300px;
-    text-align: center;
+    text-align: left;
 }
 
 .no-results-title {
@@ -369,15 +364,24 @@
     max-width: 500px;
 }
 
-/* Ajustes responsivos */
+.artists-section {
+    margin-top: 32px;
+    width: 100%;
+}
+
 @media (max-width: 768px) {
     .main-result-card {
         width: 100%;
+        max-width: none;
     }
 
-    .artists-grid,
-    .playlists-grid {
+    .artists-grid, .playlists-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 16px;
+    }
+
+    .filter-tabs {
+        margin-bottom: 24px;
     }
 
     .section-title {
@@ -390,27 +394,124 @@
         padding: 12px;
     }
 
-    .filter-button {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
-
-    .artists-grid,
-    .playlists-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 16px;
-    }
-
     .main-result-image {
         width: 80px;
         height: 80px;
     }
 
     .main-result-name {
-        font-size: 22px;
+        font-size: 24px;
+    }
+
+    .artists-grid, .playlists-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .artists-item {
+        padding: 8px;
+    }
+
+    .artists-image {
+        width: 50px;
+        height: 50px;
     }
 }
 
-.artists-section {
+/* Estilos adicionales para resultados de álbumes */
+.albums-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 24px;
+    margin-top: 16px;
+    justify-content: start;
+    width: 100%;
+}
+
+.albums-item {
+    background-color: #181818;
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-align: left;
+}
+
+.albums-item:hover {
+    background-color: #282828;
+}
+
+.albums-image {
+    width: 100%;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    margin-bottom: 16px;
+    border-radius: 4px;
+}
+
+.albums-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.albums-title {
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.albums-artist {
+    color: #a7a7a7;
+    font-size: 14px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+
+.playlists-item:hover .play-button,
+.albums-item:hover .play-button,
+.artists-item:hover .play-button {
+    opacity: 1;
+}
+
+/* Posición relativa para contener el botón de reproducción */
+.playlists-item,
+.albums-item,
+.artists-item {
+    position: relative;
+}
+
+/* Estilos para paginación */
+.pagination {
+    display: flex;
+    justify-content: center;
     margin-top: 32px;
+    gap: 8px;
+}
+
+.pagination-button {
+    background-color: #2a2a2a;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.pagination-button:hover {
+    background-color: #3e3e3e;
+}
+
+.pagination-button.active {
+    background-color: #1db954;
 }

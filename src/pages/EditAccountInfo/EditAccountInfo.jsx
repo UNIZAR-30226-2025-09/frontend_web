@@ -1,9 +1,11 @@
+// Importa el icono adicional para la cruz
 import { useState, useEffect } from "react";
 import { apiFetch } from "#utils/apiFetch";
 import "./EditAccountInfo.css";
 import Compressor from 'compressorjs';
 import { getImageUrl } from "#utils/getImageUrl";
 import { useNavigate } from "react-router-dom";
+import { FaTimes } from "react-icons/fa"; // Importamos el icono de cruz
 
 function EditAccountInfo() {
     const userId = JSON.parse(localStorage.getItem('user')).id;
@@ -12,6 +14,7 @@ function EditAccountInfo() {
     const [profileImageShow, setProfileImageShow] = useState(null);
     const [userInfo, setUserInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    const [imageChanged, setImageChanged] = useState(false); // Para rastrear si la imagen fue cambiada
     const navigate = useNavigate();
 
     // Cargar información del usuario
@@ -48,6 +51,9 @@ function EditAccountInfo() {
             if (profileImage) {
                 const base64Image = await convertFileToBase64(profileImage);
                 body.profileImage = base64Image;
+            } else if (imageChanged && !profileImage) {
+                // Si la imagen fue eliminada
+                body.profileImage = null;
             }
 
             // Enviar la solicitud de actualización
@@ -89,19 +95,22 @@ function EditAccountInfo() {
         });
     };
 
+    // Actualiza la función handleImageUpload para corregir la vista previa
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
 
         if (!file) return;
 
+        // Crear y mostrar la vista previa inmediatamente
+        const tempPreviewUrl = URL.createObjectURL(file);
+        setProfileImageShow(tempPreviewUrl);
+        setImageChanged(true);
+
+        // Comprimir la imagen para el envío
         new Compressor(file, {
             quality: 0.6,
             success(result) {
                 setProfileImage(result);
-
-                // Mostrar una vista previa de la imagen seleccionada
-                const previewUrl = URL.createObjectURL(result);
-                setProfileImageShow(previewUrl);
             },
             error(err) {
                 console.error("Error al comprimir la imagen", err);
@@ -109,27 +118,90 @@ function EditAccountInfo() {
         });
     };
 
+    // Nueva función para eliminar la imagen seleccionada
+    const handleRemoveImage = () => {
+        setProfileImage(null);
+        setProfileImageShow(null);
+        setImageChanged(true);
+        
+        // Resetear el input de archivo
+        const fileInput = document.getElementById('profileImage');
+        if (fileInput) {
+            fileInput.value = '';
+        }
+    };
+
+    // Función para generar un avatar con iniciales cuando no hay imagen (copiada de AccountInfo)
+    const generateAvatarColor = (name) => {
+        if (!name) return { background: "#4f74ff", initial: "U" };
+        
+        // Generar un color basado en el nombre
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        
+        // Lista de colores vibrantes para los avatares
+        const colors = [
+            "#FF5722", "#E91E63", "#9C27B0", "#673AB7", 
+            "#3F51B5", "#2196F3", "#03A9F4", "#00BCD4", 
+            "#009688", "#4CAF50", "#8BC34A", "#CDDC39", 
+            "#FFC107", "#FF9800", "#795548", "#607D8B"
+        ];
+        
+        const colorIndex = Math.abs(hash) % colors.length;
+        const background = colors[colorIndex];
+        
+        // Obtener la inicial en mayúscula
+        const initial = name.charAt(0).toUpperCase();
+        
+        return { background, initial };
+    };
+
+    // Renderizar el avatar basado en si hay imagen de perfil o no
+    const renderAvatar = () => {
+        if (profileImageShow) {
+            return (
+                <img
+                    src={profileImageShow.startsWith('data:') ? profileImageShow : getImageUrl(profileImageShow)}
+                    alt="Foto de perfil"
+                    className="profile-img"
+                />
+            );
+        } else {
+            const storedUser = JSON.parse(localStorage.getItem('user'));
+            const name = storedUser?.name || storedUser?.nickname || 'Usuario';
+            const { background, initial } = generateAvatarColor(name);
+            
+            return (
+                <div className="avatar-initial" style={{ background }}>
+                    {initial}
+                </div>
+            );
+        }
+    };
+
     return (
         <>
             <div className="header">
-                <div className="logo-container">
+                <div className="logo-account-container" onClick={() => { navigate(`/`) }}>
                     <img
                         src="/vibrablanco.png"
                         alt="Vibra Logo"
-                        className="logo"
-                        onClick={() => { navigate(`/`) }}
+                        className="logo-account"
+                        style={{ 
+                            height: "48px",
+                            width: "48px",
+                            background: 'rgba(30, 40, 60, 0.9)',
+                            borderRadius: '50%',
+                            padding: '8px'
+                        }}
                     />
                     <span className="logo-text">Vibra</span>
                 </div>
                 <div className="profile-container">
                     <div className="profile-picture">
-                        <img
-                            src={profileImageShow ?
-                                (profileImageShow.startsWith('data:') ? profileImageShow : getImageUrl(profileImageShow))
-                                : '/default-profile.png'}
-                            alt="Foto de perfil"
-                            className="profile-img"
-                        />
+                        {renderAvatar()}
                     </div>
                 </div>
             </div>
@@ -166,14 +238,51 @@ function EditAccountInfo() {
                             className="form-input"
                         />
                         
-                        {/* Vista previa de la imagen */}
+                        {/* Vista previa de la imagen con botón para eliminar */}
                         {profileImageShow && (
                             <div className="profile-preview">
-                                <img
-                                    src={profileImageShow.startsWith('data:') ? profileImageShow : getImageUrl(profileImageShow)}
-                                    alt="Vista previa"
-                                    className="profile-preview-img"
-                                />
+                                <div className="profile-preview-container">
+                                    <img
+                                        src={profileImageShow.startsWith('data:') || profileImageShow.startsWith('blob:') 
+                                            ? profileImageShow 
+                                            : getImageUrl(profileImageShow)}
+                                        alt="Vista previa"
+                                        className="profile-preview-img"
+                                        style={{ 
+                                            width: '150px', 
+                                            height: '150px',
+                                            objectFit: 'cover',
+                                            borderRadius: '50%',
+                                            border: '2px solid #4f74ff'
+                                        }}
+                                    />
+                                    <button 
+                                        type="button"
+                                        onClick={handleRemoveImage}
+                                        className="remove-image-btn"
+                                        title="Eliminar imagen"
+                                    >
+                                        <FaTimes />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        {!profileImageShow && (
+                            <div className="profile-preview">
+                                <div className="profile-preview-img" style={{ 
+                                    display: 'flex',
+                                    alignItems: 'center', 
+                                    justifyContent: 'center',
+                                    background: generateAvatarColor(userInfo.nickname).background,
+                                    fontSize: '48px',
+                                    fontWeight: 'bold',
+                                    color: 'white',
+                                    width: '150px',
+                                    height: '150px',
+                                    borderRadius: '50%'
+                                }}>
+                                    {userInfo.nickname ? userInfo.nickname.charAt(0).toUpperCase() : 'U'}
+                                </div>
                             </div>
                         )}
                     </div>

@@ -1,176 +1,392 @@
-/* 🔹 Contenedor principal */
+/* 🔹 Contenedor principal con gradiente moderno */
 .library-content {
     width: 100%;
-    padding: 20px;
+    padding: 30px 40px; /* Aumentado padding lateral */
     display: flex;
     flex-direction: column;
     color: white;
     border-radius: 20px;
     overflow: hidden;
+    background: linear-gradient(135deg, #1e3c72 0%, #1e3c72 1%, #2a5298 100%);
+    position: relative; /* Para posicionar elementos absolutos */
 }
 
-/* 🔹 Sección de playlists */
+/* 🔹 Título principal animado con nombre de usuario */
+.library-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 40px;
+    color: white;
+    background: linear-gradient(to right, #fff, #0399b6, #fff);
+    background-size: 200% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 5s linear infinite;
+    text-shadow: 0px 2px 10px rgba(3, 153, 182, 0.3);
+    text-align: left;
+}
+
+/* Asegurar que el contenedor se alinea bien cuando solo tiene un mensaje vacío */
+.library-playlists:has(.empty-message) {
+    justify-content: flex-start;
+    min-width: auto;
+    width: auto;
+}
+
+.user-name-highlight {
+    color: #0399b6;
+    background: none;
+    -webkit-text-fill-color: #0399b6;
+    animation: none;
+    text-shadow: 0px 2px 10px rgba(3, 153, 182, 0.5);
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
+}
+
+/* 🔹 Sección de playlists con separador elegante */
 .library-section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
-    width: 100%;
-    padding-right: 15px;
+    margin: 25px 0 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
 }
 
-/* 🔹 Títulos alineados y con hover */
-h2 {
-    font-size: 1.5rem;
-    font-weight: bold;
+.library-section-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, #0399b6, transparent);
+    border-radius: 3px;
+}
+
+/* 🔹 Títulos de sección con efecto hover mejorado */
+.library-section-header h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
     color: white;
-    transition: color 0.3s ease, transform 0.2s ease;
+    transition: all 0.3s ease;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 80%;
+    position: relative;
+    padding-left: 15px;
 }
 
-h2:hover {
-    color: #21a1f1;
-    transform: scale(1.05);
+.library-section-header h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 22px;
+    background: #0399b6;
+    border-radius: 3px;
+    transition: height 0.3s ease;
 }
 
-/* 🔹 Botones de ordenación bien alineados */
-.sort-options {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
+.library-section-header h2:hover {
+    color: #0399b6;
+    transform: translateX(5px);
 }
 
-.sort-options button {
-    background: #333;
-    color: white;
-    border: 1px solid #555;
-    padding: 8px 15px;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: background 0.3s ease, border 0.3s ease, transform 0.2s ease;
+.library-section-header h2:hover::before {
+    height: 30px;
 }
 
-.sort-options button:hover {
-    background: #21a1f1;
-    border-color: #21a1f1;
-    transform: scale(1.05);
-}
-
-/* 🔹 Scroll horizontal */
-.scroll-container {
-    display: flex;
-    overflow-x: auto;
-    padding: 10px 0;
-    gap: 15px;
-}
-
-/* 🔹 Contenedor de playlists */
-.library-playlists {
-    display: flex;
-    gap: 15px;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    width: 100%;
-}
-
-/* 🔹 Contenedor de cada playlist (IMAGEN + TEXTO) */
-.playlist-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px; /* Espacio entre imagen y título */
-    cursor: pointer;
-}
-
-/* 🔹 Tarjetas de playlists */
-.library-playlist-card {
-    max-width: 220px;
-    min-width: 220px;
-    background: transparent; /* Sin fondo */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Efecto de sombra */
-    cursor: pointer;
-    flex-shrink: 0;
-    overflow: hidden;
-    box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.1); /* Sombra ligera por defecto */
-}
-
-/* 🔹 Efecto hover sobre el contenedor completo de la playlist */
-.library-playlist-card:hover {
-    transform: scale(1.05); /* Hace el contenedor más grande */
-    box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.4); /* Sombra más fuerte al hacer hover */
-}
-
-/* 🔹 Imagen de la Playlist */
-.library-playlist-image {
-    width: 100%;
-    height: 220px; /* Ajustado a la misma altura que en .home-content */
-    border-radius: 12px;
-    object-fit: cover; /* Asegura que las imágenes se ajusten al contenedor sin deformarse */
-}
-
-/* 🔹 Título de la Playlist (SEPARADO DE LA IMAGEN) */
-.library-playlist-title {
-    font-size: 16px; /* Aumentado ligeramente */
-    font-weight: bold;
-    color: white;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* Si el título es muy largo, añade "..." */
-    max-width: 100%;
-    transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
-}
-
-/* 🔹 Efecto hover sobre el título de la playlist */
-.library-playlist-title:hover {
-    color: #21a1f1;
-    transform: scale(1.1); /* Un leve aumento al pasar el ratón */
-    text-shadow: 0px 0px 10px rgba(33, 161, 241, 0.6); /* Sombra azulada elegante */
-}
-
-/* 🔹 Mensajes cuando no hay contenido */
-.empty-message {
-    font-size: 16px;
-    color: #bfbfbf;
-    text-align: center;
-    padding: 20px;
-}
-
+/* 🔹 Botón de crear playlist mejorado */
 .create-playlist {
-    margin-top: 16px;
-    display: flex;
-    justify-content: flex-end; /* O centra, según tu diseño */
+    margin-left: auto;
 }
 
 .create-playlist-button {
     display: flex;
     align-items: center;
-    background-color: #1db954; /* Verde de Spotify/Vibra */
+    justify-content: center;
+    background: linear-gradient(135deg, #0399b6, #035c6d);
     color: white;
     border: none;
-    border-radius: 20px;
-    padding: 8px 16px;
-    font-size: 14px;
+    border-radius: 30px;
+    padding: 12px 25px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 5px 15px rgba(3, 153, 182, 0.4);
+    position: relative;
+    overflow: hidden;
 }
 
 .create-playlist-button:hover {
-    background-color: #17a44c;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(3, 153, 182, 0.6);
+}
+
+.create-playlist-button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.create-playlist-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: translateX(-100%);
+}
+
+.create-playlist-button:hover::after {
+    animation: shine-effect 1.5s infinite;
+}
+
+@keyframes shine-effect {
+    100% {
+        transform: translateX(100%);
+    }
 }
 
 .create-playlist-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    fill: white;
+    transition: transform 0.3s ease;
+}
+/* Estilos para playlists colaborativas */
+.library-playlist-card.collaborative {
+    position: relative;
 }
 
+.collaborative-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(29, 185, 84, 0.8); /* Color verde Spotify */
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    z-index: 2;
+}
+
+.create-playlist-button:hover .create-playlist-icon {
+    transform: rotate(90deg);
+}
+
+/* 🔹 Scroll horizontal con efecto de sombreado en los bordes y controles de carrusel */
+.scroll-section {
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.scroll-container {
+    position: relative;
+    display: flex;
+    overflow-x: auto;
+    padding: 15px 0;
+    margin: 0 40px; /* Más margen en los bordes */
+    scroll-behavior: smooth; /* Scroll suave para el carrusel */
+    mask-image: linear-gradient(to right, transparent 0%, white 5%, white 95%, transparent 100%);
+    scrollbar-width: none; /* Para Firefox */
+}
+
+/* Ocultar scrollbar completamente */
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* 🔹 Contenedor de playlists */
+.library-playlists {
+    display: flex;
+    gap: 30px; /* Aumentado el espacio entre playlists */
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    padding: 0 10px; /* Padding adicional */
+    min-width: max-content;
+}
+
+/* 🔹 Contenedor de cada playlist con efecto de vidrio */
+.playlist-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.playlist-wrapper:hover {
+    transform: translateY(-8px);
+}
+
+/* 🔹 Tarjetas de playlists con efecto de profundidad */
+.library-playlist-card {
+    width: 220px;
+    height: 220px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.library-playlist-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(3, 153, 182, 0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.library-playlist-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.library-playlist-card:hover::before {
+    opacity: 1;
+}
+
+/* 🔹 Imagen de la Playlist con efecto de brillo */
+.library-playlist-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+    transition: transform 0.6s ease;
+}
+
+.library-playlist-card:hover .library-playlist-image {
+    transform: scale(1.1);
+}
+
+/* 🔹 Título de la Playlist con fondo de protección */
+.library-playlist-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    transition: all 0.3s ease;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background: rgba(3, 153, 182, 0.1);
+}
+
+.playlist-wrapper:hover .library-playlist-title {
+    color: #0399b6;
+    background: rgba(3, 153, 182, 0.2);
+    transform: scale(1.05);
+    box-shadow: 0 3px 10px rgba(3, 153, 182, 0.3);
+}
+
+/* 🔹 Mensajes cuando no hay contenido */
+.empty-message {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    padding: 30px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    margin: 10px 0;
+    max-width: 300px; /* Añadido un ancho máximo */
+}
+
+/* Añadir animaciones generales para mejorar experiencia */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.library-section-header,
+.playlist-wrapper,
+.empty-message {
+    animation: fadeIn 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.library-section-header:nth-child(1) { animation-delay: 0.1s; }
+.library-section-header:nth-child(3) { animation-delay: 0.2s; }
+.library-section-header:nth-child(5) { animation-delay: 0.3s; }
+
+.playlist-wrapper:nth-child(1) { animation-delay: 0.3s; }
+.playlist-wrapper:nth-child(2) { animation-delay: 0.4s; }
+.playlist-wrapper:nth-child(3) { animation-delay: 0.5s; }
+.playlist-wrapper:nth-child(4) { animation-delay: 0.6s; }
+.playlist-wrapper:nth-child(5) { animation-delay: 0.7s; }
+.playlist-wrapper:nth-child(6) { animation-delay: 0.8s; }
+.playlist-wrapper:nth-child(7) { animation-delay: 0.9s; }
+.playlist-wrapper:nth-child(8) { animation-delay: 1s; }
+.playlist-wrapper:nth-child(9) { animation-delay: 1.1s; }
+.playlist-wrapper:nth-child(10) { animation-delay: 1.2s; }
+
+/* Botones del carrusel */
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: rgba(3, 153, 182, 0.8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+    color: white;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+.carousel-control:hover {
+    background: #0399b6;
+    box-shadow: 0 0 20px rgba(3, 153, 182, 0.6);
+    transform: translateY(-50%) scale(1.1);
+    opacity: 1;
+}
+
+.carousel-control:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.carousel-prev {
+    left: 10px; /* Ajustado más cerca del borde */
+}
+
+.carousel-next {
+    right: 10px; /* Ajustado más cerca del borde */
+}
+
+.carousel-control-icon {
+    font-size: 18px;
+}

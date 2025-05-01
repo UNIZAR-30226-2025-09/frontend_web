@@ -183,7 +183,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: 9999;
 }
 
 .popup-content {
@@ -663,3 +663,109 @@
     from { opacity: 0; transform: translateY(20px);}
     to { opacity: 1; transform: translateY(0);}
 }
+
+
+/* Estilos para el icono de búsqueda y la barra de búsqueda de canciones - nombres únicos */
+.playlist-song-search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 22px;
+    color: white;
+    opacity: 0.8;
+}
+
+.playlist-song-search-button:hover {
+    color: #0399b6;
+    transform: scale(1.05);
+    opacity: 1;
+}
+
+.playlist-song-search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    width: 0;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); /* Transición más suave */
+    margin-right: 10px;
+}
+
+.playlist-song-search-container.expanded {
+    width: 250px;
+}
+
+.playlist-song-search-input {
+    background: transparent; /* Eliminamos el fondo oscuro */
+    border: none; /* Quitamos el borde */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4); /* Solo borde inferior */
+    color: white;
+    padding: 8px 16px 8px 34px;
+    width: 100%;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.playlist-song-search-input:focus {
+    background: transparent; /* Sin fondo al hacer focus */
+    border-bottom: 1px solid #0399b6; /* Solo cambiamos el color del borde inferior */
+    box-shadow: none; /* Eliminamos la sombra */
+}
+
+.playlist-song-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.playlist-song-search-icon-inside {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #0399b6; /* Icono del mismo color que el tema */
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.playlist-song-search-clear {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    opacity: 0.7;
+    width: 16px;
+    height: 16px;
+}
+
+.playlist-song-search-clear:hover {
+    color: #fff;
+    opacity: 1;
+}
+
+/* Mensaje cuando no hay resultados - estilo mejorado */
+.playlist-no-results {
+    text-align: center;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    width: 100%;
+    font-style: italic;
+    background: rgba(3, 153, 182, 0.05); /* Fondo muy sutil */
+    border-radius: 8px;
+    margin: 10px 0;
+    border: 1px dashed rgba(3, 153, 182, 0.2); /* Borde punteado sutil */
+}
+

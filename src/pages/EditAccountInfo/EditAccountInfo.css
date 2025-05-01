@@ -370,3 +370,115 @@ input[type="file"].form-input::file-selector-button:hover {
         padding: 12px;
     }
 }
+
+/* Añade estas clases al final del archivo */
+
+/* Para el contenedor del logo y texto, hacerlos clickables */
+.logo-account-container {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    position: relative;
+}
+
+.logo-account {
+    height: 48px;
+    width: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    max-width: 48px;
+    max-height: 48px;
+    object-fit: contain;
+    background: rgba(30, 40, 60, 0.9);
+    border-radius: 50%;
+    padding: 8px;
+    display: block;
+    position: relative;
+    z-index: 5;
+}
+
+.logo-account:hover {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 6px rgba(79, 116, 255, 0.7));
+}
+
+/* Estilo para el avatar con iniciales */
+.avatar-initial {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    border-radius: 50%;
+}
+
+/* Sobrescribe la clase logo para evitar conflictos */
+.logo {
+    display: none;
+}
+
+/* Ajustes al logo-container para que no genere problemas */
+.logo-container {
+    display: none;
+}
+
+.profile-preview {
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.profile-preview-img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.form-input[type="file"] {
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+/* Añadir estos estilos a tu archivo EditAccountInfo.css */
+
+.profile-preview-container {
+    position: relative;
+    display: inline-block;
+    margin: 15px 0;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(255, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.remove-image-btn:hover {
+    background-color: rgba(255, 0, 0, 0.9);
+    transform: scale(1.1);
+}
+
+.remove-image-btn:active {
+    transform: scale(0.95);
+}
