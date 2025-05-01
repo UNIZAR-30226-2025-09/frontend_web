@@ -908,52 +908,94 @@ const PlaylistContent = () => {
 
                     {playlist.typeP !== "Vibra_likedSong" && (
                         <div className="actions-right">
-
-                            <div className={`playlist-song-search-container ${searchVisible ? 'expanded' : ''}`}>
-                                {searchVisible && (
-                                    <>
-                                        <FaSearch className="search-icon-inside" />
-                                        <input
-                                            type="text"
-                                            className="playlist-song-search-input"
-                                            placeholder="Buscar en esta playlist..."
-                                            value={searchTerm}
-                                            onChange={(e) => setSearchTerm(e.target.value)}
-                                            autoFocus
-                                        />
-                                        {searchTerm && (
-                                            <button 
-                                                className="playlist-song-search-clear" 
-                                                onClick={() => setSearchTerm('')}
-                                            >
-                                                <FaTimes />
-                                            </button>
-                                        )}
-                                    </>
-                                )}
-                            </div>
-
-                            {/* Botón de búsqueda */}
-                            <button className="playlist-song-search-button" onClick={toggleSearch}>
-                                <FaSearch className="icon" />
-                            </button>
-
-                            <button className="shuffle-btn" onClick={toggleLike}>
-                                <FaHeart
-                                    className={`icon heart-icon ${isLiked ? "liked" : ""}`}
-                                />
-                            </button>
+                        <div className={`playlist-song-search-container ${searchVisible ? 'expanded' : ''}`}>
+                            {searchVisible && (
+                                <>
+                                    <FaSearch className="search-icon-inside" />
+                                    <input
+                                        type="text"
+                                        className="playlist-song-search-input"
+                                        placeholder="Buscar en esta playlist..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        autoFocus
+                                    />
+                                    {searchTerm && (
+                                        <button 
+                                            className="playlist-song-search-clear" 
+                                            onClick={() => setSearchTerm('')}
+                                        >
+                                            <FaTimes />
+                                        </button>
+                                    )}
+                                </>
+                            )}
                         </div>
                     </div>
-                    <div className="song-header">
-                        <span># / Play</span>
-                        <span>Portada</span>
-                        <span>Título</span>
-                        <span>Álbum</span>
-                        <span>Fecha Añadida</span>
-                        <span>Duración</span>
+                    )}
+                    {/* Botón de búsqueda */}
+                    <button className="playlist-song-search-button" onClick={toggleSearch}>
+                        <FaSearch className="icon" />
+                    </button>
+                    
+                    <button className="shuffle-btn" onClick={toggleLike}>
+                        <FaHeart
+                            className={`icon heart-icon ${isLiked ? "liked" : ""}`}
+                        />
+                    </button>
+                     
+                    {/* Acciones de la derecha */}
+                    <div className="actions-right">
+                        <div className={`playlist-song-search-container ${searchVisible ? 'expanded' : ''}`}>
+                            {searchVisible && (
+                                <>
+                                    <FaSearch className="search-icon-inside" />
+                                    <input
+                                        type="text"
+                                        className="playlist-song-search-input"
+                                        placeholder="Buscar en esta playlist..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        autoFocus
+                                    />
+                                    {searchTerm && (
+                                        <button 
+                                            className="playlist-song-search-clear" 
+                                            onClick={() => setSearchTerm('')}
+                                        >
+                                            <FaTimes />
+                                        </button>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    
+                        {/* Botón de búsqueda */}
+                        <button className="playlist-song-search-button" onClick={toggleSearch}>
+                            <FaSearch className="icon" />
+                        </button>
+                    
+                        <button className="shuffle-btn" onClick={toggleLike}>
+                            <FaHeart
+                                className={`icon heart-icon ${isLiked ? "liked" : ""}`}
+                            />
+                        </button>
                     </div>
-                    <div className="song-cont">
+                    </div>
+                    <div className="song-header">
+                    <span># / Play</span>
+                    <span>Portada</span>
+                    <span>Título</span>
+                    <span>Álbum</span>
+                    <span>Fecha Añadida</span>
+                    <span>Duración</span>
+                </div>
+                <div className="sort-buttons">
+                    <button onClick={() => setSortOption('title')}>Ordenar por Título</button>
+                    <button onClick={() => setSortOption('artist')}>Ordenar por Artista</button>
+                    <button onClick={() => setSortOption('date')}>Ordenar por Fecha Añadida</button>
+                </div>
+                <div className="song-cont">
                         {/* Cabecera: 6 columnas (#/Play, Portada, Título, Álbum, Fecha, Duración) */}
 
                         <div className="song-list">
@@ -1022,98 +1064,22 @@ const PlaylistContent = () => {
                                 ))
                             ) : (
                                 <div className="playlist-no-results">
-                                    No se encontraron canciones que coincidan con la búsqueda
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-                <div className="song-header">
-                    <span># / Play</span>
-                    <span>Portada</span>
-                    <span>Título</span>
-                    <span>Álbum</span>
-                    <span>Fecha Añadida</span>
-                    <span>Duración</span>
-
-                </div>
-                <div className="sort-buttons">
-                    <button onClick={() => setSortOption('title')}>Ordenar por Título</button>
-                    <button onClick={() => setSortOption('artist')}>Ordenar por Artista</button>
-                    <button onClick={() => setSortOption('date')}>Ordenar por Fecha Añadida</button>
-                </div>
-                <div className="song-cont">
-                    {/* Cabecera: 6 columnas (#/Play, Portada, Título, Álbum, Fecha, Duración) */}
-
-                    <div className="song-list">
-    {sortedSongs.map((song, index) => (
-        <div key={song.id || index} className="song-item">
-            {/* Columna 1: (# / botón al hover) */}
-            <div className="song-action">
-                <span className="song-index">{index + 1}</span>
-                <button
-                    className="play-icon"
-                    onClick={() => handlePlaySong(song, index, playlist.songs)}
-                >
-                    <FaPlay/>
-                </button>
-            </div>
-            
-            {/* Columna 2: Portada */}
-            <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>
-
-            {/* Columna 3: Título */}
-            <span className="song-title" onClick={() => redirectToSong(song.id)}>{song.name}</span>
-
-            {/* Columna 4: Álbum */}
-            <span className="song-artist">
-                {song.album?.name || "Sin álbum"}
-            </span>
-
-            {/* Columna 5: Fecha */}
-            <span className="song-date">
-                {song.song_playlist?.date || "Fecha desconocida"}
-            </span>
-
-            {/* Columna 6: Duración (min:seg) */}
-            <span className="song-duration">
-                {formatDuration(song.duration)}
-            </span>
-
-            {/* Contenedor de opciones (tres puntos) que aparece al hacer hover */}
-            <div className="song-options">
-                <OptionsPopup
-                    trigger={<FaEllipsisH className="song-options-icon"/>}
-                    options={[
-                        {
-                            label: "Agregar a playlist",
-                            submenu: agregarAFavoritosSubmenu,
-                        },
-                        playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
-                        {
-                            label: song.liked ? "Eliminar de favoritos" : "Agregar a favoritos",
-                        },
-                        {label: "Ver detalles"},
-                    ].filter(option => option != null)}
-                    position="bottom-right"
-                    submenuPosition="left"
-                    onOptionSelect={(option, idx) => handleSongOptionSelect(option, idx, song)}
-                />
-            </div>
-            
-            {/* Modal para crear playlist */}
-            {showCreateModal && (
-                <CreatePlaylistModal
-                    onSubmit={handleCreatePlaylist}
-                    onClose={() => setShowCreateModal(false)}
-                />
+    No se encontraron canciones que coincidan con la búsqueda
+    </div>
             )}
         </div>
-    ))}
+    </div>
 </div>
-                    </div>
-                </div>
-            </div>
+</div>
+
+{/*el modal de colaboradores  */}
+
+{showCollabModal && (
+    <Collaborators
+        playlistId={playlistId}
+        onClose={() => setShowCollabModal(false)}
+    />
+)}
 
             {/*el modal de colaboradores  */}
 
