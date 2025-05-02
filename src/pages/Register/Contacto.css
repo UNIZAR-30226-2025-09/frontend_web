@@ -570,3 +570,54 @@
         margin-top: 20px;
     }
 }
+
+/* Añadir a Contacto.css */
+.vb-contacto-error-message {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-left: 4px solid #ef4444;
+    color: #dc2626;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 0 4px 4px 0;
+    font-size: 14px;
+}
+
+.vb-contacto-success-email {
+    color: #65a30d;
+    margin-top: 10px;
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+/* Añadir a Contacto.css */
+.vb-contacto-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 4px;
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out forwards;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.vb-contacto-notification.success {
+    background-color: #22c55e;
+}
+
+.vb-contacto-notification.error {
+    background-color: #ef4444;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

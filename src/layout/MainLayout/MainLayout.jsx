@@ -266,25 +266,25 @@ const MainLayout = () => {
 
             {/* Popup de inicio de sesión */}
             {showLoginPopup && (
-                <div className="login-popup">
-                    <div className="popup-glass">
-                        <img src="/vibrablanco.png" alt="Vibra logo" className="popup-logo" />
-                        <h2 className="popup-title">Empieza a disfrutar de todo lo que Vibra tiene para ti</h2>
-                        <p className="popup-subtitle">
+                <div className="auth-modal-overlay">
+                    <div className="auth-modal-container">
+                        <img src="/vibrablanco.png" alt="Vibra logo" className="auth-modal-logo" />
+                        <h2 className="auth-modal-heading">Empieza a disfrutar de todo lo que Vibra tiene para ti</h2>
+                        <p className="auth-modal-description">
                             Crea una cuenta gratuita o inicia sesión para acceder a todas las funciones.
                         </p>
 
-                        <button className="popup-button primary" onClick={() => navigate("/register")}>
+                        <button className="auth-modal-btn auth-modal-btn-primary" onClick={() => navigate("/register")}>
                             Registrarse gratis
                         </button>
 
-                        <button className="popup-button secondary" onClick={closeLoginPopup}>
+                        <button className="auth-modal-btn auth-modal-btn-secondary" onClick={closeLoginPopup}>
                             Cerrar
                         </button>
 
-                        <div className="popup-login-link">
+                        <div className="auth-modal-footer">
                             ¿Ya tienes una cuenta?{" "}
-                            <span onClick={() => navigate("/login")} className="popup-link">
+                            <span onClick={() => navigate("/login")} className="auth-modal-link">
                                 Iniciar sesión
                             </span>
                         </div>
