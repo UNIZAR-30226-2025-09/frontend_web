@@ -932,6 +932,7 @@ const PlaylistContent = () => {
                                     )}
                                 </div>
 
+
                                 <button className="playlist-song-search-button" onClick={toggleSearch}>
                                     <FaSearch className="icon" />
                                 </button>
@@ -961,6 +962,7 @@ const PlaylistContent = () => {
                         <span>Fecha Añadida</span>
                         <span>Duración</span>
                     </div>
+
 
                     {/* Lista de canciones */}
                     <div className="song-cont">
@@ -1024,6 +1026,7 @@ const PlaylistContent = () => {
                         </div>
                     </div>
                 </div>
+
 
                 {/* Modal de colaboradores */}
                 {showCollabModal && (
