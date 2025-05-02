@@ -24,7 +24,11 @@ function ForgotPassword() {
             setMessage("Se ha enviado un correo con instrucciones para restablecer tu contraseña.");
         } catch (error) {
             setIsSuccess(false);
-            setMessage(error.message || "Error al procesar la solicitud. Inténtalo de nuevo.");
+            if (error.status === 404) {
+                setMessage("El correo electrónico introducido no está registrado en el sistema.");
+            } else {
+                setMessage("Error al procesar la solicitud. Por favor, inténtalo de nuevo más tarde.");
+            }
         } finally {
             setIsLoading(false);
         }
@@ -84,15 +88,13 @@ function ForgotPassword() {
                             
                             <button 
                                 type="submit" 
-                                className="submit-button"
+                                className={`submit-button ${isLoading ? 'button-loading' : ''}`}
                                 disabled={isLoading || !email}
                             >
-                                {isLoading ? (
-                                    <>
-                                        <span className="loading-spinner"></span>
-                                        <span>Enviando...</span>
-                                    </>
-                                ) : "Enviar enlace de recuperación"}
+                                <span className="button-content">
+                                    {isLoading && <div className="loading-spinner-password"></div>}
+                                    <span>{isLoading ? "Enviando..." : "Enviar enlace de recuperación"}</span>
+                                </span>
                             </button>
                             
                             <div style={{ textAlign: "center" }}>

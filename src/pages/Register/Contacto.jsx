@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { apiFetch } from "../../utils/apiFetch"; 
 import "./Contacto.css";
 import { FaEnvelope, FaUser, FaPaperPlane, FaArrowLeft, FaCheck } from "react-icons/fa";
 
@@ -13,20 +14,40 @@ const Contacto = () => {
     });
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [notification, setNotification] = useState({ show: false, type: '', message: '' });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        // Si había errores, limpiarlos cuando el usuario comienza a escribir
+        if (error) setError(null);
     };
 
-    const handleSubmit = (e) => {
+    // Función para mostrar notificaciones
+    const showNotification = (type, message) => {
+        setNotification({ show: true, type, message });
+        setTimeout(() => {
+            setNotification({ show: false, type: '', message: '' });
+        }, 3000);
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setError(null);
         
-        // Simulamos envío (aquí irá tu lógica de API real)
-        setTimeout(() => {
-            setLoading(false);
+        try {
+            // Realizar petición al backend
+            const response = await apiFetch('/user/contact', {
+                method: 'POST',
+                body: formData // Nota: usa 'body' en lugar de 'data'
+            });           
+            // Si todo va bien, mostrar mensaje de éxito
             setSubmitted(true);
+            
+            showNotification('success', "Mensaje enviado correctamente");
+
             // Resetear después de 5 segundos
             setTimeout(() => {
                 setSubmitted(false);
@@ -37,11 +58,29 @@ const Contacto = () => {
                     message: ""
                 });
             }, 5000);
-        }, 1500);
+            
+        } catch (error) {
+            console.error("Error al enviar mensaje:", error);
+            
+            // Mostrar mensaje de error
+            setError(error.response?.data?.error || "No se pudo enviar el mensaje. Inténtalo nuevamente más tarde.");
+            
+            showNotification('error', error.message || "Error al enviar mensaje");
+            
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div className="vb-contacto-wrapper">
+            {/* Notificación personalizada */}
+            {notification.show && (
+                <div className={`vb-contacto-notification ${notification.type}`}>
+                    {notification.message}
+                </div>
+            )}
+
             <div className="vb-contacto-hero">
                 <div className="vb-contacto-overlay"></div>
                 <div className="vb-contacto-logo-container">
@@ -68,7 +107,7 @@ const Contacto = () => {
                             <div className="vb-contacto-method-icon"><FaEnvelope /></div>
                             <div className="vb-contacto-method-text">
                                 <h3>Correo Electrónico</h3>
-                                <a href="mailto:soporte@vibra.com">soporte@vibra.com</a>
+                                <a href="mailto:vibraassistance@gmail.com">vibraassistance@gmail.com</a>
                             </div>
                         </div>
                         
@@ -113,9 +152,15 @@ const Contacto = () => {
                                 </div>
                                 <h3>¡Mensaje enviado!</h3>
                                 <p>Gracias por contactarnos. Te responderemos lo antes posible.</p>
+                                <p className="vb-contacto-success-email">Hemos enviado una confirmación a tu correo electrónico.</p>
                             </div>
                         ) : (
                             <form className="vb-contacto-form" onSubmit={handleSubmit}>
+                                {error && (
+                                    <div className="vb-contacto-error-message">
+                                        {error}
+                                    </div>
+                                )}
                                 <div className="vb-contacto-form-group">
                                     <label htmlFor="name">Nombre</label>
                                     <div className="vb-contacto-input-container">

@@ -275,7 +275,8 @@ html, body {
 }
 
 /* Estilos para el popup */
-.login-popup {
+/* Estilos para el popup - RENOMBRADOS */
+.auth-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -289,7 +290,7 @@ html, body {
     backdrop-filter: blur(6px);
 }
 
-.popup-glass {
+.auth-modal-container {
     background: linear-gradient(135deg, #2196f3, #0d47a1); /* degradado más contrastado */
     border-radius: 25px;
     padding: 3.5rem 2rem;
@@ -304,7 +305,7 @@ html, body {
     align-items: center;
 }
 
-.popup-logo {
+.auth-modal-logo {
     width: 100px;         /* más grande */
     height: 100px;        /* altura fija para proporción perfecta */
     margin-bottom: 2rem;
@@ -315,7 +316,7 @@ html, body {
     object-fit: contain;
 }
 
-.popup-title {
+.auth-modal-heading {
     font-size: 1.9rem;
     font-weight: 700;
     margin-bottom: 1rem;
@@ -325,18 +326,18 @@ html, body {
     user-select: none;
 }
 
-.popup-title:hover {
+.auth-modal-heading:hover {
     color: white; /* evita que se vuelva azul al hacer hover */
 }
 
-.popup-subtitle {
+.auth-modal-description {
     font-size: 1rem;
     margin-bottom: 2rem;
     opacity: 0.95;
     line-height: 1.5;
 }
 
-.popup-button {
+.auth-modal-btn {
     width: 100%;
     padding: 13px;
     font-size: 1rem;
@@ -348,36 +349,36 @@ html, body {
     transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.popup-button.primary {
+.auth-modal-btn-primary {
     background-color: white;
     color: #1b82c3;
 }
 
-.popup-button.primary:hover {
+.auth-modal-btn-primary:hover {
     background-color: #f1f5f9;
     transform: scale(1.03);
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
-.popup-button.secondary {
+.auth-modal-btn-secondary {
     background-color: transparent;
     border: 2px solid white;
     color: white;
 }
 
-.popup-button.secondary:hover {
+.auth-modal-btn-secondary:hover {
     background-color: rgba(255, 255, 255, 0.1);
     transform: scale(1.03);
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
 }
 
-.popup-login-link {
+.auth-modal-footer {
     margin-top: 1rem;
     font-size: 0.95rem;
     color: white;
 }
 
-.popup-link {
+.auth-modal-link {
     font-weight: 600;
     cursor: pointer;
     text-decoration: underline;
@@ -385,7 +386,7 @@ html, body {
     transition: color 0.2s;
 }
 
-.popup-link:hover {
+.auth-modal-link:hover {
     color: #d1eaff;
 }
 
