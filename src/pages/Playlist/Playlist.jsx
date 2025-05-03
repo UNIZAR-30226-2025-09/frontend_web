@@ -55,7 +55,9 @@ const PlaylistContent = () => {
     const [searchVisible, setSearchVisible] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredSongs, setFilteredSongs] = useState([]);
-
+    const [showCollaboratorsPopup, setShowCollaboratorsPopup] = useState(false);
+    const [searchFriend, setSearchFriend] = useState('');
+    const [invitedFriends, setInvitedFriends] = useState([]);
     useEffect(() => {
         if (!playlist) return;
 
@@ -675,334 +677,301 @@ const PlaylistContent = () => {
     };
 
     return (
-      <>
-       {showSharePopup && (
-                <div className="popup-overlay">
-                    <div className="popup-content playlist-share-popup">
-                        <div className="playlist-popup-header">
-                            <h3>Compartir playlist con amigos</h3>
-                        </div>
-                        <div className="playlist-search-container">
+        <>
+        {showSharePopup && (
+            <div className="popup-overlay">
+                <div className="popup-content playlist-share-popup">
+                    <div className="playlist-popup-header">
+                        <h3>Compartir playlist con amigos</h3>
+                    </div>
+                    <div className="playlist-search-container">
                             <span className="playlist-search-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                 </svg>
                             </span>
-                            <input
-                                type="text"
-                                placeholder="Buscar amigo..."
-                                value={shareSearch}
-                                onChange={e => setShareSearch(e.target.value)}
-                                className="playlist-edit-input"
-                            />
-                            {shareSearch && (
-                                <button
-                                    className="playlist-clear-search"
-                                    onClick={() => setShareSearch('')}
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
-                            )}
-                        </div>
-                        <div className="playlist-friends-list">
-                            {friendsList.filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase())).length > 0 ? (
-                                friendsList
-                                    .filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase()))
-                                    .map(f => (
-                                        <label key={f.friendId} className="playlist-friend-item">
-                                            <div className="playlist-checkbox-wrapper">
-                                                <input
-                                                    type="checkbox"
-                                                    id={`playlist-friend-${f.friendId}`}
-                                                    checked={selectedFriends.includes(f.friendId)}
-                                                    onChange={e => {
-                                                        if (e.target.checked) {
-                                                            setSelectedFriends(prev => [...prev, f.friendId]);
-                                                        } else {
-                                                            setSelectedFriends(prev => prev.filter(id => id !== f.friendId));
-                                                        }
-                                                    }}
-                                                />
-                                                <span className="playlist-custom-checkbox"></span>
-                                            </div>
-                                            {f.user_picture ? (
-                                                <img src={getImageUrl(f.user_picture)} alt={f.nickname} className="playlist-friend-avatar" />
-                                            ) : (
-                                                <span className="playlist-friend-initials">{f.nickname[0]}</span>
-                                            )}
-                                            <span className="playlist-friend-name">{f.nickname}</span>
-                                            {selectedFriends.includes(f.friendId) && (
-                                                <span className="playlist-selected-badge">✓</span>
-                                            )}
-                                        </label>
-                                    ))
-                            ) : (
-                                <div className="playlist-friends-empty">
-                                    {shareSearch
-                                        ? "No se encontraron amigos con ese nombre"
-                                        : "No tienes amigos para compartir esta playlist"}
-                                </div>
-                            )}
-                        </div>
-                        <div className="playlist-popup-actions">
+                        <input
+                            type="text"
+                            placeholder="Buscar amigo..."
+                            value={shareSearch}
+                            onChange={e => setShareSearch(e.target.value)}
+                            className="playlist-edit-input"
+                        />
+                        {shareSearch && (
                             <button
-                                className="playlist-share-btn"
-                                onClick={async () => {
-                                    try {
-                                        for (const friendId of selectedFriends) {
-                                            await apiFetch('/chat/send', {
-                                                method: 'POST',
-                                                headers: {
-                                                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                                                },
-                                                body: {
-                                                    user2_id: friendId,
-                                                    message: `Te comparto esta playlist: ${playlist.name}`,
-                                                    shared_content: {
-                                                        type: 'playlist',
-                                                        id: playlist.id,
-                                                        name: playlist.name,
-                                                        image: playlist.front_page ? playlist.front_page : null,
-                                                        url: `${window.location.origin}/playlist/${playlist.id}`
+                                className="playlist-clear-search"
+                                onClick={() => setShareSearch('')}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        )}
+                    </div>
+                    <div className="playlist-friends-list">
+                        {friendsList.filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase())).length > 0 ? (
+                            friendsList
+                                .filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase()))
+                                .map(f => (
+                                    <label key={f.friendId} className="playlist-friend-item">
+                                        <div className="playlist-checkbox-wrapper">
+                                            <input
+                                                type="checkbox"
+                                                id={`playlist-friend-${f.friendId}`}
+                                                checked={selectedFriends.includes(f.friendId)}
+                                                onChange={e => {
+                                                    if (e.target.checked) {
+                                                        setSelectedFriends(prev => [...prev, f.friendId]);
+                                                    } else {
+                                                        setSelectedFriends(prev => prev.filter(id => id !== f.friendId));
                                                     }
+                                                }}
+                                            />
+                                            <span className="playlist-custom-checkbox"></span>
+                                        </div>
+                                        {f.user_picture ? (
+                                            <img src={getImageUrl(f.user_picture)} alt={f.nickname} className="playlist-friend-avatar" />
+                                        ) : (
+                                            <span className="playlist-friend-initials">{f.nickname[0]}</span>
+                                        )}
+                                        <span className="playlist-friend-name">{f.nickname}</span>
+                                        {selectedFriends.includes(f.friendId) && (
+                                            <span className="playlist-selected-badge">✓</span>
+                                        )}
+                                    </label>
+                                ))
+                        ) : (
+                            <div className="playlist-friends-empty">
+                                {shareSearch
+                                    ? "No se encontraron amigos con ese nombre"
+                                    : "No tienes amigos para compartir esta playlist"}
+                            </div>
+                        )}
+                    </div>
+                    <div className="playlist-popup-actions">
+                        <button
+                            className="playlist-share-btn"
+                            onClick={async () => {
+                                try {
+                                    for (const friendId of selectedFriends) {
+                                        await apiFetch('/chat/send', {
+                                            method: 'POST',
+                                            headers: {
+                                                Authorization: `Bearer ${localStorage.getItem('token')}`
+                                            },
+                                            body: {
+                                                user2_id: friendId,
+                                                message: `Te comparto esta playlist: ${playlist.name}`,
+                                                shared_content: {
+                                                    type: 'playlist',
+                                                    id: playlist.id,
+                                                    name: playlist.name,
+                                                    image: playlist.front_page ? playlist.front_page : null,
+                                                    url: `${window.location.origin}/playlist/${playlist.id}`
                                                 }
-                                            });
-                                        }
-                                        setShowSharePopup(false);
-                                        setSelectedFriends([]);
-                                        setShareSearch("");
-                                        alert("Playlist compartida por chat!");
-                                    } catch (error) {
-                                        alert("Hubo un error al compartir");
+                                            }
+                                        });
                                     }
-                                }}
-                            >
-                                Enviar
-                            </button>
-                            <button
-                                className="playlist-cancel-btn"
-                                onClick={() => setShowSharePopup(false)}
-                            >
-                                Cancelar
-                            </button>
-                        </div>
+                                    setShowSharePopup(false);
+                                    setSelectedFriends([]);
+                                    setShareSearch("");
+                                    alert("Playlist compartida por chat!");
+                                } catch (error) {
+                                    alert("Hubo un error al compartir");
+                                }
+                            }}
+                        >
+                            Enviar
+                        </button>
+                        <button
+                            className="playlist-cancel-btn"
+                            onClick={() => setShowSharePopup(false)}
+                        >
+                            Cancelar
+                        </button>
                     </div>
                 </div>
-            )}
-        <div className="layout">
-            {/* Columna derecha: contenido de la playlist */}
-            <div className="box">
-                <div className="play-cont">
-                    <div
-                        className={`${playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id ? 'image' : 'imagenoedit'}`}
-                        onClick={handleEditToggle} style={{cursor: "pointer"}}>
-                        <img
-                            src={`${getImageUrl(playlist.front_page)}?t=${Date.now()}`}
-                            width="275"
-                            alt="Playlist Cover"
-                            onError={(e) => (e.target.src = "/default-playlist.jpg")}
-                        />
-                    </div>
-                    <div className="playlist-info">
-                        {playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id && isEditing ? (
-                            <div className="popup-overlay">
-                                <div className="popup-content">
-                                    <label htmlFor="title">Título de la Playlist</label>
-                                    <input
-                                        id="title"
-                                        type="text"
-                                        value={newTitle}
-                                        onChange={(e) => setNewTitle(e.target.value)}
-                                        className="edit-input"
-                                    />
+            </div>
+        )}
 
-                                    <label htmlFor="description">Descripción</label>
-                                    <textarea
-                                        id="description"
-                                        value={newDescription}
-                                        onChange={(e) => setNewDescription(e.target.value)}
-                                        className="edit-input"
-                                    />
+            <div className="layout">
+                <div className="box">
+                    <div className="play-cont">
+                        <div
+                            className={`${playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id ? 'image' : 'imagenoedit'}`}
+                            onClick={handleEditToggle}
+                            style={{cursor: "pointer"}}>
+                            <img
+                                src={`${getImageUrl(playlist.front_page)}?t=${Date.now()}`}
+                                width="275"
+                                alt="Playlist Cover"
+                                onError={(e) => (e.target.src = "/default-playlist.jpg")}
+                            />
+                        </div>
+                        <div className="playlist-info">
+                            {playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id && isEditing ? (
+                                <div className="popup-overlay">
+                                    <div className="popup-content">
+                                        <label htmlFor="title">Título de la Playlist</label>
+                                        <input
+                                            id="title"
+                                            type="text"
+                                            value={newTitle}
+                                            onChange={(e) => setNewTitle(e.target.value)}
+                                            className="edit-input"
+                                        />
 
-                                    <label htmlFor="playlistImage">Imagen de portada</label>
-                                    <input
-                                        id="playlistImage"
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleImageUpload}
-                                        className="edit-input"
-                                    />
+                                        <label htmlFor="description">Descripción</label>
+                                        <textarea
+                                            id="description"
+                                            value={newDescription}
+                                            onChange={(e) => setNewDescription(e.target.value)}
+                                            className="edit-input"
+                                        />
 
-                                    {newImagePreview && (
-                                        <div className="image-preview-play">
-                                            <img
-                                                src={newImagePreview}
-                                                alt="Vista previa"
-                                                style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "10px" }}
+                                        <label htmlFor="playlistImage">Imagen de portada</label>
+                                        <input
+                                            id="playlistImage"
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageUpload}
+                                            className="edit-input"
+                                        />
+
+                                        {newImagePreview && (
+                                            <div className="image-preview-play">
+                                                <img
+                                                    src={newImagePreview}
+                                                    alt="Vista previa"
+                                                    style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "10px" }}
+                                                />
+                                            </div>
+                                        )}
+
+                                        <button className="save-btn" onClick={handleSaveChanges}>Guardar</button>
+                                        <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancelar</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <p className="text-gray-300 text-sm uppercase">Lista</p>
+                                    <h1>{playlist.name}</h1>
+                                    <p>{playlist.description}</p>
+                                    <p>
+                                        {playlist.owner?.nickname || "Desconocido"} •
+                                        Guardada {playlist.likes || 0} veces •
+                                        Total -- {playlist.songs?.length} canciones
+                                    </p>
+
+                                    {playlist.typeP !== "Vibra_likedSong" && (
+                                        <div className="rating-section">
+                                            <p>Valoración promedio: {averageRating} / 5</p>
+                                            <Rating
+                                                playlistId={playlistId}
+                                                userId={user_Id}
+                                                initialRating={0}
+                                                onRatingUpdate={(newRating) => setAverageRating(newRating)}
                                             />
                                         </div>
                                     )}
+                                </>
+                            )}
+                        </div>
+                    </div>
 
-                                    <button className="save-btn" onClick={handleSaveChanges}>Guardar</button>
-                                    <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancelar</button>
+                    <div className="playlist-actions">
+                        <div className="rep-cont">
+                            <button
+                                className="play-btn"
+                                onClick={() => currentSong?.type !== "anuncio" && handlePlaySongs(playlist.songs, isPlaying)}
+                            >
+                                {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ?
+                                    <FaPause/> : <FaPlay/>}
+                            </button>
+
+                            <button className="shuffle-btn" onClick={toggleShuffle}>
+                                <FaRandom className={`shuffle-icon ${isShuffling ? "active" : ""}`}/>
+                            </button>
+                            {playlist.typeP !== "Vibra_likedSong" && (
+                                <div className="popup-wrapper">
+                                    <OptionsPopup
+                                        trigger={<FaEllipsisH className="icon"/>}
+                                        options={options}
+                                        position="bottom-right"
+                                        submenuPosition="right"
+                                        onOptionSelect={handleOptionSelect}
+                                    />
                                 </div>
-                            </div>
-                        ) : (
-                            <>
-                                <p className="text-gray-300 text-sm uppercase">Lista</p>
-                                <h1>{playlist.name}</h1>
-                                <p>{playlist.description}</p>
-                                <p>
-                                    {playlist.owner?.nickname || "Desconocido"} •
-                                    Guardada {playlist.likes || 0} veces •
-                                    Total -- {playlist.songs?.length} canciones
-                                </p>
+                            )}
+                        </div>
 
-                                {/* Sistema de valoración */}
-                                {playlist.typeP !== "Vibra_likedSong" && (
-                                    <div className="rating-section">
-                                        <p>Valoración promedio: {averageRating} / 5</p>
-                                        <Rating
-                                            playlistId={playlistId}
-                                            userId={user_Id}
-                                            initialRating={0} // Puedes ajustar esto si tienes la valoración inicial del usuario
-                                            onRatingUpdate={(newRating) => setAverageRating(newRating)}
-                                        />
-                                    </div>
-                                )}
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                <div className="playlist-actions">
-                    {/* Botón principal grande con solo el ícono */}
-                    <div className="rep-cont">
-                        <button
-                            className="play-btn"
-                            onClick={() => currentSong?.type !== "anuncio" && handlePlaySongs(playlist.songs, isPlaying)}
-                        >
-                            {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ?
-                                <FaPause/> : <FaPlay/>}
-                        </button>
-
-                        <button className="shuffle-btn" onClick={toggleShuffle}>
-                            <FaRandom className={`shuffle-icon ${isShuffling ? "active" : ""}`}/>
-                        </button>
                         {playlist.typeP !== "Vibra_likedSong" && (
-                            <div className="popup-wrapper ">
-                                <OptionsPopup
-                                    trigger={<FaEllipsisH className="icon"/>}
-                                    options={options}
-                                    position="bottom-right"
-                                    submenuPosition="right"
-                                    onOptionSelect={handleOptionSelect}
-                                />
+                            <div className="actions-right">
+                                <div className={`playlist-song-search-container ${searchVisible ? 'expanded' : ''}`}>
+                                    {searchVisible && (
+                                        <>
+                                            <FaSearch className="search-icon-inside" />
+                                            <input
+                                                type="text"
+                                                className="playlist-song-search-input"
+                                                placeholder="Buscar en esta playlist..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                autoFocus
+                                            />
+                                            {searchTerm && (
+                                                <button
+                                                    className="playlist-song-search-clear"
+                                                    onClick={() => setSearchTerm('')}
+                                                >
+                                                    <FaTimes />
+                                                </button>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
+
+
+                                <button className="playlist-song-search-button" onClick={toggleSearch}>
+                                    <FaSearch className="icon" />
+                                </button>
+
+                                <button className="shuffle-btn" onClick={toggleLike}>
+                                    <FaHeart
+                                        className={`icon heart-icon ${isLiked ? "liked" : ""}`}
+                                    />
+                                </button>
                             </div>
                         )}
                     </div>
 
-                    {playlist.typeP !== "Vibra_likedSong" && (
-                        <div className="actions-right">
-                        <div className={`playlist-song-search-container ${searchVisible ? 'expanded' : ''}`}>
-                            {searchVisible && (
-                                <>
-                                    <FaSearch className="search-icon-inside" />
-                                    <input
-                                        type="text"
-                                        className="playlist-song-search-input"
-                                        placeholder="Buscar en esta playlist..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        autoFocus
-                                    />
-                                    {searchTerm && (
-                                        <button 
-                                            className="playlist-song-search-clear" 
-                                            onClick={() => setSearchTerm('')}
-                                        >
-                                            <FaTimes />
-                                        </button>
-                                    )}
-                                </>
-                            )}
-                        </div>
+                    {/* Opciones de ordenación */}
+                    <div className="sort-buttons">
+                        <button onClick={() => setSortOption('title')}>Ordenar por Título</button>
+                        <button onClick={() => setSortOption('artist')}>Ordenar por Artista</button>
+                        <button onClick={() => setSortOption('date')}>Ordenar por Fecha Añadida</button>
                     </div>
-                    )}
-                    {/* Botón de búsqueda */}
-                    <button className="playlist-song-search-button" onClick={toggleSearch}>
-                        <FaSearch className="icon" />
-                    </button>
-                    
-                    <button className="shuffle-btn" onClick={toggleLike}>
-                        <FaHeart
-                            className={`icon heart-icon ${isLiked ? "liked" : ""}`}
-                        />
-                    </button>
-                     
-                    {/* Acciones de la derecha */}
-                    <div className="actions-right">
-                        <div className={`playlist-song-search-container ${searchVisible ? 'expanded' : ''}`}>
-                            {searchVisible && (
-                                <>
-                                    <FaSearch className="search-icon-inside" />
-                                    <input
-                                        type="text"
-                                        className="playlist-song-search-input"
-                                        placeholder="Buscar en esta playlist..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        autoFocus
-                                    />
-                                    {searchTerm && (
-                                        <button 
-                                            className="playlist-song-search-clear" 
-                                            onClick={() => setSearchTerm('')}
-                                        >
-                                            <FaTimes />
-                                        </button>
-                                    )}
-                                </>
-                            )}
-                        </div>
-                    
-                        {/* Botón de búsqueda */}
-                        <button className="playlist-song-search-button" onClick={toggleSearch}>
-                            <FaSearch className="icon" />
-                        </button>
-                    
-                        <button className="shuffle-btn" onClick={toggleLike}>
-                            <FaHeart
-                                className={`icon heart-icon ${isLiked ? "liked" : ""}`}
-                            />
-                        </button>
-                    </div>
-                    </div>
-                    <div className="song-header">
-                    <span># / Play</span>
-                    <span>Portada</span>
-                    <span>Título</span>
-                    <span>Álbum</span>
-                    <span>Fecha Añadida</span>
-                    <span>Duración</span>
-                </div>
-                <div className="sort-buttons">
-                    <button onClick={() => setSortOption('title')}>Ordenar por Título</button>
-                    <button onClick={() => setSortOption('artist')}>Ordenar por Artista</button>
-                    <button onClick={() => setSortOption('date')}>Ordenar por Fecha Añadida</button>
-                </div>
-                <div className="song-cont">
-                        {/* Cabecera: 6 columnas (#/Play, Portada, Título, Álbum, Fecha, Duración) */}
 
+                    {/* Cabecera de la tabla */}
+                    <div className="song-header">
+                        <span># / Play</span>
+                        <span>Portada</span>
+                        <span>Título</span>
+                        <span>Álbum</span>
+                        <span>Fecha Añadida</span>
+                        <span>Duración</span>
+                    </div>
+
+
+                    {/* Lista de canciones */}
+                    <div className="song-cont">
                         <div className="song-list">
-                            {filteredSongs.length > 0 ? (
-                                filteredSongs.map((song, index) => (
+                            {/* Usamos filteredSongs o sortedSongs dependiendo de si hay un término de búsqueda */}
+                            {(searchTerm ? filteredSongs : sortedSongs).length > 0 ? (
+                                (searchTerm ? filteredSongs : sortedSongs).map((song, index) => (
                                     <div key={song.id || index} className="song-item">
-                                        {/* Columna 1: (# / botón al hover) */}
                                         <div className="song-action">
                                             <span className="song-index">{index + 1}</span>
                                             <button
@@ -1013,28 +982,22 @@ const PlaylistContent = () => {
                                             </button>
                                         </div>
 
-                                        {/* Columna 2: Portada */}
                                         <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>
 
-                                        {/* Columna 3: Título */}
                                         <span className="song-title" onClick={() => redirectToSong(song.id)}>{song.name}</span>
 
-                                        {/* Columna 4: Álbum */}
                                         <span className="song-artist">
-                                        {song.album?.name || "Sin álbum"}
+                                            {song.album?.name || "Sin álbum"}
                                         </span>
 
-                                        {/* Columna 5: Fecha */}
                                         <span className="song-date">
-                                        {song.song_playlist?.date || "Fecha desconocida"}
+                                            {song.song_playlist?.date || "Fecha desconocida"}
                                         </span>
 
-                                        {/* Columna 6: Duración (min:seg) */}
                                         <span className="song-duration">
-                                        {formatDuration(song.duration)}
+                                            {formatDuration(song.duration)}
                                         </span>
 
-                                        {/* Contenedor de opciones (tres puntos) que aparece al hacer hover */}
                                         <div className="song-options">
                                             <OptionsPopup
                                                 trigger={<FaEllipsisH className="song-options-icon"/>}
@@ -1043,7 +1006,7 @@ const PlaylistContent = () => {
                                                         label: "Agregar a playlist",
                                                         submenu: agregarAFavoritosSubmenu,
                                                     },
-                                                    playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
+                                                    playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id ? {label: "Eliminar canción"} : null,
                                                     {
                                                         label: song.liked ? "Eliminar de favoritos" : "Agregar a favoritos",
                                                     },
@@ -1053,46 +1016,39 @@ const PlaylistContent = () => {
                                                 submenuPosition="left"
                                                 onOptionSelect={(option, idx) => handleSongOptionSelect(option, idx, song)}
                                             />
-                                            {showCreateModal && (
-                                                <CreatePlaylistModal
-                                                    onSubmit={handleCreatePlaylist}
-                                                    onClose={() => setShowCreateModal(false)}
-                                                />
-                                            )}
                                         </div>
                                     </div>
                                 ))
                             ) : (
                                 <div className="playlist-no-results">
-    No se encontraron canciones que coincidan con la búsqueda
-    </div>
-            )}
-        </div>
-    </div>
-</div>
-</div>
+                                    No se encontraron canciones que coincidan con la búsqueda
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
 
-{/*el modal de colaboradores  */}
 
-{showCollabModal && (
-    <Collaborators
-        playlistId={playlistId}
-        onClose={() => setShowCollabModal(false)}
-    />
-)}
+                {/* Modal de colaboradores */}
+                {showCollabModal && (
+                    <Collaborators
+                        playlistId={playlistId}
+                        onClose={() => setShowCollabModal(false)}
+                    />
+                )}
 
-            {/*el modal de colaboradores  */}
-
-            {showCollabModal && (
-                <Collaborators
-                    playlistId={playlistId}
-                    onClose={() => setShowCollabModal(false)}
-                />
-            )}
-
+                {/* Modal para crear playlist */}
+                {showCreateModal && (
+                    <CreatePlaylistModal
+                        onSubmit={handleCreatePlaylist}
+                        onClose={() => setShowCreateModal(false)}
+                    />
+                )}
+            </div>
         </>
     );
 };
+
 
 const Playlist = () => {
     return (

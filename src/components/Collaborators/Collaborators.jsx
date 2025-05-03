@@ -1,174 +1,221 @@
-import React, { useState, useEffect } from "react";
-import { apiFetch } from "#utils/apiFetch";
+import { useState, useEffect } from "react";
+import { apiFetch } from "../../utils/apiFetch";
+import { getImageUrl } from "../../utils/getImageUrl";
+import PropTypes from "prop-types";
+import "./Collaborators.css";
 
 const Collaborators = ({ playlistId, onClose }) => {
-    const [friends, setFriends] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [loadingInvite, setLoadingInvite] = useState(false);
-    const [successMessage, setSuccessMessage] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+    const [friendsList, setFriendsList] = useState([]);
+    const [collaborators, setCollaborators] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [selectedFriends, setSelectedFriends] = useState([]);
 
     useEffect(() => {
-        const fetchFriendsAndCollaborators = async () => {
+        const fetchData = async () => {
+            setLoading(true);
             try {
-                setLoading(true);
-                const token = localStorage.getItem("token");
-
-                // Get friends list
-                const friendsResponse = await apiFetch("/social/getFriendsList", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                });
-
-                // Get current collaborators
-                const collaboratorsResponse = await apiFetch(`/collaborators/${playlistId}/collaborators`, {
+                // Intentar obtener colaboradores actuales
+                const collabResponse = await apiFetch(`/collaborators/${playlistId}/collaborators`, {
                     method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
+                }).catch(() => {
+                    console.log("No se pudieron cargar los colaboradores actuales, puede ser una nueva función");
+                    return { collaborators: [] };
                 });
 
-                console.log("Amigos obtenidos:", friendsResponse.friends || []);
-                console.log("Colaboradores actuales:", collaboratorsResponse || []);
+                // Obtener la lista de amigos para invitar
+                const friendsResponse = await apiFetch('/social/getFriendsList', {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
 
-                const allFriends = friendsResponse.friends || [];
-                const currentCollaborators = collaboratorsResponse || [];
+                // Filtrar amigos que ya son colaboradores
+                const existingCollaboratorIds = collabResponse.collaborators
+                    ? collabResponse.collaborators.map(c => c.userId)
+                    : [];
 
-                // Filter out friends who are already collaborators
-                const availableFriends = allFriends.filter(friend =>
-                    !currentCollaborators.some(collab => collab.user_id === friend.friendId)
+                const availableFriends = friendsResponse.friends.filter(
+                    friend => !existingCollaboratorIds.includes(friend.friendId)
                 );
 
-                setFriends(availableFriends);
+                setFriendsList(availableFriends || []);
+                setCollaborators(collabResponse.collaborators || []);
             } catch (error) {
-                console.error("Error al obtener la lista de amigos o colaboradores:", error);
-                setErrorMessage("Error al cargar amigos. Inténtalo de nuevo.");
+                console.error("Error al cargar datos:", error);
+                setError("No se pudieron cargar los colaboradores o amigos. Intenta más tarde.");
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchFriendsAndCollaborators();
+        fetchData();
     }, [playlistId]);
 
-    const inviteFriend = async (friendId) => {
+    const handleInviteCollaborators = async () => {
+        if (selectedFriends.length === 0) return;
+
         try {
-            setLoadingInvite(true);
-            const token = localStorage.getItem("token");
+            console.log("Sending invitations for playlistId:", playlistId);
 
-            console.log("Enviando invitación con datos:", {
-                playlistId,
-                userId: friendId
+            const promises = selectedFriends.map(friendId => {
+                const requestData = {
+                    userId: friendId,
+                    playlistId: playlistId
+                };
+
+                console.log("Request data for user:", friendId, requestData);
+
+                return apiFetch(`/collaborators/invite`, {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: requestData
+                });
             });
 
-            const response = await apiFetch("/collaborators/invite", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: {
-                    playlistId,
-                    userId: friendId
-                },
-            });
+            await Promise.all(promises);
 
-            console.log("Respuesta invitación:", response);
-
-            if (response && response.message) {
-                // Mostrar mensaje de éxito
-                setSuccessMessage(`Amigo invitado como colaborador.`);
-                // Remover el amigo de la lista para no mostrar amigos ya invitados
-                setFriends(prev => prev.filter(friend => friend.friendId !== friendId));
-                // Limpia el mensaje después de 3 segundos
-                setTimeout(() => setSuccessMessage(""), 3000);
-            } else if (response && response.error) {
-                console.error("Error al invitar colaborador:", response.error);
-                setErrorMessage(`No se pudo invitar al amigo como colaborador: ${response.error}`);
-                setTimeout(() => setErrorMessage(""), 3000);
-            }
+            alert("¡Invitaciones enviadas con éxito! Los amigos recibirán las invitaciones en sus chats.");
+            onClose();
         } catch (error) {
-            console.error("Error al invitar colaborador:", error);
-            setErrorMessage("Error al invitar al amigo como colaborador.");
-            setTimeout(() => setErrorMessage(""), 3000);
-        } finally {
-            setLoadingInvite(false);
+            console.error("Error al invitar colaboradores:", error);
+            alert("Hubo un problema al invitar colaboradores. Intenta de nuevo.");
         }
     };
 
-    // Filter friends based on search term
-    const filteredFriends = friends.filter(friend =>
-        friend.nickname.toLowerCase().includes(searchTerm.toLowerCase())
+    const getInitialsAndColor = (nickname, id) => {
+        if (!nickname) return null;
+
+        const initial = nickname.charAt(0).toUpperCase();
+
+        // Generar un color basado en el ID
+        const hue = (parseInt(id, 16) % 360) || Math.floor(Math.random() * 360);
+        const bgColor = `hsl(${hue}, 70%, 45%)`;
+
+        return { initial, bgColor };
+    };
+
+    const filteredFriends = friendsList.filter(f =>
+        f.nickname.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <h2>Invitar Amigos como Colaboradores</h2>
-
-                {/* Mensajes de éxito o error */}
-                {successMessage && (
-                    <div className="success-message">{successMessage}</div>
-                )}
-                {errorMessage && (
-                    <div className="error-message">{errorMessage}</div>
-                )}
-
-                {/* Buscador de amigos */}
-                <div className="search-container">
-                    <input
-                        type="text"
-                        placeholder="Buscar amigos..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="search-input"
-                    />
+        <div className="popup-overlay" onClick={onClose}>
+            <div className="collaborators-popup" onClick={e => e.stopPropagation()}>
+                <div className="collaborators-popup-header">
+                    <h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{marginRight: '10px'}}>
+                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/>
+                        </svg>
+                        Invitar colaboradores
+                    </h3>
                 </div>
 
-                {loading ? (
-                    <p>Cargando...</p>
-                ) : (
-                    <ul className="friends-list">
-                        {filteredFriends.length > 0 ? (
-                            filteredFriends.map((friend) => (
-                                <li key={friend.friendId} className="friend-item">
-                                    <img
-                                        src={friend.user_picture || "/default-avatar.jpg"}
-                                        alt={friend.nickname}
-                                        className="friend-avatar"
-                                        onError={(e) => {e.target.src = "/default-avatar.jpg"}}
-                                    />
-                                    <span>{friend.nickname}</span>
-                                    <button
-                                        className="invite-btn"
-                                        onClick={() => inviteFriend(friend.friendId)}
-                                        disabled={loadingInvite}
-                                    >
-                                        {loadingInvite ? "Enviando..." : "Invitar"}
-                                    </button>
-                                </li>
-                            ))
-                        ) : (
-                            <p>
-                                {searchTerm
-                                    ? "No se encontraron amigos con ese nombre"
-                                    : "No tienes amigos en tu lista o todos ya son colaboradores."}
-                            </p>
-                        )}
-                    </ul>
-                )}
+                <div className="collaborators-search-container">
+                    <span className="collaborators-search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </span>
+                    <input
+                        type="text"
+                        placeholder="Buscar amigo..."
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                        className="collaborators-edit-input"
+                    />
+                    {searchTerm && (
+                        <button
+                            className="collaborators-clear-search"
+                            onClick={() => setSearchTerm('')}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    )}
+                </div>
 
-                <button className="close-btn" onClick={onClose} disabled={loading}>
-                    Cerrar
-                </button>
+                <div className="collaborators-friends-list">
+                    {loading ? (
+                        <div className="collaborators-friends-empty">
+                            Cargando amigos...
+                        </div>
+                    ) : error ? (
+                        <div className="collaborators-friends-empty">
+                            {error}
+                        </div>
+                    ) : filteredFriends.length > 0 ? (
+                        filteredFriends.map(friend => {
+                            const avatarInfo = getInitialsAndColor(friend.nickname, friend.friendId);
+
+                            return (
+                                <label key={friend.friendId} className="collaborators-friend-item">
+                                    {friend.user_picture ? (
+                                        <img src={getImageUrl(friend.user_picture)} alt={friend.nickname} className="collaborators-friend-avatar" />
+                                    ) : avatarInfo && (
+                                        <div className="collaborators-friend-initials" style={{backgroundColor: avatarInfo.bgColor}}>
+                                            {avatarInfo.initial}
+                                        </div>
+                                    )}
+                                    <span className="collaborators-friend-name">{friend.nickname}</span>
+                                    <input
+                                        type="checkbox"
+                                        id={`friend-${friend.friendId}`}
+                                        checked={selectedFriends.includes(friend.friendId)}
+                                        onChange={e => {
+                                            if (e.target.checked) {
+                                                setSelectedFriends(prev => [...prev, friend.friendId]);
+                                            } else {
+                                                setSelectedFriends(prev => prev.filter(id => id !== friend.friendId));
+                                            }
+                                        }}
+                                        style={{display: 'none'}}
+                                    />
+                                    {selectedFriends.includes(friend.friendId) ? (
+                                        <span className="collaborators-selected-badge">✓</span>
+                                    ) : null}
+                                </label>
+                            );
+                        })
+                    ) : (
+                        <div className="collaborators-friends-empty">
+                            {searchTerm ? "No se encontraron amigos con ese nombre" : "No tienes amigos disponibles para invitar"}
+                        </div>
+                    )}
+                </div>
+
+                <div className="collaborators-popup-actions">
+                    <button
+                        className="collaborators-cancel-btn"
+                        onClick={onClose}
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        className="save-btn"
+                        onClick={handleInviteCollaborators}
+                        disabled={selectedFriends.length === 0}
+                    >
+                        Invitar {selectedFriends.length > 0 ? `(${selectedFriends.length})` : ''}
+                    </button>
+                </div>
             </div>
         </div>
     );
+};
+
+// Agregar validación de PropTypes
+Collaborators.propTypes = {
+    playlistId: PropTypes.string.isRequired,
+    onClose: PropTypes.func.isRequired
 };
 
 export default Collaborators;
