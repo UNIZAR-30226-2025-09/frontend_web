@@ -216,191 +216,191 @@ const Library = () => {
     };
 
     return (
-        <div className="library-content">
+        <div className="library-page-content">
             {/* Título principal con nombre de usuario */}
-            <h1 className="library-title">
-                Tu Colección Musical, <span className="user-name-highlight">{user?.name || user?.nickname || 'Usuario'}!</span>
+            <h1 className="library-page-title">
+                Tu Colección Musical, <span className="library-page-user-name-highlight">{user?.name || user?.nickname || 'Usuario'}!</span>
             </h1>
 
             {/* Sección: Canciones que te han gustado */}
-            <div className="library-section-header">
+            <div className="library-page-section-header">
                 <h2>Canciones que te han gustado</h2>
             </div>
-            <div className="scroll-section">
+            <div className="library-page-scroll-section">
                 {overflowStates.likedSongs && (
                     <button 
-                        className="carousel-control carousel-prev" 
+                        className="library-page-carousel-control library-page-carousel-prev" 
                         onClick={() => scrollContainer(likedSongsRef, 'prev')}
                     >
-                        <FaChevronLeft className="carousel-control-icon" />
+                        <FaChevronLeft className="library-page-carousel-control-icon" />
                     </button>
                 )}
                 
-                <div className="scroll-container" ref={likedSongsRef}>
-                    <div className="library-playlists">
+                <div className="library-page-scroll-container" ref={likedSongsRef}>
+                    <div className="library-page-playlists">
                         {likedSongPlaylist ? (
-                            <div className="playlist-wrapper">
-                                <div className="library-playlist-card"
+                            <div className="library-page-playlist-wrapper">
+                                <div className="library-page-playlist-card"
                                      onClick={() => handlePlaylistClick(likedSongPlaylist.id)}>
                                     <img
                                         src={getImageUrl(likedSongPlaylist.front_page) || "/default-playlist.jpg"}
                                         alt={likedSongPlaylist.name}
-                                        className="library-playlist-image"
+                                        className="library-page-playlist-image"
                                     />
                                 </div>
                                 <div onClick={() => handlePlaylistClick(likedSongPlaylist.id)}>
-                                    <p className="library-playlist-title">{likedSongPlaylist.name}</p>
+                                    <p className="library-page-playlist-title">{likedSongPlaylist.name}</p>
                                 </div>
                             </div>
                         ) : (
-                            <div className="empty-message">No tienes una playlist 'Me Gusta'.</div>
+                            <div className="library-page-empty-message">No tienes una playlist 'Me Gusta'.</div>
                         )}
                     </div>
                 </div>
                 
                 {overflowStates.likedSongs && (
                     <button 
-                        className="carousel-control carousel-next" 
+                        className="library-page-carousel-control library-page-carousel-next" 
                         onClick={() => scrollContainer(likedSongsRef, 'next')}
                     >
-                        <FaChevronRight className="carousel-control-icon" />
+                        <FaChevronRight className="library-page-carousel-control-icon" />
                     </button>
                 )}
             </div>
 
             {/* Sección: Tus Playlists */}
-            <div className="library-section-header">
+            <div className="library-page-section-header">
                 <h2>Tus Playlists</h2>
                 {/* Botón para crear nueva playlist */}
-                <div className="create-playlist">
-                    <button className="create-playlist-button" onClick={openPlaylistModal}>
-                        <FaPlus className="create-playlist-icon" />
+                <div className="library-page-create-playlist">
+                    <button className="library-page-create-playlist-button" onClick={openPlaylistModal}>
+                        <FaPlus className="library-page-create-playlist-icon" />
                         <span>Crear Playlist</span>
                     </button>
                 </div>
             </div>
-            <div className="scroll-section">
+            <div className="library-page-scroll-section">
                 {overflowStates.userPlaylists && (
                     <button 
-                        className="carousel-control carousel-prev" 
+                        className="library-page-carousel-control library-page-carousel-prev" 
                         onClick={() => scrollContainer(userPlaylistsRef, 'prev')}
                     >
-                        <FaChevronLeft className="carousel-control-icon" />
+                        <FaChevronLeft className="library-page-carousel-control-icon" />
                     </button>
                 )}
                 
-                <div className="scroll-container" ref={userPlaylistsRef}>
-                    <div className="library-playlists">
+                <div className="library-page-scroll-container" ref={userPlaylistsRef}>
+                    <div className="library-page-playlists">
                         {userPlaylists.length > 0 ? userPlaylists.map(playlist => (
-                            <div key={playlist.id} className="playlist-wrapper">
-                                <div className="library-playlist-card" onClick={() => handlePlaylistClick(playlist.id)}>
+                            <div key={playlist.id} className="library-page-playlist-wrapper">
+                                <div className="library-page-playlist-card" onClick={() => handlePlaylistClick(playlist.id)}>
                                     <img
                                         src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
                                         alt={playlist.name}
-                                        className="library-playlist-image"
+                                        className="library-page-playlist-image"
                                     />
                                 </div>
                                 <div onClick={() => handlePlaylistClick(playlist.id)}>
-                                    <p className="library-playlist-title">{playlist.name}</p>
+                                    <p className="library-page-playlist-title">{playlist.name}</p>
                                 </div>
                             </div>
-                        )) : <div className="empty-message">No tienes playlists creadas.</div>}
+                        )) : <div className="library-page-empty-message">No tienes playlists creadas.</div>}
                     </div>
                 </div>
                 
                 {overflowStates.userPlaylists && (
                     <button 
-                        className="carousel-control carousel-next" 
+                        className="library-page-carousel-control library-page-carousel-next" 
                         onClick={() => scrollContainer(userPlaylistsRef, 'next')}
                     >
-                        <FaChevronRight className="carousel-control-icon" />
+                        <FaChevronRight className="library-page-carousel-control-icon" />
                     </button>
                 )}
             </div>
 
             {/* SECCIÓN: Playlists Colaborativas */}
-            <div className="library-section-header">
+            <div className="library-page-section-header">
                 <h2>Playlists Colaborativas</h2>
             </div>
-            <div className="scroll-section">
+            <div className="library-page-scroll-section">
                 {overflowStates.collaborativePlaylists && (
                     <button 
-                        className="carousel-control carousel-prev" 
+                        className="library-page-carousel-control library-page-carousel-prev" 
                         onClick={() => scrollContainer(collaborativePlaylistsRef, 'prev')}
                     >
-                        <FaChevronLeft className="carousel-control-icon" />
+                        <FaChevronLeft className="library-page-carousel-control-icon" />
                     </button>
                 )}
                 
-                <div className="scroll-container" ref={collaborativePlaylistsRef}>
-                    <div className="library-playlists">
+                <div className="library-page-scroll-container" ref={collaborativePlaylistsRef}>
+                    <div className="library-page-playlists">
                         {collaborativePlaylists.length > 0 ? collaborativePlaylists.map(playlist => (
-                            <div key={playlist.id} className="playlist-wrapper">
-                                <div className="library-playlist-card collaborative" onClick={() => handlePlaylistClick(playlist.id)}>
-                                    <div className="collaborative-badge">Colaborador</div>
+                            <div key={playlist.id} className="library-page-playlist-wrapper">
+                                <div className="library-page-playlist-card library-page-collaborative" onClick={() => handlePlaylistClick(playlist.id)}>
+                                    <div className="library-page-collaborative-badge">Colaborador</div>
                                     <img
                                         src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
                                         alt={playlist.name}
-                                        className="library-playlist-image"
+                                        className="library-page-playlist-image"
                                     />
                                 </div>
                                 <div onClick={() => handlePlaylistClick(playlist.id)}>
-                                    <p className="library-playlist-title">{playlist.name}</p>
+                                    <p className="library-page-playlist-title">{playlist.name}</p>
                                 </div>
                             </div>
-                        )) : <div className="empty-message">No estás colaborando en ninguna playlist.</div>}
+                        )) : <div className="library-page-empty-message">No estás colaborando en ninguna playlist.</div>}
                     </div>
                 </div>
                 
                 {overflowStates.collaborativePlaylists && (
                     <button 
-                        className="carousel-control carousel-next" 
+                        className="library-page-carousel-control library-page-carousel-next" 
                         onClick={() => scrollContainer(collaborativePlaylistsRef, 'next')}
                     >
-                        <FaChevronRight className="carousel-control-icon" />
+                        <FaChevronRight className="library-page-carousel-control-icon" />
                     </button>
                 )}
             </div>
 
             {/* Sección: Playlists que te han gustado */}
-            <div className="library-section-header">
+            <div className="library-page-section-header">
                 <h2>Playlists que te han gustado</h2>
             </div>
-            <div className="scroll-section">
+            <div className="library-page-scroll-section">
                 {overflowStates.likedPlaylists && (
                     <button 
-                        className="carousel-control carousel-prev" 
+                        className="library-page-carousel-control library-page-carousel-prev" 
                         onClick={() => scrollContainer(likedPlaylistsRef, 'prev')}
                     >
-                        <FaChevronLeft className="carousel-control-icon" />
+                        <FaChevronLeft className="library-page-carousel-control-icon" />
                     </button>
                 )}
                 
-                <div className="scroll-container" ref={likedPlaylistsRef}>
-                    <div className="library-playlists">
+                <div className="library-page-scroll-container" ref={likedPlaylistsRef}>
+                    <div className="library-page-playlists">
                         {likedPlaylists.length > 0 ? likedPlaylists.map(playlist => (
-                            <div key={playlist.id} className="playlist-wrapper">
-                                <div className="library-playlist-card" onClick={() => handlePlaylistClick(playlist.id)}>
+                            <div key={playlist.id} className="library-page-playlist-wrapper">
+                                <div className="library-page-playlist-card" onClick={() => handlePlaylistClick(playlist.id)}>
                                     <img
                                         src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
                                         alt={playlist.name}
-                                        className="library-playlist-image"
+                                        className="library-page-playlist-image"
                                     />
                                 </div>
                                 <div onClick={() => handlePlaylistClick(playlist.id)}>
-                                    <p className="library-playlist-title">{playlist.name}</p>
+                                    <p className="library-page-playlist-title">{playlist.name}</p>
                                 </div>
                             </div>
-                        )) : <div className="empty-message">No has dado like a ninguna playlist.</div>}
+                        )) : <div className="library-page-empty-message">No has dado like a ninguna playlist.</div>}
                     </div>
                 </div>
                 
                 {overflowStates.likedPlaylists && (
                     <button 
-                        className="carousel-control carousel-next" 
+                        className="library-page-carousel-control library-page-carousel-next" 
                         onClick={() => scrollContainer(likedPlaylistsRef, 'next')}
                     >
-                        <FaChevronRight className="carousel-control-icon" />
+                        <FaChevronRight className="library-page-carousel-control-icon" />
                     </button>
                 )}
             </div>
