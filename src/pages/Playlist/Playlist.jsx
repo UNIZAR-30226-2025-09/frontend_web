@@ -13,7 +13,6 @@ import OptionsPopup from "../../components/PopUpSelection/OptionsPopup.jsx";
 import Rating from '../../components/Rating/Rating.jsx';
 import axios from "axios";
 
-"#utils/apiFetch.js"
 
 // Convierte segundos a m:ss
 function formatDuration(seconds) {
@@ -55,9 +54,7 @@ const PlaylistContent = () => {
     const [searchVisible, setSearchVisible] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredSongs, setFilteredSongs] = useState([]);
-    const [showCollaboratorsPopup, setShowCollaboratorsPopup] = useState(false);
-    const [searchFriend, setSearchFriend] = useState('');
-    const [invitedFriends, setInvitedFriends] = useState([]);
+
     useEffect(() => {
         if (!playlist) return;
 
@@ -676,132 +673,134 @@ const PlaylistContent = () => {
         setNewImage(file);
     };
 
+    // Esta parte reemplaza el return actual con un código más limpio
+
     return (
         <>
-        {showSharePopup && (
-            <div className="popup-overlay">
-                <div className="popup-content playlist-share-popup">
-                    <div className="playlist-popup-header">
-                        <h3>Compartir playlist con amigos</h3>
-                    </div>
-                    <div className="playlist-search-container">
+            {showSharePopup && (
+                <div className="popup-overlay">
+                    <div className="popup-content playlist-share-popup">
+                        <div className="playlist-popup-header">
+                            <h3>Compartir playlist con amigos</h3>
+                        </div>
+                        <div className="playlist-search-container">
                             <span className="playlist-search-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                 </svg>
                             </span>
-                        <input
-                            type="text"
-                            placeholder="Buscar amigo..."
-                            value={shareSearch}
-                            onChange={e => setShareSearch(e.target.value)}
-                            className="playlist-edit-input"
-                        />
-                        {shareSearch && (
+                            <input
+                                type="text"
+                                placeholder="Buscar amigo..."
+                                value={shareSearch}
+                                onChange={e => setShareSearch(e.target.value)}
+                                className="playlist-edit-input"
+                            />
+                            {shareSearch && (
+                                <button
+                                    className="playlist-clear-search"
+                                    onClick={() => setShareSearch('')}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                        <div className="playlist-friends-list">
+                            {friendsList.filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase())).length > 0 ? (
+                                friendsList
+                                    .filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase()))
+                                    .map(f => (
+                                        <label key={f.friendId} className="playlist-friend-item">
+                                            <div className="playlist-checkbox-wrapper">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`playlist-friend-${f.friendId}`}
+                                                    checked={selectedFriends.includes(f.friendId)}
+                                                    onChange={e => {
+                                                        if (e.target.checked) {
+                                                            setSelectedFriends(prev => [...prev, f.friendId]);
+                                                        } else {
+                                                            setSelectedFriends(prev => prev.filter(id => id !== f.friendId));
+                                                        }
+                                                    }}
+                                                />
+                                                <span className="playlist-custom-checkbox"></span>
+                                            </div>
+                                            {f.user_picture ? (
+                                                <img src={getImageUrl(f.user_picture)} alt={f.nickname} className="playlist-friend-avatar" />
+                                            ) : (
+                                                <span className="playlist-friend-initials">{f.nickname[0]}</span>
+                                            )}
+                                            <span className="playlist-friend-name">{f.nickname}</span>
+                                            {selectedFriends.includes(f.friendId) && (
+                                                <span className="playlist-selected-badge">✓</span>
+                                            )}
+                                        </label>
+                                    ))
+                            ) : (
+                                <div className="playlist-friends-empty">
+                                    {shareSearch
+                                        ? "No se encontraron amigos con ese nombre"
+                                        : "No tienes amigos para compartir esta playlist"}
+                                </div>
+                            )}
+                        </div>
+                        <div className="playlist-popup-actions">
                             <button
-                                className="playlist-clear-search"
-                                onClick={() => setShareSearch('')}
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
-                            </button>
-                        )}
-                    </div>
-                    <div className="playlist-friends-list">
-                        {friendsList.filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase())).length > 0 ? (
-                            friendsList
-                                .filter(f => f.nickname.toLowerCase().includes(shareSearch.toLowerCase()))
-                                .map(f => (
-                                    <label key={f.friendId} className="playlist-friend-item">
-                                        <div className="playlist-checkbox-wrapper">
-                                            <input
-                                                type="checkbox"
-                                                id={`playlist-friend-${f.friendId}`}
-                                                checked={selectedFriends.includes(f.friendId)}
-                                                onChange={e => {
-                                                    if (e.target.checked) {
-                                                        setSelectedFriends(prev => [...prev, f.friendId]);
-                                                    } else {
-                                                        setSelectedFriends(prev => prev.filter(id => id !== f.friendId));
+                                className="playlist-share-btn"
+                                onClick={async () => {
+                                    try {
+                                        for (const friendId of selectedFriends) {
+                                            await apiFetch('/chat/send', {
+                                                method: 'POST',
+                                                headers: {
+                                                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                                                },
+                                                body: {
+                                                    user2_id: friendId,
+                                                    message: `Te comparto esta playlist: ${playlist.name}`,
+                                                    shared_content: {
+                                                        type: 'playlist',
+                                                        id: playlist.id,
+                                                        name: playlist.name,
+                                                        image: playlist.front_page ? playlist.front_page : null,
+                                                        url: `${window.location.origin}/playlist/${playlist.id}`
                                                     }
-                                                }}
-                                            />
-                                            <span className="playlist-custom-checkbox"></span>
-                                        </div>
-                                        {f.user_picture ? (
-                                            <img src={getImageUrl(f.user_picture)} alt={f.nickname} className="playlist-friend-avatar" />
-                                        ) : (
-                                            <span className="playlist-friend-initials">{f.nickname[0]}</span>
-                                        )}
-                                        <span className="playlist-friend-name">{f.nickname}</span>
-                                        {selectedFriends.includes(f.friendId) && (
-                                            <span className="playlist-selected-badge">✓</span>
-                                        )}
-                                    </label>
-                                ))
-                        ) : (
-                            <div className="playlist-friends-empty">
-                                {shareSearch
-                                    ? "No se encontraron amigos con ese nombre"
-                                    : "No tienes amigos para compartir esta playlist"}
-                            </div>
-                        )}
-                    </div>
-                    <div className="playlist-popup-actions">
-                        <button
-                            className="playlist-share-btn"
-                            onClick={async () => {
-                                try {
-                                    for (const friendId of selectedFriends) {
-                                        await apiFetch('/chat/send', {
-                                            method: 'POST',
-                                            headers: {
-                                                Authorization: `Bearer ${localStorage.getItem('token')}`
-                                            },
-                                            body: {
-                                                user2_id: friendId,
-                                                message: `Te comparto esta playlist: ${playlist.name}`,
-                                                shared_content: {
-                                                    type: 'playlist',
-                                                    id: playlist.id,
-                                                    name: playlist.name,
-                                                    image: playlist.front_page ? playlist.front_page : null,
-                                                    url: `${window.location.origin}/playlist/${playlist.id}`
                                                 }
-                                            }
-                                        });
+                                            });
+                                        }
+                                        setShowSharePopup(false);
+                                        setSelectedFriends([]);
+                                        setShareSearch("");
+                                        alert("Playlist compartida por chat!");
+                                    } catch (error) {
+                                        alert("Hubo un error al compartir");
                                     }
-                                    setShowSharePopup(false);
-                                    setSelectedFriends([]);
-                                    setShareSearch("");
-                                    alert("Playlist compartida por chat!");
-                                } catch (error) {
-                                    alert("Hubo un error al compartir");
-                                }
-                            }}
-                        >
-                            Enviar
-                        </button>
-                        <button
-                            className="playlist-cancel-btn"
-                            onClick={() => setShowSharePopup(false)}
-                        >
-                            Cancelar
-                        </button>
+                                }}
+                            >
+                                Enviar
+                            </button>
+                            <button
+                                className="playlist-cancel-btn"
+                                onClick={() => setShowSharePopup(false)}
+                            >
+                                Cancelar
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        )}
+            )}
 
             <div className="layout">
                 <div className="box">
                     <div className="play-cont">
                         <div
                             className={`${playlist.typeP !== "Vibra_likedSong" && playlist?.user_id && playlist.user_id === user_Id ? 'image' : 'imagenoedit'}`}
-                            onClick={handleEditToggle}
+                            onClick={handleEditToggle} 
                             style={{cursor: "pointer"}}>
                             <img
                                 src={`${getImageUrl(playlist.front_page)}?t=${Date.now()}`}
@@ -922,8 +921,8 @@ const PlaylistContent = () => {
                                                 autoFocus
                                             />
                                             {searchTerm && (
-                                                <button
-                                                    className="playlist-song-search-clear"
+                                                <button 
+                                                    className="playlist-song-search-clear" 
                                                     onClick={() => setSearchTerm('')}
                                                 >
                                                     <FaTimes />
@@ -981,23 +980,23 @@ const PlaylistContent = () => {
                                                 <FaPlay/>
                                             </button>
                                         </div>
-
+                                        
                                         <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>
-
+                                        
                                         <span className="song-title" onClick={() => redirectToSong(song.id)}>{song.name}</span>
-
+                                        
                                         <span className="song-artist">
                                             {song.album?.name || "Sin álbum"}
                                         </span>
-
+                                        
                                         <span className="song-date">
                                             {song.song_playlist?.date || "Fecha desconocida"}
                                         </span>
-
+                                        
                                         <span className="song-duration">
                                             {formatDuration(song.duration)}
                                         </span>
-
+                                        
                                         <div className="song-options">
                                             <OptionsPopup
                                                 trigger={<FaEllipsisH className="song-options-icon"/>}
@@ -1048,7 +1047,6 @@ const PlaylistContent = () => {
         </>
     );
 };
-
 
 const Playlist = () => {
     return (
