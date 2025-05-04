@@ -1863,14 +1863,14 @@ button:focus:not(:focus-visible), input:focus:not(:focus-visible) {
     justify-content: center;
 }
 
-.collaboration-request-buttons {
+.collaborations-request-buttons {
     display: flex;
     gap: 10px;
     margin-top: 10px;
 }
 
-.accept-button,
-.reject-button {
+.accepts-button,
+.rejects-button {
     padding: 8px 12px;
     border: none;
     border-radius: 5px;
@@ -1878,20 +1878,20 @@ button:focus:not(:focus-visible), input:focus:not(:focus-visible) {
     font-size: 14px;
 }
 
-.accept-button {
+.accepts-button {
     background-color: #28a745;
     color: white;
 }
 
-.accept-button:hover {
+.accepts-button:hover {
     background-color: #218838;
 }
 
-.reject-button {
+.rejects-button {
     background-color: #dc3545;
     color: white;
 }
 
-.reject-button:hover {
+.rejects-button:hover {
     background-color: #c82333;
 }

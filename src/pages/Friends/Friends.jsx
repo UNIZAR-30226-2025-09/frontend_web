@@ -306,7 +306,6 @@ function Friends() {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json',
                 },
                 body: { playlistId },
             });
@@ -338,7 +337,6 @@ function Friends() {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json',
                 },
                 body: { playlistId },
             });
@@ -1155,17 +1153,17 @@ function Friends() {
                                                         ): msg.shared_content && msg.shared_content.type === 'collaboration_request' ? (
                                                             <>
                                                                 <p>{msg.txt_message}</p>
-                                                                <div className="collaboration-request-buttons">
+                                                                <div className="collaborations-request-buttons">
                                                                     <button
                                                                         onClick={() => acceptCollaboration(msg.shared_content.playlist_id)}
-                                                                        className="accept-button"
+                                                                        className="accepts-button"
                                                                         disabled={processing} // Deshabilita el botón mientras se procesa la solicitud
                                                                     >
                                                                         Aceptar
                                                                     </button>
                                                                     <button
                                                                         onClick={() => rejectCollaboration(msg.shared_content.playlist_id)}
-                                                                        className="reject-button"
+                                                                        className="rejects-button"
                                                                         disabled={processing} // Deshabilita el botón mientras se procesa la solicitud
                                                                     >
                                                                         Rechazar
