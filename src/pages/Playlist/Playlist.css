@@ -12,7 +12,7 @@
 .box {
     flex: 1;
     width: 100%;
-    background: linear-gradient(to bottom, #0399b6, #121212);
+    background: linear-gradient(to bottom, #15515d, #121212);
     color: white;
     padding: 40px;
     border-radius: 12px;

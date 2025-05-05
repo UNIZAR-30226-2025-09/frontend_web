@@ -26,6 +26,7 @@ const Home = () => {
     const [recommendedPlaylists, setRecommendedPlaylists] = useState([]);
     const [loading, setLoading] = useState(true);
     const [recentlyVisited, setRecentlyVisited] = useState([]);
+    const [albums, setAlbums] = useState([]);
 
 
     // Configuración responsive para el carrusel
@@ -170,6 +171,40 @@ const Home = () => {
         }
     }, []);
 
+    useEffect(() => {
+        const fetchAlbums = async () => {
+            try {
+                console.log("Iniciando petición de álbumes");
+                const data = await apiFetch("/playlists");
+                console.log("Datos recibidos de álbumes:", data);
+                
+                if (data && Array.isArray(data)) {
+                    // Filtrar solo los elementos donde typeP === "album"
+                    const albumsOnly = data.filter(item => item.typeP === "album");
+                    console.log("Álbumes filtrados:", albumsOnly.length, "de", data.length, "items");
+                    setAlbums(albumsOnly);
+                } else {
+                    console.log("Los datos recibidos no son un array:", typeof data);
+                    // Si la API devuelve un objeto con una propiedad que contiene el array
+                    if (data && typeof data === 'object') {
+                        // Intenta encontrar un array en alguna propiedad del objeto
+                        const possibleArrays = Object.values(data).filter(value => Array.isArray(value));
+                        if (possibleArrays.length > 0) {
+                            // Filtrar solo los elementos donde typeP === "album"
+                            const albumsOnly = possibleArrays[0].filter(item => item.typeP === "album");
+                            console.log("Álbumes filtrados del array encontrado:", albumsOnly.length, "items");
+                            setAlbums(albumsOnly);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Error al obtener los álbumes:", error);
+            }
+        };
+        
+        fetchAlbums();
+    }, []);
+
     console.log("Recently Visited: ", recentlyVisited);
 
     return (
@@ -304,24 +339,52 @@ const Home = () => {
             </div>
 
             {/* Nueva sección: Últimos Álbums */}
-            <h1 onClick={() => setActive("albums")}>Últimos Álbums</h1>
-            <div
-                className="scroll-container"
-                ref={albumsRef}
-                onMouseDown={(e) => handleMouseDown(e, albumsRef)}
-                onMouseMove={(e) => handleMouseMove(e, albumsRef)}
-                onMouseUp={() => handleMouseUp(albumsRef)}
-                onMouseLeave={() => handleMouseUp(albumsRef)}
-            >
-                <div className="home-albums">
-                    <div className="home-album-card" onClick={(e) => handleAccessWithoutLogin(e)}>Álbum 1</div>
-                    <div className="home-album-card" onClick={(e) => handleAccessWithoutLogin(e)}>Álbum 2</div>
-                    <div className="home-album-card" onClick={(e) => handleAccessWithoutLogin(e)}>Álbum 3</div>
-                    <div className="home-album-card" onClick={(e) => handleAccessWithoutLogin(e)}>Álbum 4</div>
-                    <div className="home-album-card" onClick={(e) => handleAccessWithoutLogin(e)}>Álbum 5</div>
-                    <div className="home-album-card" onClick={(e) => handleAccessWithoutLogin(e)}>Álbum 6</div>
+<h1 onClick={() => setActive("albums")}>Últimos Álbums</h1>
+<div className="carousel-container">
+    <Carousel
+        responsive={responsive}
+        autoPlay={false}
+        swipeable={true}
+        draggable={true}
+        showDots={true}
+        infinite={true}
+        partialVisible={false}
+        customDot={<CustomDot />}
+        beforeChange={(previousSlide, nextSlide) => setCurrentSlide(nextSlide)}
+        containerClass="carousel-container"
+        itemClass="carousel-item"
+        dotListClass="custom-dot-list"
+    >
+        {albums && albums.length > 0 ? (
+            albums.map((album) => (
+                <div 
+                    key={album.id} 
+                    className="playlist-wrapper" 
+                    onClick={(e) => {
+                        if (!localStorage.getItem("token")) {
+                            handleAccessWithoutLogin(e);
+                        } else {
+                            navigate(`/playlist/${album.id}`);
+                        }
+                    }}
+                >
+                    <div className="home-playlist-card">
+                        <img 
+                            src={getImageUrl(album.front_page, "/default-album.jpg")} 
+                            alt={album.name} 
+                            className="playlist-image" 
+                            onError={(e) => e.target.src = "/default-album.jpg"}
+                        />
+                    </div>
+                    <p className="playlist-title">{album.name}</p>
                 </div>
-            </div>
+            ))
+        ) : (
+            <p>Cargando álbumes...</p>
+        )}
+    </Carousel>
+    
+</div>
 
 
 {/* Nueva Sección de Artistas - FIXED */}
@@ -383,9 +446,9 @@ const Home = () => {
 ) : (
     <p>Cargando artistas...</p>
 )}
-                </div>
-
+    </div>
     );
-};
+}
+
 
 export default Home;
