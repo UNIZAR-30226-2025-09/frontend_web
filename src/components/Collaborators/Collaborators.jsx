@@ -233,6 +233,56 @@ const Collaborators = ({ playlistId, onClose, isOwner = false }) => {
         f.nickname?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const handleRemoveCollaborator = async (collaboratorId, collaboratorName) => {
+        console.log("[Collaborators.jsx][handleRemove] Attempting to remove collaborator:", {
+            collaboratorId,
+            collaboratorName,
+            playlistId
+        });
+
+        if (!actualIsOwner) {
+            console.warn("[Collaborators.jsx][handleRemove] Non-owner attempted to remove collaborator");
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error("[Collaborators.jsx][handleRemove] No token found");
+            setError("No estás autenticado. Por favor, inicia sesión.");
+            return;
+        }
+
+        try {
+            // Corregida la ruta de la API a collaborators/remove
+            await apiFetch('collaborators/remove', {
+                method: "POST", // Cambiado a POST ya que es la convención común para operaciones de eliminación con cuerpo
+                body: {
+                    userId: collaboratorId,
+                    playlistId: playlistId
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            console.log("[Collaborators.jsx][handleRemove] Successfully removed collaborator:", {
+                collaboratorId,
+                playlistId
+            });
+
+            // Actualizar la lista de colaboradores
+            setCollaborators(prevCollaborators =>
+                prevCollaborators.filter(collab => collab.userId !== collaboratorId)
+            );
+
+            // Mostrar mensaje de éxito
+            alert(`${collaboratorName} ha sido eliminado de los colaboradores.`);
+
+        } catch (error) {
+            console.error("[Collaborators.jsx][handleRemove] Error removing collaborator:", error);
+            alert("No se pudo eliminar al colaborador. Intenta de nuevo.");
+        }
+    };
 
 
     return (
