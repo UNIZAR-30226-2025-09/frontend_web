@@ -1,71 +1,243 @@
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
+/* --- MODAL DE COLABORADORES --- */
+.collaborators-popup {
+    background: linear-gradient(145deg, #182235 0%, #263044 100%);
+    color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3), 0 8px 12px rgba(0, 0, 0, 0.15);
+    padding: 36px 32px 28px 32px;
+    max-width: 480px;
+    width: 100%;
+    animation: collaborators-fadeInUp 0.35s cubic-bezier(0.21, 0.61, 0.35, 1);
+    border: 1px solid rgba(0, 123, 255, 0.12);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.collaborators-popup-header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.collaborators-popup-header::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 25%;
+    right: 25%;
+    height: 1px;
+    background: linear-gradient(to right, rgba(3, 153, 182, 0), rgba(3, 153, 182, 0.5), rgba(3, 153, 182, 0));
+}
+
+.collaborators-popup h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f8f9fa;
+}
+
+.collaborators-search-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 22px;
+    margin-top: 10px;
+}
+
+.collaborators-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    width: 18px;
+    height: 18px;
+}
+
+.collaborators-search-icon svg {
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+}
+
+.collaborators-clear-search {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
     display: flex;
+    align-items: center;
     justify-content: center;
-    align-items: center;
-    z-index: 1000;
 }
 
-.modal-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 400px;
-    max-width: 90%;
-    text-align: center;
+.collaborators-clear-search:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-.friends-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    max-height: 300px;
+.collaborators-edit-input {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(0, 123, 255, 0.2);
+    border-radius: 12px;
+    padding: 14px 40px 14px 42px;
+    font-size: 1rem;
+    color: #fff;
+    width: 100%;
+    transition: all 0.2s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.collaborators-edit-input:focus {
+    border-color: rgba(0, 123, 255, 0.5);
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+.collaborators-friends-list {
+    max-height: 280px;
     overflow-y: auto;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px;
+    width: 100%;
+    scrollbar-width: thin;
 }
 
-.friend-item {
+.collaborators-friend-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
+    gap: 14px;
+    font-size: 0.95rem;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    min-height: 56px;
+    border: 1px solid transparent;
 }
 
-.friend-avatar {
+.collaborators-friend-item:hover {
+    background: rgba(0, 123, 255, 0.08);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    border-color: rgba(0, 123, 255, 0.12);
+}
+
+.collaborators-friend-avatar,
+.collaborators-friend-initials {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    margin-right: 10px;
-}
-
-.invite-btn {
-    background: #007bff;
+    object-fit: cover;
+    background: linear-gradient(135deg, #0399b6 0%, #007bff 100%);
     color: #fff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.collaborators-friend-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.collaborators-selected-badge {
+    background: #0399b6;
+    color: white;
+    height: 22px;
+    width: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Scrollbar personalizado */
+.collaborators-friends-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.collaborators-friends-list::-webkit-scrollbar-thumb {
+    background: rgba(3, 153, 182, 0.3);
+    border-radius: 10px;
+}
+
+.collaborators-friends-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* Botones de acción */
+.collaborators-popup-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 12px;
+    width: 100%;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.collaborators-cancel-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
     cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
 }
 
-.invite-btn:hover {
-    background: #0056b3;
+.collaborators-cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
 }
 
-.close-btn {
-    background: #dc3545;
-    color: #fff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 20px;
+.collaborators-cancel-btn:active {
+    transform: translateY(0);
 }
 
-.close-btn:hover {
-    background: #c82333;
+.collaborators-friends-empty {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    padding: 28px 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    margin: 10px 0;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
 }

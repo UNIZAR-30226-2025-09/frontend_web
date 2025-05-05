@@ -337,7 +337,6 @@ const Library = () => {
                         {collaborativePlaylists.length > 0 ? collaborativePlaylists.map(playlist => (
                             <div key={playlist.id} className="library-page-playlist-wrapper">
                                 <div className="library-page-playlist-card library-page-collaborative" onClick={() => handlePlaylistClick(playlist.id)}>
-                                    <div className="library-page-collaborative-badge">Colaborador</div>
                                     <img
                                         src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
                                         alt={playlist.name}
