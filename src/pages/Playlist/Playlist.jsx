@@ -160,13 +160,21 @@ const PlaylistContent = () => {
     useEffect(() => {
         const fetchUserPlaylists = async () => {
             try {
-                const data = await apiFetch(`/playlists/users/${user_Id}/playlists`, {
+                const personalPlaylists = await apiFetch(`/playlists/users/${user_Id}/playlists`, {
                     method: "GET",
                 });
-                setUserPlaylists(data);
+
+                const collaborativePlaylists = await apiFetch(`/playlists-for-user/${user_Id}`, {
+                    method: "GET",
+                });
+
+                // Combinar ambas listas (si no quieres duplicados, filtra por ID)
+                const combinedPlaylists = [...personalPlaylists, ...collaborativePlaylists];
+
+                setUserPlaylists(combinedPlaylists);
 
                 const userData = await apiFetch(`/user/${user_Id}`, {
-                   method: "GET",
+                    method: "GET",
                 });
 
                 setUser(userData);
@@ -548,6 +556,23 @@ const PlaylistContent = () => {
         }
     };
 
+    const addToQueue = (song) => {
+        console.log("Agregando canción a la cola:", song);
+
+        setSongs(prevSongs => {
+            // Verifica si ya existe en la cola (opcional)
+            const exists = prevSongs.some(s => s.id === song.id && s.type !== 'anuncio');
+            if (exists) {
+                console.log("La canción ya está en la cola.");
+                return prevSongs;
+            }
+
+            const updatedQueue = [...prevSongs, song];
+            console.log("Nueva cola de reproducción:", updatedQueue);
+            return updatedQueue;
+        });
+    };
+
     const handleSongOptionSelect = async (option, idx, song) => {
         console.log("Opción seleccionada:", option, idx, song);
 
@@ -609,6 +634,10 @@ const PlaylistContent = () => {
 
             console.log("Respuesta del servidor:", response.data);
             window.location.reload();
+        }
+        else if (option.label === "Agregar a la cola")
+        {
+            addToQueue(song);
         }
         else
         {
@@ -1010,6 +1039,7 @@ const PlaylistContent = () => {
                                                         label: song.liked ? "Eliminar de favoritos" : "Agregar a favoritos",
                                                     },
                                                     {label: "Ver detalles"},
+                                                    {label: "Agregar a la cola"},
                                                 ].filter(option => option != null)}
                                                 position={index >= filteredSongs.length - 2 ? "top-right" : "bottom-right"}
                                                 submenuPosition={index >= filteredSongs.length - 2 ? "right" : "left"}
