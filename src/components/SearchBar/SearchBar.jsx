@@ -1,78 +1,108 @@
-// src/components/SearchBar/SearchBar.jsx
 import { useState, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { FaSearch, FaTimes } from 'react-icons/fa';
 import debounce from 'lodash.debounce';
 import './SearchBar.css';
-import {useLocation} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const SearchBar = ({ onSearch }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const searchInputRef = useRef(null);
     const location = useLocation();
+    const navigate = useNavigate();
+    const isSearchRelatedPage = useRef(false);
+    const previousPathRef = useRef(location.pathname);
 
-    // Limpiar búsqueda solo al navegar fuera de las páginas de búsqueda
-    useEffect(() => {
-        // Si no estamos en la página de búsqueda o resultados, limpiar el campo
-        if (!location.pathname.includes('/search') &&
-            !location.pathname.includes('/artist') &&
-            !location.pathname.includes('/playlist') &&
-            !location.pathname.includes('/songs')) {
-            // Solo limpia si hay algo que limpiar
-            if (searchQuery !== '') {
-                setSearchQuery('');
-                // No llames a onSearch si no hay búsqueda actual
-                onSearch('');
-            }
-        }
-    }, [location.pathname, onSearch, searchQuery]);
+    const isNavigatingToResult = useRef(false);
 
-    // Creamos una función 'debounced' para no disparar onSearch en cada pulsación exacta.
-    // En su lugar, esperamos 300ms tras la última tecla antes de llamar a onSearch(query).
+    // Creamos la función debounced fuera del ciclo de renderizado
     const debouncedOnSearch = useCallback(
         debounce((query) => {
+            console.log('[SearchBar] Searching for:', query);
             onSearch(query);
         }, 300),
         [onSearch]
     );
 
+    // Detectar cuando se selecciona un resultado específico
+    useEffect(() => {
+        const currentPath = location.pathname;
+
+        // Si venimos de búsqueda y vamos a un resultado específico
+        if (previousPathRef.current.includes('/search')) {
+            if (
+                (currentPath.includes('/songs/') ||
+                    currentPath.includes('/artist/') ||
+                    currentPath.includes('/playlist/')) &&
+                !currentPath.includes('/search')
+            ) {
+                // Marcamos que estamos navegando a un resultado
+                isNavigatingToResult.current = true;
+                setSearchQuery(''); // Limpiamos el input visualmente
+
+                // MODIFICADO: No llamamos a onSearch('') para evitar redirecciones no deseadas
+                // Solo reseteamos el flag de navegación después de un tiempo
+                setTimeout(() => {
+                    // onSearch(''); -- REMOVIDO, esta línea causa la redirección no deseada
+                    isNavigatingToResult.current = false;
+                }, 100);
+            }
+        }
+
+        // Actualizamos referencia para la próxima vez
+        previousPathRef.current = currentPath;
+    }, [location.pathname, onSearch]);
+
+    // En las funciones de búsqueda, verificamos si estamos navegando
     const handleChange = (e) => {
         const value = e.target.value;
         setSearchQuery(value);
-        // Actualizamos la búsqueda con un retardo, para no spamear peticiones.
-        debouncedOnSearch(value);
+
+        if (!isNavigatingToResult.current) {
+            debouncedOnSearch(value);
+        }
     };
 
-    // Al desmontar el componente, cancelamos el debounce para evitar efectos secundarios.
+    // Limpieza del debounce al desmontar
     useEffect(() => {
         return () => {
+            console.log('[SearchBar] Unmounting, canceling debounce');
             debouncedOnSearch.cancel();
         };
     }, [debouncedOnSearch]);
 
+    // Similar para el resto de funciones que llaman a onSearch
     const clearSearch = () => {
         setSearchQuery('');
-        searchInputRef.current?.focus();
-        onSearch(''); // Limpia también la búsqueda en el padre
+        if (!isNavigatingToResult.current) {
+            onSearch('');
+        }
+        setTimeout(() => {
+            searchInputRef.current?.focus();
+        }, 0);
+    };
+
+    // Realiza búsqueda cuando se presiona Enter
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && searchQuery.trim()) {
+            // Navegar a la página de búsqueda con la consulta
+            navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
+        }
     };
 
     return (
         <div className="search-container">
             <div className="search-box">
-                {/* Ícono de lupa */}
                 <FaSearch className="search-icon" />
-
-                {/* Input */}
                 <input
                     ref={searchInputRef}
                     type="text"
                     value={searchQuery}
                     onChange={handleChange}
+                    onKeyDown={handleKeyDown}
                     placeholder="¿Qué quieres reproducir?"
                     className="search-input"
                 />
-
-                {/* Ícono “X” para limpiar */}
                 {searchQuery && (
                     <FaTimes
                         className="clear-icon"
@@ -81,10 +111,10 @@ const SearchBar = ({ onSearch }) => {
                 )}
             </div>
         </div>
-    )
-}
+    );
+};
+
 SearchBar.propTypes = {
-    // Ahora 'onSearch' es obligatorio y se llama cada vez que cambia el texto
     onSearch: PropTypes.func.isRequired,
 };
 
