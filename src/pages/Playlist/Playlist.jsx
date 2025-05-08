@@ -89,7 +89,7 @@ const PlaylistContent = () => {
         playlist?.user_id && playlist.user_id === user_Id ? { label: "Eliminar Playlist" } : null,
         playlist?.user_id && playlist.user_id === user_Id ? { label: `Hacer ${playlist?.type === "public" ? "privada" : "pública"}` } : null,
         playlist?.typeP === "playlist" ? {
-            label: "Invitar Colaboradores",
+            label: "Gestionar Colaboradores",
             action: () => setShowCollabModal(true),
         } : null,
         {
@@ -518,7 +518,7 @@ const PlaylistContent = () => {
             } catch (error) {
                 console.error("Error al actualizar la playlist:", error);
             }
-        } else if (option.label === "Invitar Colaboradores") {
+        } else if (option.label === "Gestionar Colaboradores") {
             if (playlist?.typeP === "playlist") {
                 setShowCollabModal(true); // Abre el modal
                 console.log("Abriendo modal para invitar colaboradores");

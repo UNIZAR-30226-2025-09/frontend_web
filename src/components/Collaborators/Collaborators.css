@@ -1,4 +1,18 @@
 /* --- MODAL DE COLABORADORES --- */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
 .collaborators-popup {
     background: linear-gradient(145deg, #182235 0%, #263044 100%);
     color: #fff;
@@ -14,6 +28,17 @@
     flex-direction: column;
     align-items: center;
     backdrop-filter: blur(10px);
+}
+
+@keyframes collaborators-fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .collaborators-popup-header {
@@ -41,6 +66,19 @@
     align-items: center;
     justify-content: center;
     color: #f8f9fa;
+    margin: 0;
+}
+
+.collaborators-popup h4 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 16px 0;
+}
+
+.collaborators-current-list {
+    width: 100%;
+    margin-bottom: 20px;
 }
 
 .collaborators-search-container {
@@ -82,6 +120,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
 }
 
 .collaborators-clear-search:hover {
@@ -157,6 +196,7 @@
     justify-content: center;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
 }
 
 .collaborators-friend-name {
@@ -180,6 +220,19 @@
     justify-content: center;
     font-size: 12px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+}
+
+.collaborators-friends-empty {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    padding: 28px 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    margin: 10px 0;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
 /* Scrollbar personalizado */
@@ -230,14 +283,84 @@
     transform: translateY(0);
 }
 
-.collaborators-friends-empty {
-    text-align: center;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.95rem;
-    padding: 28px 0;
+.save-btn {
+    background: linear-gradient(135deg, #0399b6 0%, #007bff 100%);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 12px rgba(3, 153, 182, 0.2);
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(3, 153, 182, 0.3);
+}
+
+.save-btn:active {
+    transform: translateY(0);
+}
+
+.save-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+.collaborators-icon-sm {
+    margin-right: 5px;
+}
+
+.collaborators-icon-md {
+    margin-right: 10px;
+}
+
+.collaborators-action-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 12px;
     width: 100%;
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 10px;
-    margin: 10px 0;
-    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+/* Nuevos estilos para la estructura con pestañas */
+.collaborators-content {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* Ya tienes estos estilos pero los dejo para confirmar */
+.collaborators-icon-sm {
+    margin-right: 5px;
+}
+
+.collaborators-icon-md {
+    margin-right: 10px;
+}
+
+/* Estilos para el grupo de botones de acción */
+.collaborators-action-group {
+    display: flex;
+    gap: 12px;
+}
+
+/* Para elementos con display: none */
+.hidden {
+    display: none;
+}
+
+/* Estilo para botones en grupo cuando están activos */
+.save-btn svg {
+    vertical-align: text-bottom;
+}
+
+/* Aseguramos que los iconos se alineen correctamente */
+.collaborators-icon-sm,
+.collaborators-icon-md {
+    display: inline-block;
+    vertical-align: middle;
 }
