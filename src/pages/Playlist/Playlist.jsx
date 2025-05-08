@@ -96,7 +96,7 @@ const PlaylistContent = () => {
             label: "Compartir",
             submenu: [
                 { label: "Copiar enlace" },
-                { label: "Compartir con amigos" },
+                { label: "Compartir con amigos", "data-testid": "share-with-friends" },  // <- aquí
             ],
         },
     ].filter(option => option != null);
@@ -160,13 +160,21 @@ const PlaylistContent = () => {
     useEffect(() => {
         const fetchUserPlaylists = async () => {
             try {
-                const data = await apiFetch(`/playlists/users/${user_Id}/playlists`, {
+                const personalPlaylists = await apiFetch(`/playlists/users/${user_Id}/playlists`, {
                     method: "GET",
                 });
-                setUserPlaylists(data);
+
+                const collaborativePlaylists = await apiFetch(`/playlists-for-user/${user_Id}`, {
+                    method: "GET",
+                });
+
+                // Combinar ambas listas (si no quieres duplicados, filtra por ID)
+                const combinedPlaylists = [...personalPlaylists, ...collaborativePlaylists];
+
+                setUserPlaylists(combinedPlaylists);
 
                 const userData = await apiFetch(`/user/${user_Id}`, {
-                   method: "GET",
+                    method: "GET",
                 });
 
                 setUser(userData);
@@ -548,6 +556,23 @@ const PlaylistContent = () => {
         }
     };
 
+    const addToQueue = (song) => {
+        console.log("Agregando canción a la cola:", song);
+
+        setSongs(prevSongs => {
+            // Verifica si ya existe en la cola (opcional)
+            const exists = prevSongs.some(s => s.id === song.id && s.type !== 'anuncio');
+            if (exists) {
+                console.log("La canción ya está en la cola.");
+                return prevSongs;
+            }
+
+            const updatedQueue = [...prevSongs, song];
+            console.log("Nueva cola de reproducción:", updatedQueue);
+            return updatedQueue;
+        });
+    };
+
     const handleSongOptionSelect = async (option, idx, song) => {
         console.log("Opción seleccionada:", option, idx, song);
 
@@ -609,6 +634,10 @@ const PlaylistContent = () => {
 
             console.log("Respuesta del servidor:", response.data);
             window.location.reload();
+        }
+        else if (option.label === "Agregar a la cola")
+        {
+            addToQueue(song);
         }
         else
         {
@@ -886,8 +915,11 @@ const PlaylistContent = () => {
                                 className="play-btn"
                                 onClick={() => currentSong?.type !== "anuncio" && handlePlaySongs(playlist.songs, isPlaying)}
                             >
-                                {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ?
-                                    <FaPause/> : <FaPlay/>}
+                                {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ? (
+                                    <FaPause/>
+                                ) : (
+                                    <FaPlay aria-label="Play" />
+                                )}
                             </button>
 
                             <button className="shuffle-btn" onClick={toggleShuffle}>
@@ -896,7 +928,15 @@ const PlaylistContent = () => {
                             {playlist.typeP !== "Vibra_likedSong" && (
                                 <div className="popup-wrapper">
                                     <OptionsPopup
-                                        trigger={<FaEllipsisH className="icon"/>}
+                                        trigger={
+                                            <button
+                                                data-testid="popup-trigger"
+                                                aria-label="Opciones"
+                                                className="popup-trigger-button"
+                                            >
+                                                <FaEllipsisH className="icon" />
+                                            </button>
+                                        }
                                         options={options}
                                         position="bottom-right"
                                         submenuPosition="right"
@@ -911,7 +951,7 @@ const PlaylistContent = () => {
                                 <div className={`playlist-song-search-container ${searchVisible ? 'expanded' : ''}`}>
                                     {searchVisible && (
                                         <>
-                                            <FaSearch className="search-icon-inside" />
+                                            <FaSearch className="search-icon-inside"/>
                                             <input
                                                 type="text"
                                                 className="playlist-song-search-input"
@@ -921,11 +961,11 @@ const PlaylistContent = () => {
                                                 autoFocus
                                             />
                                             {searchTerm && (
-                                                <button 
-                                                    className="playlist-song-search-clear" 
+                                                <button
+                                                    className="playlist-song-search-clear"
                                                     onClick={() => setSearchTerm('')}
                                                 >
-                                                    <FaTimes />
+                                                    <FaTimes/>
                                                 </button>
                                             )}
                                         </>
@@ -933,8 +973,14 @@ const PlaylistContent = () => {
                                 </div>
 
 
-                                <button className="playlist-song-search-button" onClick={toggleSearch}>
-                                    <FaSearch className="icon" />
+                                <button
+                                    className="playlist-song-search-button"
+                                    onClick={toggleSearch}
+                                    data-testid="search-toggle"
+                                    aria-label="Buscar en playlist"
+                                >
+
+                                    <FaSearch className="icon"/>
                                 </button>
 
                                 <button className="shuffle-btn" onClick={toggleLike}>
@@ -1010,6 +1056,7 @@ const PlaylistContent = () => {
                                                         label: song.liked ? "Eliminar de favoritos" : "Agregar a favoritos",
                                                     },
                                                     {label: "Ver detalles"},
+                                                    {label: "Agregar a la cola"},
                                                 ].filter(option => option != null)}
                                                 position={index >= filteredSongs.length - 2 ? "top-right" : "bottom-right"}
                                                 submenuPosition={index >= filteredSongs.length - 2 ? "right" : "left"}
