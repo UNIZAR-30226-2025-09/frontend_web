@@ -111,13 +111,12 @@ const SongContent = () => {
                     method: "GET"
                 });
 
-                const url = `http://localhost:5001/api/song_like/${songId}/like?userId=${user_Id}`;
-                console.log("useEffect - Llamando a URL:", url);
-
-                const response = await axios.get(url);
-                console.log("useEffect - Respuesta del endpoint checkIfLiked:", response.data);
-
-                setIsLiked(response.data.isLiked);
+                const response = await apiFetch(`/song_like/${songId}/like?userId=${user_Id}`, {
+                    method: "GET"
+                });
+                console.log("useEffect - Respuesta del endpoint checkIfLiked:", response);
+                
+                setIsLiked(response.isLiked);
 
                 console.log("Canción cargada:", data);
                 setSong(data);
@@ -134,22 +133,28 @@ const SongContent = () => {
     const toggleLike = async () => {
         try {
             // Primero obtener o crear la playlist de "Me Gusta"
-            const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/songliked', {
-                user_id: user_Id
+            const likedPlaylistRes = await apiFetch('/playlists/songliked', {
+                method: 'POST',
+                body: {
+                    user_id: user_Id
+                }
             });
-            console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.data.playlist);
-
-            const playlistId = likedPlaylistRes.data.playlist.id; // Obtener el ID de la playlist
+            console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.playlist);
+            
+            const playlistId = likedPlaylistRes.playlist.id; // Obtener el ID de la playlist
 
             // Luego agregar la canción a esa playlist
 
-            const response = await axios.post(`http://localhost:5001/api/song_like/${songId}/like`, {
-                user_id: user_Id,
-                playlist_id: playlistId // Pasar el ID de la playlist correcta
+            const response = await apiFetch(`/song_like/${songId}/like`, {
+                method: 'POST',
+                body: {
+                    user_id: user_Id,
+                    playlist_id: playlistId // Pasar el ID de la playlist correcta
+                }
             });
-
-            console.log("Respuesta del servidor:", response.data);
-            setIsLiked(response.data.liked);
+            
+            console.log("Respuesta del servidor:", response);
+            setIsLiked(response.liked);
 
             // Actualizar estilo favorito después de dar like a la canción
             updateUserFavoriteStyle();
@@ -163,14 +168,17 @@ const SongContent = () => {
         setCurrentSong(song);
         setCurrentIndex(0);
         setSongs([song]);
+        
+        // Establece el songActive con el ID de la canción actual
+        setSongActive(song.id); // Importante: usa el mismo tipo de dato
+        
+        setPlaylistActive(0);
         if(firstPlay === 0){
             updateLastPlaybackState();
-            setSongActive(songId);
-            setPlaylistActive(0);
             setFirstPlay(1);
         }
-
-        if(!isPlaying){setIsPlaying(true);}
+    
+        setIsPlaying(true); // Siempre establece isPlaying en true cuando se hace clic
     };
 
     const updateLastPlaybackState = async () => {
@@ -255,25 +263,30 @@ const SongContent = () => {
         }
         else if (option.label === "Agregar a favoritos" || option.label === "Eliminar de favoritos")
         {
-            const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/songliked', {
-                user_id: user_Id
+            const likedPlaylistRes = await apiFetch('/playlists/songliked', {
+                method: 'POST',
+                body: {
+                    user_id: user_Id
+                }
             });
-            console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.data.playlist);
-
-            const playlistId = likedPlaylistRes.data.playlist.id; // Obtener el ID de la playlist
-
+            console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.playlist);
+            
+            const playlistId = likedPlaylistRes.playlist.id; // Obtener el ID de la playlist
+            
             // Luego agregar la canción a esa playlist
-
-            const response = await axios.post(`http://localhost:5001/api/song_like/${song.id}/likeUnlike`, {
-                user_id: user_Id,
-                playlist_id: playlistId // Pasar el ID de la playlist correcta
+            const response = await apiFetch(`/song_like/${song.id}/likeUnlike`, {
+                method: 'POST',
+                body: {
+                    user_id: user_Id,
+                    playlist_id: playlistId // Pasar el ID de la playlist correcta
+                }
             });
 
             // Actualizar estilo favorito después de dar like a la canción
             updateUserFavoriteStyle();
 
-            console.log("Respuesta del servidor:", response.data);
-            window.location.reload();
+            console.log("Respuesta del servidor:", response); // Quitar .data
+            setIsLiked(response.liked);
         } else if (option.label === "Copiar enlace") {
             const url = `${window.location.origin}/songs/${song.id}`;
             await navigator.clipboard.writeText(url);
@@ -352,12 +365,18 @@ const SongContent = () => {
 
                 <div className="song-actions">
                     <div className="rep-cont">
-                        <button
-                            className="play-btn"
-                            onClick={() => handlePlaySongs(isPlaying)}
-                        >
-                            {songActive === songId && isPlaying ? <FaPause/> : <FaPlay/>}
-                        </button>
+                    <button
+                        className="play-btn"
+                        onClick={() => {
+                            if (songActive === song.id && isPlaying) {
+                                setIsPlaying(false);
+                            } else {
+                                handlePlaySong();
+                            }
+                        }}
+                    >
+                        {songActive === song.id && isPlaying ? <FaPause/> : <FaPlay/>}
+                    </button>
                         <OptionsPopup
                             trigger={<FaEllipsisH className="song-options-icon"/>}
                             options={[
@@ -366,7 +385,7 @@ const SongContent = () => {
                                     submenu: agregarAFavoritosSubmenu,
                                 },
                                 {
-                                    label: song.liked ?  "Eliminar de favoritos" : "Agregar a favoritos" ,
+                                    label: isLiked ?  "Eliminar de favoritos" : "Agregar a favoritos" ,
                                 },
                                 {
                                     label: "Compartir",
@@ -406,17 +425,34 @@ const SongContent = () => {
                 <div className="song-cont">
 
                     <div className="song-list">
-                            <div key={song.id || 0} className="song-item">
-                                {/* Columna 1: (# / botón al hover) */}
-                                <div className="song-action">
-                                    <span className="song-index">{1}</span>
-                                    <button
-                                        className="play-icon"
-                                        onClick={handlePlaySong}
-                                    >
-                                        <FaPlay/>
-                                    </button>
+                    <div 
+                        key={song.id || 0} 
+                        className={`song-item ${songActive == songId ? 'active' : ''} ${songActive == songId && isPlaying ? 'playing' : ''}`}
+                    >
+                        {/* Columna 1: (# / botón al hover) */}
+                        <div className="song-action">
+                            <span className="song-index">{1}</span>
+                            <div className="playing-indicator">
+                                <div className="bar-container">
+                                    <div className="bar"></div>
+                                    <div className="bar"></div>
+                                    <div className="bar"></div>
+                                    <div className="bar"></div>
                                 </div>
+                            </div>
+                            <button
+                                className="song-item-play-button"
+                                onClick={() => {
+                                    if (songActive === song.id && isPlaying) {
+                                        setIsPlaying(false);
+                                    } else {
+                                        handlePlaySong();
+                                    }
+                                }}
+                            >
+                                {songActive === song.id && isPlaying ? <FaPause /> : <FaPlay />}
+                            </button>
+                        </div>
 
                                 {/* Columna 2: Portada */}
                                 <img src={getImageUrl(song.photo_video)} alt={song.name} className="song-cover"/>

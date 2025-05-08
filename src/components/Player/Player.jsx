@@ -7,7 +7,7 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";  // Iconos de cora
 import { IconContext } from "react-icons";
 import { getImageUrl } from "#utils/getImageUrl";
 import styles from "./PlayerStyles.module.css";
-import {apiFetch} from "#utils/apiFetch";
+import {apiFetch, MEDIA_URL} from "#utils/apiFetch";
 import SynchronizedLyrics from "../SynchronizedLyrics/SynchronizedLyrics";
 import { parseLRC } from "../../utils/parseLRC";
 function Player() {
@@ -36,7 +36,7 @@ function Player() {
     const songUrl = currentSong?.url_mp3
         ? currentSong.url_mp3.startsWith("http")
             ? currentSong.url_mp3
-            : `http://localhost:5001/${currentSong.url_mp3.replace(/^\/?/, "")}`
+            : `${MEDIA_URL}/${currentSong.url_mp3.replace(/^\/?/, "")}`
         : null;
 
     // Funcion para obtener los daily_skips del usuario
@@ -268,7 +268,7 @@ function Player() {
 
                     console.log("Fetching lyrics:", encodedFilename);
 
-                    const response = await fetch(`http://localhost:5001/lyrics/${encodedFilename}`);
+                    const response = await fetch(`${MEDIA_URL}/lyrics/${encodedFilename}`);
                     if (response.ok) {
                         const lrcText = await response.text();
                         const parsedLyrics = parseLRC(lrcText);
@@ -306,37 +306,25 @@ function Player() {
 
     useEffect(() => {
         if (!currentSong || !userId) return;
-
+    
         console.log("useEffect - Verificando favoritos para la canción:", currentSong);
         console.log("useEffect - userId:", userId);
-
+    
         const checkIfLiked = async () => {
             try {
-                const url = `http://localhost:5001/api/song_like/${currentSong.id}/like?userId=${userId}`;
-                console.log("useEffect - Llamando a URL:", url);
-
-                // Hacemos la solicitud con fetch
-                const response = await fetch(url, {
-                    method: 'GET',  // Método GET
-                    headers: {
-                        'Content-Type': 'application/json',  // Especificamos el tipo de contenido
-                    },
+                // Usar apiFetch en lugar de fetch directo
+                const data = await apiFetch(`/song_like/${currentSong.id}/like?userId=${userId}`, {
+                    method: 'GET'
                 });
-
-                if (!response.ok) {
-                    throw new Error(`Error en la solicitud: ${response.status}`);
-                }
-
-                const data = await response.json();  // Obtener los datos de la respuesta
+                
                 console.log("useEffect - Respuesta del endpoint checkIfLiked:", data);
-
-                setIsLiked(data.isLiked);  // Actualizamos el estado con la respuesta
-
+                setIsLiked(data.isLiked);
+    
             } catch (error) {
                 console.error("useEffect - Error al verificar los favoritos:", error);
             }
         };
-
+    
         checkIfLiked();
     }, [currentSong, userId]);
 
@@ -497,47 +485,31 @@ function Player() {
 
     const toggleLike = async () => {
         try {
-            // Primero obtener o crear la playlist de "Me Gusta"
-            const responsePlaylist = await fetch('http://localhost:5001/api/playlists/songliked', {
+            // Primero obtener o crear la playlist de "Me Gusta" usando apiFetch
+            const likedPlaylistRes = await apiFetch('/playlists/songliked', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    user_id: userId,
-                }),
+                body: {
+                    user_id: userId
+                }
             });
-
-            if (!responsePlaylist.ok) {
-                throw new Error(`Error al obtener o crear la playlist: ${responsePlaylist.status}`);
-            }
-
-            const likedPlaylistRes = await responsePlaylist.json();
+            
             console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.playlist);
-
-            const playlistId = likedPlaylistRes.playlist.id;  // Obtener el ID de la playlist
-
-            // Luego agregar la canción a esa playlist
+    
+            const playlistId = likedPlaylistRes.playlist.id;
+    
+            // Luego agregar la canción a esa playlist usando apiFetch
             const songId = currentSong.id;
-            const responseLike = await fetch(`http://localhost:5001/api/song_like/${songId}/like`, {
+            const likeResponse = await apiFetch(`/song_like/${songId}/like`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
+                body: {
                     user_id: userId,
-                    playlist_id: playlistId,  // Pasar el ID de la playlist correcta
-                }),
+                    playlist_id: playlistId
+                }
             });
-
-            if (!responseLike.ok) {
-                throw new Error(`Error al agregar el like: ${responseLike.status}`);
-            }
-
-            const likeResponse = await responseLike.json();
+    
             console.log("Respuesta del servidor:", likeResponse);
             setIsLiked(likeResponse.liked);
-
+    
             // Actualizar estilo favorito después de dar like a la canción
             updateUserFavoriteStyle();
         } catch (error) {
@@ -548,13 +520,21 @@ function Player() {
     return (
         <div className={styles.playerContainer}>
             {/* Portada de la canción */}
-            <img
-                className={styles.musicCover}
-                src={noSongSelected
-                    ? "https://via.placeholder.com/300x300.png?text=Sin+Canci%C3%B3n"
-                    : getImageUrl(currentSong.photo_video)}
-                alt={noSongSelected ? "Sin canción seleccionada" : "Portada de la canción"}
-            />
+            {noSongSelected ? (
+                <div className={styles.noSongPlaceholder}>
+                    <div className={styles.emojiIcon}>🎵</div>
+                    <div className={styles.placeholderText}>
+                        Sin canción seleccionada
+                    </div>
+                </div>
+            ) : (
+                <img
+                    className={styles.musicCover}
+                    src={getImageUrl(currentSong.photo_video)}
+                    alt="Portada de la canción"
+                    onError={(e) => (e.target.src = "/default-song.jpg")}
+                />
+            )}
 
             {/* Información de la canción */}
             <div className={styles.info}>
@@ -586,7 +566,7 @@ function Player() {
 
                     {/* Botón de Play/Pause con estilo circular */}
                     <button
-                        className={styles.playerControlPlay}
+                        className={`${styles.playerControlPlay} ${isPlaying ? styles.playing : ''}`}
                         onClick={playingButton}
                         disabled={noSongSelected}
                     >

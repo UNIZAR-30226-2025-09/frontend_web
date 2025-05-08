@@ -1,7 +1,7 @@
-
 // src/Reproductor/SongList.jsx
 import { useState, useEffect } from "react";
 import {useOutletContext} from "react-router-dom";
+import { apiFetch } from "#utils/apiFetch"; // Importamos apiFetch simplemente
 
 function SongList() {
     const [loading, setLoading] = useState(true);
@@ -18,11 +18,9 @@ function SongList() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5001/api/songs");
-                if (!response.ok) {
-                    throw new Error(`Error HTTP! Status: ${response.status}`);
-                }
-                const data = await response.json();
+                // Usamos apiFetch directamente 
+                const data = await apiFetch("/songs");
+                
                 // Guardamos la lista completa de canciones en el contexto
                 setSongs(data);
             } catch (e) {

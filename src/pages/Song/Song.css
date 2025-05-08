@@ -10,8 +10,10 @@
 
 /* Contenedor de la caja que muestra la información de la canción */
 .song-box {
-    flex: 1;  /* Toma el resto del espacio horizontal */
-    background: linear-gradient(to bottom, #0399b6, #121212);
+    flex: 1;
+    width: 100%;
+    /* Cambio al mismo degradado gris de Playlist */
+    background: linear-gradient(to bottom, #1a1a1a, #121212);
     color: white;
     padding: 40px;
     border-radius: 12px;
@@ -85,20 +87,122 @@
     align-items: center;
 }
 
-/* Botón de reproducción */
-.play-btn {
-    background-color: #1db954;
+/* Mejorando el botón de play en song-item para que sea igual que en Playlist */
+.song-item-play-button {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+    opacity: 0 !important; /* Por defecto oculto */
+    background: none;
     border: none;
-    color: white;
-    padding: 15px;
-    font-size: 20px;
+    color: #0399b6;
+    font-size: 18px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50%;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.2s ease;
+    z-index: 10;
+  }
+
+  .song-item:hover .song-item-play-button {
+    opacity: 1 !important;
+  }
+
+  /* 3. Asegurar que cuando el ratón está sobre la canción activa, siempre se muestre el botón */
+.song-item.active:hover .song-item-play-button {
+    opacity: 1 !important;
+    z-index: 10 !important;
+  }
+  
+  /* 4. Asegurar que las barras NUNCA aparezcan cuando el ratón está sobre una canción activa */
+  .song-item.active:hover .playing-indicator {
+    display: none !important;
+  }
+  
+  /* 5. Índice siempre visible, excepto cuando hay barras o hover */
+  .song-index {
+    opacity: 1 !important;
+  }
+  
+  /* 6. Ocultar índice cuando las barras están visibles */
+  .song-item.active.playing .song-index {
+    opacity: 0 !important;
+  }
+  
+  /* 7. Ocultar índice cuando el ratón está sobre una canción activa */
+  .song-item.active:hover .song-index {
+    opacity: 0 !important;
+  }
+
+.song-item-play-button:hover {
+    transform: scale(1.2);
+    background-color: rgba(3, 153, 182, 0.2);
+    color: #0399b6;
+}
+
+/* Botón de reproducción */
+.play-btn {
+    background: linear-gradient(135deg, #0399b6, #0382a0);
+    color: white;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(3, 153, 182, 0.35);
+    position: relative;
+    z-index: 5;
+    animation: pulse-play 2s infinite;
+}
+
+@keyframes pulse-play {
+    0% { box-shadow: 0 4px 12px rgba(3, 153, 182, 0.35); }
+    50% { box-shadow: 0 4px 15px rgba(3, 153, 182, 0.45); }
+    100% { box-shadow: 0 4px 12px rgba(3, 153, 182, 0.35); }
 }
 
 .play-btn:hover {
-    background-color: #1ed760;
+    background: linear-gradient(135deg, #03a9c6, #0399b6);
+    box-shadow: 0 5px 15px rgba(3, 153, 182, 0.4);
+}
+
+.play-btn:active {
+    transform: scale(0.95);
+}
+
+.play-btn svg {
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+    transition: transform 0.3s ease;
+    width: 18px;
+    height: 18px;
+}
+
+.play-btn:hover svg {
+    transform: scale(1.1);
+}
+
+.song-options-icon {
+    font-size: 24px;
+    color: #d4d4d4;
+    transition: all 0.3s ease;
+    margin-left: 15px;
+}
+
+.song-options-icon:hover {
+    color: #0399b6;
+    transform: scale(1.1);
+    text-shadow: 0 0 10px rgba(3, 153, 182, 0.4);
 }
 
 /* Contenedor de las acciones a la derecha (like y más opciones) */
@@ -111,18 +215,28 @@
 .like-btn {
     background: transparent;
     border: none;
-    color: #1db954;
+    color: #0399b6;
     font-size: 25px;
     cursor: pointer;
     transition: color 0.3s ease;
 }
 
-.like-btn .heart-icon.liked {
-    color: #e2242c;
+.like-btn .heart-icon.liked { 
+    color: #dd1e41;
+    animation: pulse 0.3s ease-in-out;
+    text-shadow: 0 0 10px rgba(221, 30, 65, 0.4);
 }
 
 .like-btn:hover {
-    color: #1ed760;
+    color: #0399b6; /* Color azul de la app al hacer hover */
+    transform: scale(1.15);
+    text-shadow: 0 0 10px rgba(3, 153, 182, 0.4);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
 }
 
 /* Icono de tres puntos (más opciones) */
@@ -135,7 +249,7 @@
 
 /* Animación del icono de tres puntos */
 .icon:hover {
-    color: #1ed760;
+    color: #0399b6;
 }
 
 /* --- POPUP DE COMPARTIR CANCIÓN --- */
@@ -465,3 +579,108 @@
     from { opacity: 0; transform: translateY(20px);}
     to { opacity: 1; transform: translateY(0);}
 }
+
+.song-action {
+    position: relative !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  
+  /* Asegurate que .song-item tiene las clases adecuadas */
+  .song-item {
+    position: relative !important;
+  }
+  
+  /* Posicionamiento del play-button */
+  .song-item-play-button {
+    z-index: 10 !important;
+  }
+
+/* Indicador de canción en reproducción con barras de ecualización */
+.playing-indicator {
+    display: none !important; /* Oculto por defecto */
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    width: 30px;
+  }
+  
+  /* Mostrar SOLO cuando la canción está activa Y reproduciéndose */
+  .song-item.active.playing .playing-indicator {
+    display: flex !important; /* Con !important para asegurar que se muestre */
+  }
+  
+  /* Nunca mostrar las barras cuando no está reproduciendo */
+  .song-item.active:not(.playing) .playing-indicator {
+    display: none !important;
+  }
+  
+  /* Índices de canciones - siempre visibles por defecto */
+  .song-index {
+    opacity: 1 !important;
+  }
+  
+  /* Ocultar el índice SOLO cuando las barras están visibles */
+  .song-item.active.playing .song-index {
+    opacity: 0 !important;
+  }
+  
+  /* Asegurar que las barras NUNCA aparezcan cuando el ratón está sobre una canción activa */
+  .song-item.active:hover .playing-indicator {
+    display: none !important;
+  }
+  
+  /* Asegurar que cuando el ratón está sobre la canción activa, siempre se muestre el botón */
+  .song-item.active:hover .song-item-play-button {
+    opacity: 1 !important;
+  }
+  
+  /* Las barras de ecualización */
+  .bar-container {
+    display: flex;
+    align-items: flex-end;
+    height: 16px; 
+    width: 24px;
+    gap: 3px;
+  }
+  
+  .bar {
+    width: 3px;
+    background-color: #0399b6;
+    border-radius: 1.5px;
+    animation: sound 0ms -800ms linear infinite alternate;
+  }
+  
+  .bar:nth-child(1) {
+    animation-duration: 474ms;
+    height: 10px;
+  }
+  
+  .bar:nth-child(2) {
+    animation-duration: 433ms;
+    height: 16px;
+  }
+  
+  .bar:nth-child(3) {
+    animation-duration: 407ms;
+    height: 8px;
+  }
+  
+  .bar:nth-child(4) {
+    animation-duration: 458ms;
+    height: 14px;
+  }
+  
+  @keyframes sound {
+    0% {
+      transform: scaleY(0.3);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+  }

@@ -11,8 +11,6 @@ import { getImageUrl } from "#utils/getImageUrl";
 import CreatePlaylistModal from "../../components/PlaylistModal/PlaylistModal.jsx";
 import OptionsPopup from "../../components/PopUpSelection/OptionsPopup.jsx";
 import Rating from '../../components/Rating/Rating.jsx';
-import axios from "axios";
-
 
 // Convierte segundos a m:ss
 function formatDuration(seconds) {
@@ -363,60 +361,66 @@ const PlaylistContent = () => {
     }
 
     const handlePlaySongs = (songs, isPlaying) => {
-        console.log("Reproduciendo canciones en modo aleatorio...");
-        let result = ([]);
-        if(!isPlaying){
-            if(isShuffling){
-                // Shuffle array of songs
-                const shuffledSongs = shuffleArray(songs);
-                // Reproducir la primera canción del array mezclado
-                console.log("PREMIUM USER: ",user.is_premium);
-
-                if(!user.is_premium){
-                    console.log("USUARIO es premium metiendo anuncios", user.is_premium);
-                    result = addsSong(shuffledSongs);
-                    console.log("VALOR ID CANCION PLAY SONGS: ", result[0].songId);
-                    setCurrentSong(result[0]);
-                    setCurrentIndex(0);
-                    setSongs(result);
-                    updateLastPlaybackState(result[0].id);
-                }
-                else{
-                    setCurrentSong(shuffledSongs[0]);
-                    setCurrentIndex(0);
-                    setSongs(shuffledSongs);
-                    updateLastPlaybackState(shuffledSongs[0].id);
-                }
-
-                setFirstPlay(0);
-            }
-            else{
-                if(firstPlay === 0){
-                    console.log("PREMIUM USER: is nt shuffling",user.is_premium);
-                    if(!user.is_premium){
-                        result = addsSong(songs);
-
-                        setCurrentSong(result[0]);
-                        setCurrentIndex(0);
-                        setSongs(result);
-                        updateLastPlaybackState(result[0].id);
-                    }
-                    else{
-                        setCurrentSong(songs[0]);
-                        setCurrentIndex(0);
-                        setSongs(songs);
-                        updateLastPlaybackState(songs[0].id);
-                    }
-                }
-            }
-
-            setPlaylistActive(playlistId);
-            setSongActive(0);
+        console.log("Reproduciendo canciones...");
+        let result = [];
+        
+        // Verificar si estamos en la misma playlist que ya está sonando
+        const isCurrentPlaylist = playlistActive === playlistId;
+        
+        // Si estamos en la misma playlist, solo alternamos play/pause sin cambiar la canción
+        if (isCurrentPlaylist) {
+            console.log("Alternando reproducción en la playlist actual");
+            setIsPlaying(!isPlaying);
+            return;
         }
-
-        console.log("Cambiando isplaying en playlist");
+        
+        // A partir de aquí, estamos cambiando de playlist
+        console.log("Iniciando reproducción de nueva playlist");
+        
+        // Si el modo aleatorio está activado, barajamos las canciones
+        if (isShuffling) {
+            // Shuffle array of songs
+            const shuffledSongs = shuffleArray(songs);
+            // Reproducir la primera canción del array mezclado
+            console.log("PREMIUM USER: ", user.is_premium);
+    
+            if (!user.is_premium) {
+                console.log("USUARIO no es premium, metiendo anuncios");
+                result = addsSong(shuffledSongs);
+                console.log("VALOR ID CANCION PLAY SONGS: ", result[0].id);
+                setCurrentSong(result[0]);
+                setCurrentIndex(0);
+                setSongs(result);
+                updateLastPlaybackState(result[0].id);
+            } else {
+                setCurrentSong(shuffledSongs[0]);
+                setCurrentIndex(0);
+                setSongs(shuffledSongs);
+                updateLastPlaybackState(shuffledSongs[0].id);
+            }
+        } else {
+            if (!user.is_premium) {
+                console.log("USUARIO no es premium, metiendo anuncios");
+                result = addsSong(songs);
+                setCurrentSong(result[0]);
+                setCurrentIndex(0);
+                setSongs(result);
+                updateLastPlaybackState(result[0].id);
+            } else {
+                setCurrentSong(songs[0]);
+                setCurrentIndex(0);
+                setSongs(songs);
+                updateLastPlaybackState(songs[0].id);
+            }
+        }
+        
+        // Actualizar la playlist activa y activar la reproducción
+        setPlaylistActive(playlistId);
+        setSongActive(0);
         setFirstPlay(firstPlay + 1);
-        setIsPlaying(!isPlaying);
+        
+        // Siempre comenzar reproducción cuando cambiamos de playlist
+        setIsPlaying(true);
     };
 
     const handleEditToggle = () => {
@@ -590,24 +594,28 @@ const PlaylistContent = () => {
         }
         else if (option.label === "Agregar a favoritos" || option.label === "Eliminar de favoritos")
         {
-            const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/songliked', {
-                user_id: user_Id
+            const likedPlaylistRes = await apiFetch('/playlists/songliked', {
+                method: 'POST',
+                body: {
+                    user_id: user_Id
+                }
             });
-            console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.data.playlist);
+            console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.playlist);
 
-            const playlistId = likedPlaylistRes.data.playlist.id; // Obtener el ID de la playlist
+            const playlistId = likedPlaylistRes.playlist.id;
 
-            // Luego agregar la canción a esa playlist
-
-            const response = await axios.post(`http://localhost:5001/api/song_like/${song.id}/likeUnlike`, {
-                user_id: user_Id,
-                playlist_id: playlistId // Pasar el ID de la playlist correcta
+            const response = await apiFetch(`/song_like/${song.id}/likeUnlike`, {
+                method: 'POST',
+                body: {
+                    user_id: user_Id,
+                    playlist_id: playlistId // Pasar el ID de la playlist correcta
+                }
             });
 
             // Actualizar estilo favorito después de dar like a la canción
             updateUserFavoriteStyle();
 
-            console.log("Respuesta del servidor:", response.data);
+            console.log("Respuesta del servidor:", response);
             window.location.reload();
         }
         else
@@ -896,7 +904,7 @@ const PlaylistContent = () => {
                             {playlist.typeP !== "Vibra_likedSong" && (
                                 <div className="popup-wrapper">
                                     <OptionsPopup
-                                        trigger={<FaEllipsisH className="icon"/>}
+                                        trigger={<FaEllipsisH className="playlist-main-options-icon"/>}
                                         options={options}
                                         position="bottom-right"
                                         submenuPosition="right"
@@ -934,12 +942,12 @@ const PlaylistContent = () => {
 
 
                                 <button className="playlist-song-search-button" onClick={toggleSearch}>
-                                    <FaSearch className="icon" />
+                                    <FaSearch className="playlist-search-icon-btn" />
                                 </button>
 
                                 <button className="shuffle-btn" onClick={toggleLike}>
                                     <FaHeart
-                                        className={`icon heart-icon ${isLiked ? "liked" : ""}`}
+                                        className={`playlist-heart-icon ${isLiked ? "liked" : ""}`}
                                     />
                                 </button>
                             </div>
@@ -948,9 +956,21 @@ const PlaylistContent = () => {
 
                     {/* Opciones de ordenación */}
                     <div className="sort-buttons">
-                        <button onClick={() => setSortOption('title')}>Ordenar por Título</button>
-                        <button onClick={() => setSortOption('artist')}>Ordenar por Artista</button>
-                        <button onClick={() => setSortOption('date')}>Ordenar por Fecha Añadida</button>
+                        <button 
+                            className={sortOption === 'title' ? 'active' : ''} 
+                            onClick={() => setSortOption('title')}>
+                            Ordenar por Título
+                        </button>
+                        <button 
+                            className={sortOption === 'artist' ? 'active' : ''} 
+                            onClick={() => setSortOption('artist')}>
+                            Ordenar por Artista
+                        </button>
+                        <button 
+                            className={sortOption === 'date' ? 'active' : ''} 
+                            onClick={() => setSortOption('date')}>
+                            Ordenar por Fecha
+                        </button>
                     </div>
 
                     {/* Cabecera de la tabla */}
@@ -970,14 +990,33 @@ const PlaylistContent = () => {
                             {/* Usamos filteredSongs o sortedSongs dependiendo de si hay un término de búsqueda */}
                             {(searchTerm ? filteredSongs : sortedSongs).length > 0 ? (
                                 (searchTerm ? filteredSongs : sortedSongs).map((song, index) => (
-                                    <div key={song.id || index} className="song-item">
+                                    <div 
+                                        key={song.id || index} 
+                                        className={`song-item ${currentSong?.id === song.id ? 'active' : ''} ${currentSong?.id === song.id && isPlaying ? 'playing' : ''}`}
+                                    >
+                                        {/* resto del contenido de la canción */}
                                         <div className="song-action">
                                             <span className="song-index">{index + 1}</span>
+                                            <div className="playing-indicator">
+                                                <div className="bar-container">
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                </div>
+                                            </div>
                                             <button
-                                                className="play-icon"
-                                                onClick={() => handlePlaySong(song, index, playlist.songs)}
+                                                className={`song-play-button ${currentSong?.id === song.id && playlistActive === playlistId ? 'active' : ''}`}
+                                                onClick={() => {
+                                                    if (currentSong?.id === song.id && playlistActive === playlistId) {
+                                                        setIsPlaying(!isPlaying);
+                                                    } else {
+                                                        handlePlaySong(song, index, playlist.songs);
+                                                    }
+                                                }}
                                             >
-                                                <FaPlay/>
+                                                {currentSong?.id === song.id && playlistActive === playlistId && isPlaying ? 
+                                                    <FaPause /> : <FaPlay />}
                                             </button>
                                         </div>
                                         
@@ -997,9 +1036,9 @@ const PlaylistContent = () => {
                                             {formatDuration(song.duration)}
                                         </span>
                                         
-                                        <div className="song-options">
+                                        <div className="playlist-song-options-wrapper">
                                             <OptionsPopup
-                                                trigger={<FaEllipsisH className="song-options-icon"/>}
+                                                trigger={<FaEllipsisH className="playlist-song-options-icon"/>}
                                                 options={[
                                                     {
                                                         label: "Agregar a playlist",

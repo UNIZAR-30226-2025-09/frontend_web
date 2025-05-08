@@ -1,27 +1,40 @@
+/* Layout principal */
 .layout {
     display: flex;
     width: 100%;
-    min-height: 100vh;  /* Cambié a min-height para que siempre ocupe toda la ventana */
+    min-height: 100vh;
     margin: 0;
     padding: 0;
-    overflow-x: hidden; /* No queremos scroll horizontal */
-    overflow-y: auto;   /* El scroll lo manejamos desde el navegador */
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
-/* Columna derecha (contenido principal) */
+/* Contenedor principal */
 .box {
     flex: 1;
     width: 100%;
-    background: linear-gradient(to bottom, #0399b6, #121212);
+    /* Cambiamos el fondo por un degradado negro más elegante */
+    background: linear-gradient(to bottom, #1a1a1a, #121212);
     color: white;
     padding: 40px;
     border-radius: 12px;
     box-sizing: border-box;
-
-    /* Aseguramos que el contenedor no tiene restricciones de altura */
     height: auto;
     display: flex;
     flex-direction: column;
+}
+
+/* Área de cabecera con una sutil línea de acento */
+.box:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #0399b6, transparent);
+    opacity: 0.5;
+    border-radius: 12px 12px 0 0;
 }
 
 /* Encabezado con la portada y el nombre de la playlist */
@@ -32,14 +45,24 @@
     height: auto;
     align-items: flex-end;
     justify-content: flex-start;
-    gap: 20px;
-    margin-bottom: 2rem;
+    gap: 30px; /* Aumentado el espacio entre imagen y texto */
+    margin-bottom: 2.5rem; /* Mayor espacio inferior */
+    position: relative; /* Para el efecto de sombra */
 }
 
-/* Imagen de la playlist */
+/* Imagen de la playlist con mejores efectos */
+.image {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
 .image:hover {
-    opacity: 0.7;
-    transform: scale(1.05);
+    opacity: 0.85;
+    transform: scale(1.03);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(3, 153, 182, 0.2);
 }
 
 .image::after {
@@ -48,93 +71,176 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.7);
     color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 12px 24px;
+    border-radius: 30px;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 600;
+    letter-spacing: 0.5px;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(3, 153, 182, 0.3);
 }
 
 .image:hover::after {
     opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
 }
 
-.imagenoedit:after{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
+.imagenoedit {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
 }
 
-/* Información de la playlist (título, etc.) */
+.imagenoedit:hover {
+    transform: scale(1.02);
+}
+
+/* Mejora de las imágenes */
+.image img,
+.imagenoedit img {
+    width: 275px;
+    height: 275px;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Información de la playlist con tipografía mejorada */
 .playlist-info {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 12px;
     color: #fff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    max-width: 65%; /* Control del ancho máximo */
 }
 
 .playlist-info h1 {
-    font-size: 80px;
-    font-weight: bold;
+    font-size: 72px;
+    font-weight: 800;
     margin: 0;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    background: linear-gradient(to bottom, #ffffff, #b3b3b3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
 }
 
 .playlist-info p {
     font-size: 18px;
     color: #b3b3b3;
     margin: 0;
+    max-width: 95%;
+    line-height: 1.5;
 }
 
-/* Acciones de la playlist (botón play, iconos) */
+/* Acciones de la playlist con mejor separación */
 .playlist-actions {
     display: flex;
     align-items: center;
-    gap: 15px;
-    width: 100%;               /* Se extiende al ancho disponible */
+    gap: 20px;
+    width: 100%;
     border-bottom: 2px solid #282828;
-    padding-bottom: 10px;
-    margin-bottom: 2rem;
+    padding-bottom: 18px;
+    margin-bottom: 2.5rem;
     justify-content: space-between;
+    position: relative;
+}
+
+/* Efecto de línea brillante en el borde inferior */
+.playlist-actions:after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 30%;
+    height: 1px;
+    background: linear-gradient(to right, #0399b6, transparent);
 }
 
 /* Contenedor botones principales izquierda */
 .rep-cont {
     display: flex;
     align-items: center;
-    gap: 20px; /* Espacio entre los botones */
-    justify-content: center; /* Centra los botones */
-    padding: 10px;
+    gap: 25px;
+    justify-content: center;
+    padding: 10px 5px;
 }
 
-/* Botón principal de play */
+/* Botón principal de play con mejor efecto */
 .play-btn {
-    background-color: #0399b6;
+    background: linear-gradient(135deg, #0399b6, #0382a0);
     color: white;
-    padding: 15px;
+    padding: 0;
     border: none;
     border-radius: 50%;
     cursor: pointer;
-    font-size: 22px;
+    font-size: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 55px;
-    height: 55px;
-    transition: background 0.2s;
+    width: 50px;
+    height: 50px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(3, 153, 182, 0.35);
+    position: relative;
+    z-index: 5;
+}
+
+/* Efecto de brillo en el botón principal */
+
+/* Quitamos el efecto de brillo */
+.play-btn:before {
+    content: none;
+}
+
+@keyframes shine {
+    0% { left: -50%; }
+    20% { left: 120%; }
+    100% { left: 120%; }
+}
+
+@keyframes pulse-play {
+    0% { box-shadow: 0 4px 12px rgba(3, 153, 182, 0.35); }
+    50% { box-shadow: 0 4px 15px rgba(3, 153, 182, 0.45); }
+    100% { box-shadow: 0 4px 12px rgba(3, 153, 182, 0.35); }
+}
+
+.play-btn {
+    animation: pulse-play 2s infinite;
 }
 
 .play-btn:hover {
-    background-color: #0399b6;
+    background: linear-gradient(135deg, #03a9c6, #0399b6);
+    box-shadow: 0 5px 15px rgba(3, 153, 182, 0.4);
 }
 
+.play-btn:active {
+    transform: scale(0.95);
+}
+
+/* Mejora para el icono dentro del botón */
+.play-btn svg {
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+    transition: transform 0.3s ease;
+    width: 18px;
+    height: 18px;
+}
+
+.play-btn:hover svg {
+    transform: scale(1.1);
+}
+
+/* Botón de reproducción aleatoria mejorado */
 .shuffle-btn {
     background: none;
     border: none;
@@ -142,190 +248,460 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s;
+    padding: 12px;
+    border-radius: 50%;
+}
+
+.shuffle-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
 }
 
 .shuffle-icon {
-    font-size: 30px;
-    color: #ffffff; /* Color por defecto */
-    transition: color 0.2s;
+    font-size: 28px;
+    color: #d4d4d4;
+    transition: all 0.3s ease;
 }
 
 .shuffle-icon.active {
-    color: #ff9900; /* Color cuando está activado */
+    color: #0399b6;
+    text-shadow: 0 0 15px rgba(3, 153, 182, 0.6);
 }
 
-/* Iconos de la derecha */
+.playlist-options-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 10px;
+    border-radius: 50%;
+    margin-left: 8px;
+}
+
+.playlist-options-button:hover {
+    background: rgba(3, 153, 182, 0.1);
+}
+
+.playlist-options-icon {
+    font-size: 24px; /* Más grande que antes */
+    color: #d4d4d4;
+    transition: all 0.3s ease;
+}
+
+.playlist-options-button:hover .playlist-options-icon {
+    color: #0399b6; /* Color azul de la app */
+    transform: scale(1.1);
+}
+
+/* Iconos de la derecha con mejor hover */
 .actions-right {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 18px;
 }
 
-.icon {
-    font-size: 22px;
-    cursor: pointer;
-    color: white;
-    transition: color 0.2s;
+.playlist-main-options-icon {
+    font-size: 24px;
+    color: #d4d4d4;
+    transition: all 0.3s ease;
 }
 
-.icon:hover {
+.playlist-main-options-icon:hover {
+    color: #0399b6; /* Color azul de la app */
+    transform: scale(1.1);
+    text-shadow: 0 0 10px rgba(3, 153, 182, 0.4);
+}
+
+.playlist-song-options-icon {
+    font-size: 20px;
+    color: #a0a0a0;
+    transition: all 0.2s ease;
+}
+
+.playlist-song-options-icon:hover {
     color: #0399b6;
+    transform: scale(1.1);
 }
 
-/* Estilos de edición de playlist */
+.playlist-song-options-wrapper {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
+    opacity: 0; /* Oculto por defecto */
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+/* Mostrar los tres puntos solo al pasar el ratón sobre la canción */
+.song-item:hover .playlist-song-options-wrapper {
+    opacity: 1;
+}
+
+.playlist-song-options-wrapper:hover {
+    background-color: rgba(3, 153, 182, 0.1);
+}
+
+.song-options-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.song-options-icon {
+    font-size: 20px;
+    color: #a0a0a0;
+    transition: all 0.2s ease;
+}
+
+.song-options-button:hover {
+    background-color: rgba(3, 153, 182, 0.1);
+}
+
+.song-options-button:hover .song-options-icon {
+    color: #0399b6;
+    transform: scale(1.1);
+}
+
+/* Icono del corazón */
+.playlist-heart-icon {
+    font-size: 24px; /* Más grande */
+    color: #d4d4d4;
+    transition: all 0.3s ease;
+}
+
+.playlist-heart-icon:hover {
+    color: #0399b6; /* Color azul de la app al hacer hover */
+    transform: scale(1.15);
+    text-shadow: 0 0 10px rgba(3, 153, 182, 0.4);
+}
+
+.playlist-heart-icon.liked {
+    color: #dd1e41;
+    animation: pulse 0.3s ease-in-out;
+    text-shadow: 0 0 10px rgba(221, 30, 65, 0.4);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* Estilo modal de edición mejorado */
 .popup-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6); /* Fondo oscurecido */
+    background: rgba(0, 0, 0, 0.75);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
+    backdrop-filter: blur(5px);
 }
 
 .popup-content {
-    background: #1e1e1e;
-    padding: 30px;
-    border-radius: 12px;
-    width: 400px;
+    background: linear-gradient(145deg, #1e1e1e, #262626);
+    padding: 35px;
+    border-radius: 16px;
+    width: 450px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    text-align: center;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.3s ease-in-out;
+    gap: 15px;
+    text-align: left;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.35s cubic-bezier(0.21, 0.61, 0.35, 1);
+    border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+.popup-content label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #b3b3b3;
+    margin-bottom: -5px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 .edit-input {
     width: 100%;
-    font-size: 24px;
-    background: #222;
+    font-size: 16px;
+    background: rgba(0, 0, 0, 0.2);
     color: white;
-    border: none;
-    padding: 8px;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
 }
 
 .edit-input:focus {
     outline: none;
     border: 1px solid #0399b6;
+    box-shadow: 0 0 0 3px rgba(3, 153, 182, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.edit-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* Botones de acción en los modales */
+.save-btn, .cancel-btn {
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    border: none;
+    margin-top: 10px;
+    cursor: pointer;
 }
 
 .save-btn {
-    background-color: #0399b6;
+    background: linear-gradient(135deg, #0399b6, #03809b);
     color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    display: block;
-    margin: 0 auto;
-}
-
-
-.cancel-btn {
-    background-color: #dd1e41;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(3, 153, 182, 0.3);
 }
 
 .save-btn:hover {
-    background-color: #0399b6;
+    background: linear-gradient(135deg, #03a9c6, #0399b6);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(3, 153, 182, 0.4);
 }
 
-.heart-icon {
-    color: #ccc;  /* Color predeterminado (gris) */
+.cancel-btn {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.heart-icon.liked {
-    color: #dd1e41;  /* Color rojo cuando se le da like */
-}
-/* Pop up de opciones, 3 puntos*/
-.popup-wrapper {
-    position: relative;
-    overflow: visible;
-    display: inline-block;
+.cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
 }
 
-.rating-section {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-}
-
-.rating-section p {
-    font-size: 1rem;
-    color: white;
-}
-
-/* Botones de ordenacion de las canciones de la playlist */
+/* Botones de ordenación mejorados */
 .sort-buttons {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     padding-left: 10px;
 }
 
 .sort-buttons button {
-    background-color: transparent;
-    border: 1px solid #ccc;
-    color: #ccc;
-    padding: 8px 16px;
-    border-radius: 20px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 10px 20px;
+    border-radius: 30px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    min-width: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sort-buttons button:before {
+    content: "";
+    position: absolute;
+    left: -100%;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(3, 153, 182, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.sort-buttons button:hover:before {
+    left: 100%;
 }
 
 .sort-buttons button:hover {
-    background-color: #0399b6; /* Verde tipo Spotify */
+    background: rgba(3, 153, 182, 0.1);
     color: white;
-    border-color: #0399b6;
+    border-color: rgba(3, 153, 182, 0.2);
+    transform: translateY(-2px);
 }
 
 .sort-buttons button.active {
-    background-color: #0399b6;
+    background: linear-gradient(135deg, #0399b6, #03809b);
     color: white;
-    border-color: #0399b6;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(3, 153, 182, 0.3);
+    position: relative;
 }
 
-/* Pop up actualizacion de imagen*/
+.sort-buttons button.active:after {
+    font-size: 12px;
+    position: absolute;
+    right: 15px;
+    opacity: 0.8;
+}
 
+/* Efecto de pulso para el botón activo */
+@keyframes pulse-border {
+    0% { box-shadow: 0 0 0 0 rgba(3, 153, 182, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(3, 153, 182, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(3, 153, 182, 0); }
+}
+
+.sort-buttons button.active {
+    animation: pulse-border 2s infinite;
+}
+
+/* Mejora el diseño de la vista previa de imagen */
 .image-preview-play {
-    margin-top: 15px;
+    margin-top: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .image-preview-play img {
-    width: 120px;
-    height: 120px;
+    width: 140px;
+    height: 140px;
     border-radius: 12px;
     object-fit: cover;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+    border: 2px solid rgba(3, 153, 182, 0.3);
 }
 
 .image-preview-play img:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
 }
+
+/* Mejoras en la sección de búsqueda de canciones */
+.playlist-song-search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    width: 0;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    margin-right: 10px;
+    height: 36px;
+}
+
+.playlist-song-search-container.expanded {
+    width: 280px;
+    border-bottom: 2px solid rgba(3, 153, 182, 0.3);
+}
+
+.search-icon-inside {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(3, 153, 182, 0.8);
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.playlist-song-search-input {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 8px 16px 8px 34px;
+    width: 100%;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.playlist-song-search-input:focus {
+    background: transparent;
+}
+
+.playlist-song-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+}
+
+.playlist-song-search-clear {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+    width: 18px;
+    height: 18px;
+}
+
+.playlist-song-search-clear:hover {
+    color: #ffffff;
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.playlist-song-search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 22px;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.playlist-song-search-button:hover {
+    color: #0399b6;
+    background: rgba(3, 153, 182, 0.1);
+    transform: scale(1.05);
+}
+
+/* Mensaje cuando no hay resultados */
+.playlist-no-results {
+    text-align: center;
+    padding: 30px 20px;
+    color: rgba(255, 255, 255, 0.6);
+    width: 100%;
+    font-style: italic;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    margin: 15px 0;
+    border: 1px dashed rgba(3, 153, 182, 0.2);
+}
+
 
 /* Para ajustar la imagen al marco de la playlist */
 .image img,
@@ -396,6 +772,19 @@
     color: rgba(255, 255, 255, 0.5);
     width: 18px;
     height: 18px;
+}
+
+.playlist-search-icon-btn {
+    font-size: 22px;
+    cursor: pointer;
+    color: #d4d4d4;
+    transition: all 0.3s ease;
+}
+
+.playlist-search-icon-btn:hover {
+    color: #0399b6;
+    transform: scale(1.1);
+    text-shadow: 0 0 10px rgba(3, 153, 182, 0.4);
 }
 
 .playlist-search-icon svg {
@@ -664,63 +1053,6 @@
     to { opacity: 1; transform: translateY(0);}
 }
 
-
-/* Estilos para el icono de búsqueda y la barra de búsqueda de canciones - nombres únicos */
-.playlist-song-search-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    font-size: 22px;
-    color: white;
-    opacity: 0.8;
-}
-
-.playlist-song-search-button:hover {
-    color: #0399b6;
-    transform: scale(1.05);
-    opacity: 1;
-}
-
-.playlist-song-search-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    width: 0;
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); /* Transición más suave */
-    margin-right: 10px;
-}
-
-.playlist-song-search-container.expanded {
-    width: 250px;
-}
-
-.playlist-song-search-input {
-    background: transparent; /* Eliminamos el fondo oscuro */
-    border: none; /* Quitamos el borde */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.4); /* Solo borde inferior */
-    color: white;
-    padding: 8px 16px 8px 34px;
-    width: 100%;
-    font-size: 14px;
-    outline: none;
-    transition: all 0.2s ease;
-}
-
-.playlist-song-search-input:focus {
-    background: transparent; /* Sin fondo al hacer focus */
-    border-bottom: 1px solid #0399b6; /* Solo cambiamos el color del borde inferior */
-    box-shadow: none; /* Eliminamos la sombra */
-}
-
-.playlist-song-search-input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
-}
-
 .playlist-song-search-icon-inside {
     position: absolute;
     left: 10px;
@@ -731,41 +1063,188 @@
     pointer-events: none;
 }
 
-.playlist-song-search-clear {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.6);
-    cursor: pointer;
-    font-size: 14px;
-    padding: 0;
+.song-item {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.song-item:hover {
+    background-color: rgba(3, 153, 182, 0.08);
+}
+
+.song-action {
+    position: relative;
+    width: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
-    opacity: 0.7;
-    width: 16px;
-    height: 16px;
 }
 
-.playlist-song-search-clear:hover {
-    color: #fff;
+.song-index {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    transition: opacity 0.2s ease;
+}
+
+.song-item:hover .song-index {
+    opacity: 0;
+}
+
+/* Nuevo estilo específico para el botón de play de canciones */
+.song-play-button {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+    opacity: 0;
+    background: none;
+    border: none;
+    color: #0399b6;
+    font-size: 18px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.song-item:hover .song-play-button {
     opacity: 1;
 }
 
-/* Mensaje cuando no hay resultados - estilo mejorado */
-.playlist-no-results {
-    text-align: center;
-    padding: 20px;
-    color: rgba(255, 255, 255, 0.7);
-    width: 100%;
-    font-style: italic;
-    background: rgba(3, 153, 182, 0.05); /* Fondo muy sutil */
-    border-radius: 8px;
-    margin: 10px 0;
-    border: 1px dashed rgba(3, 153, 182, 0.2); /* Borde punteado sutil */
+.song-play-button:hover {
+    transform: scale(1.2);
+    background-color: rgba(3, 153, 182, 0.2);
+    color: #0399b6;
 }
 
+.play-icon {
+    /* No eliminamos la clase, pero ajustamos solo para los botones grandes */
+    position: relative; /* en lugar de absolute para no interferir */
+}
+
+.song-item:hover .play-icon {
+    opacity: 1;
+}
+
+.play-icon:hover {
+    transform: scale(1.2);
+    background-color: rgba(3, 153, 182, 0.2);
+}
+
+.song-item.active {
+    background-color: rgba(3, 153, 182, 0.15);
+}
+
+.song-item.active:hover {
+    background-color: rgba(3, 153, 182, 0.2);
+}
+
+.song-play-button.active {
+    opacity: 1;
+}
+
+/* Indicador de canción en reproducción con barras de ecualización */
+.playing-indicator {
+    display: none !important; /* Oculto por defecto */
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    width: 30px;
+  }
+  
+  /* Mostrar SOLO cuando la canción está activa Y reproduciéndose */
+  .song-item.active.playing .playing-indicator {
+    display: flex !important; /* Con !important para asegurar que se muestre */
+  }
+  
+  /* Mantener ocultas cuando NO está reproduciendo */
+  .song-item.active:not(.playing) .playing-indicator {
+    display: none !important;
+  }
+  
+  /* Índices de canciones - siempre visibles por defecto */
+  .song-index {
+    opacity: 1 !important;
+  }
+  
+  /* Ocultar el índice SOLO cuando las barras están visibles */
+  .song-item.active.playing .song-index {
+    opacity: 0 !important;
+  }
+  
+  /* Asegurar que las barras NUNCA aparezcan cuando el ratón está sobre una canción activa */
+  .song-item.active:hover .playing-indicator {
+    display: none !important;
+  }
+  
+  /* Asegurar que cuando el ratón está sobre la canción activa, siempre se muestre el botón */
+  .song-item.active:hover .song-play-button {
+    opacity: 1 !important;
+  }
+  
+  /* Las barras de ecualización */
+  .bar-container {
+    display: flex;
+    align-items: flex-end;
+    height: 16px; 
+    width: 24px;
+    gap: 3px;
+  }
+  
+  .bar {
+    width: 3px;
+    background-color: #0399b6;
+    border-radius: 1.5px;
+    animation: sound 0ms -800ms linear infinite alternate;
+  }
+  
+  .bar:nth-child(1) {
+    animation-duration: 474ms;
+    height: 10px;
+  }
+  
+  .bar:nth-child(2) {
+    animation-duration: 433ms;
+    height: 16px;
+  }
+  
+  .bar:nth-child(3) {
+    animation-duration: 407ms;
+    height: 8px;
+  }
+  
+  .bar:nth-child(4) {
+    animation-duration: 458ms;
+    height: 14px;
+  }
+  
+  @keyframes sound {
+    0% {
+      transform: scaleY(0.3);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+  }
+  
+  /* Ajustamos el botón de play/pause para que solo aparezca al hover en canción activa */
+  .song-item.active .song-play-button {
+    opacity: 0; /* Por defecto oculto, incluso en canción activa */
+  }
+  
+  .song-item.active:hover .song-play-button {
+    opacity: 1; /* Visible solo al pasar el cursor */
+  }
+  
+  .song-item.active:hover .playing-indicator {
+    display: none; /* Ocultar las barras cuando se muestra el botón */
+  }
