@@ -96,7 +96,7 @@ const PlaylistContent = () => {
             label: "Compartir",
             submenu: [
                 { label: "Copiar enlace" },
-                { label: "Compartir con amigos" },
+                { label: "Compartir con amigos", "data-testid": "share-with-friends" },  // <- aquí
             ],
         },
     ].filter(option => option != null);
@@ -915,8 +915,11 @@ const PlaylistContent = () => {
                                 className="play-btn"
                                 onClick={() => currentSong?.type !== "anuncio" && handlePlaySongs(playlist.songs, isPlaying)}
                             >
-                                {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ?
-                                    <FaPause/> : <FaPlay/>}
+                                {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ? (
+                                    <FaPause/>
+                                ) : (
+                                    <FaPlay aria-label="Play" />
+                                )}
                             </button>
 
                             <button className="shuffle-btn" onClick={toggleShuffle}>
@@ -925,7 +928,15 @@ const PlaylistContent = () => {
                             {playlist.typeP !== "Vibra_likedSong" && (
                                 <div className="popup-wrapper">
                                     <OptionsPopup
-                                        trigger={<FaEllipsisH className="icon"/>}
+                                        trigger={
+                                            <button
+                                                data-testid="popup-trigger"
+                                                aria-label="Opciones"
+                                                className="popup-trigger-button"
+                                            >
+                                                <FaEllipsisH className="icon" />
+                                            </button>
+                                        }
                                         options={options}
                                         position="bottom-right"
                                         submenuPosition="right"
@@ -940,7 +951,7 @@ const PlaylistContent = () => {
                                 <div className={`playlist-song-search-container ${searchVisible ? 'expanded' : ''}`}>
                                     {searchVisible && (
                                         <>
-                                            <FaSearch className="search-icon-inside" />
+                                            <FaSearch className="search-icon-inside"/>
                                             <input
                                                 type="text"
                                                 className="playlist-song-search-input"
@@ -950,11 +961,11 @@ const PlaylistContent = () => {
                                                 autoFocus
                                             />
                                             {searchTerm && (
-                                                <button 
-                                                    className="playlist-song-search-clear" 
+                                                <button
+                                                    className="playlist-song-search-clear"
                                                     onClick={() => setSearchTerm('')}
                                                 >
-                                                    <FaTimes />
+                                                    <FaTimes/>
                                                 </button>
                                             )}
                                         </>
@@ -962,8 +973,14 @@ const PlaylistContent = () => {
                                 </div>
 
 
-                                <button className="playlist-song-search-button" onClick={toggleSearch}>
-                                    <FaSearch className="icon" />
+                                <button
+                                    className="playlist-song-search-button"
+                                    onClick={toggleSearch}
+                                    data-testid="search-toggle"
+                                    aria-label="Buscar en playlist"
+                                >
+
+                                    <FaSearch className="icon"/>
                                 </button>
 
                                 <button className="shuffle-btn" onClick={toggleLike}>
