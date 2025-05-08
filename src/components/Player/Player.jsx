@@ -25,7 +25,8 @@ function Player() {
     const [lyrics, setLyrics] = useState([]); // New state for lyrics
     const [showLyrics, setShowLyrics] = useState(false); // Toggle for showing/hiding lyrics
     const [premium, setPremium] = useState(false);
-
+    const [artistDetails, setArtistDetails] = useState(null);
+    const [songArtists, setSongArtists] = useState([]); // Estado para almacenar los artistas de la canción
     const user = JSON.parse(localStorage.getItem('user'));
     const userId = user ? user.id : null; // Evitar errores si el usuario no está logueado
 
@@ -39,6 +40,83 @@ function Player() {
             : `http://localhost:5001/${currentSong.url_mp3.replace(/^\/?/, "")}`
         : null;
 
+
+    // Utilizamos la API específica para obtener los artistas de una canción
+    const fetchArtistsForSong = async (songId) => {
+        if (!songId) {
+            console.log("No song ID provided to fetch artists");
+            return;
+        }
+
+        try {
+            const response = await apiFetch(`/songs/${songId}/artists`);
+            console.log("Artists for song fetched:", response);
+
+            if (response && response.artists && Array.isArray(response.artists) && response.artists.length > 0) {
+                // Guardar todos los artistas de la canción en el estado
+                setSongArtists(response.artists);
+
+                // También podemos establecer el artista principal (el primero) para detalles
+                if (response.artists[0]) {
+                    setArtistDetails(response.artists[0]);
+                }
+
+                return response.artists;
+            } else {
+                console.warn("No artists found for this song or unexpected response format");
+                setSongArtists([]);
+                setArtistDetails(null);
+                return [];
+            }
+        } catch (error) {
+            console.error("Error fetching artists for song:", error);
+            setSongArtists([]);
+            setArtistDetails(null);
+            return [];
+        }
+    };
+
+// Efecto para cargar los artistas cuando cambia la canción
+    useEffect(() => {
+        if (!currentSong || !currentSong.id) {
+            console.log("No valid song selected to fetch artists");
+            setSongArtists([]);
+            setArtistDetails(null);
+            return;
+        }
+
+        console.log("Current song changed, fetching artists:", currentSong);
+        fetchArtistsForSong(currentSong.id);
+    }, [currentSong]);
+
+// Función para obtener el nombre de los artistas
+    const getArtistName = () => {
+        if (noSongSelected) {
+            return "Selecciona una canción de la lista";
+        }
+
+        if (!currentSong) {
+            return "No hay canción seleccionada";
+        }
+
+        // Si tenemos la lista de artistas cargada
+        if (songArtists && Array.isArray(songArtists) && songArtists.length > 0) {
+            // Unir todos los nombres de artistas separados por coma
+            return songArtists.map(artist => artist.name).join(", ");
+        }
+
+        // Si tenemos el artista principal en artistDetails
+        if (artistDetails && artistDetails.name) {
+            return artistDetails.name;
+        }
+
+        // Si los artistas están cargando, mostramos mensaje de carga
+        if (currentSong.id) {
+            return "Cargando artistas...";
+        }
+
+        return "Artista desconocido";
+    };
     // Funcion para obtener los daily_skips del usuario
     const obtenerDailySkips = async() => {
         const token = localStorage.getItem("token");  // Asumimos que el token JWT está en el localStorage
@@ -64,6 +142,10 @@ function Player() {
 
         console.log(dailySkips);
     };
+
+
+
+
 
     // Función para actualizar el estilo favorito del usuario
     const updateUserFavoriteStyle = async () => {
@@ -295,7 +377,6 @@ function Player() {
         fetchLyrics();  // Call the async function
     }, [currentSong]);
 
-    // Add this right before your fetchLyrics useEffect
     useEffect(() => {
         console.log("Current song:", currentSong);
         if (currentSong) {
@@ -309,29 +390,19 @@ function Player() {
 
         console.log("useEffect - Verificando favoritos para la canción:", currentSong);
         console.log("useEffect - userId:", userId);
-
+        console.log("useEffect - Artista:",currentSong.artists);
         const checkIfLiked = async () => {
             try {
-                const url = `http://localhost:5001/api/song_like/${currentSong.id}/like?userId=${userId}`;
+                const url = `/song_like/${currentSong.id}/like?userId=${userId}`;
                 console.log("useEffect - Llamando a URL:", url);
 
-                // Hacemos la solicitud con fetch
-                const response = await fetch(url, {
-                    method: 'GET',  // Método GET
-                    headers: {
-                        'Content-Type': 'application/json',  // Especificamos el tipo de contenido
-                    },
+                const data = await apiFetch(url, {
+                    method: 'GET',
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Error en la solicitud: ${response.status}`);
-                }
-
-                const data = await response.json();  // Obtener los datos de la respuesta
                 console.log("useEffect - Respuesta del endpoint checkIfLiked:", data);
 
-                setIsLiked(data.isLiked);  // Actualizamos el estado con la respuesta
-
+                setIsLiked(data.isLiked);
             } catch (error) {
                 console.error("useEffect - Error al verificar los favoritos:", error);
             }
@@ -495,56 +566,56 @@ function Player() {
         console.log("Reproduciendo desde flecha siguiente");
     };
 
+
     const toggleLike = async () => {
         try {
-            // Primero obtener o crear la playlist de "Me Gusta"
-            const responsePlaylist = await fetch('http://localhost:5001/api/playlists/songliked', {
+            // Obtener o crear la playlist "Me Gusta"
+            const likedPlaylistRes = await apiFetch('/playlists/songliked', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
+                body: {
                     user_id: userId,
-                }),
+                },
             });
 
-            if (!responsePlaylist.ok) {
-                throw new Error(`Error al obtener o crear la playlist: ${responsePlaylist.status}`);
-            }
-
-            const likedPlaylistRes = await responsePlaylist.json();
             console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.playlist);
+            const playlistId = likedPlaylistRes.playlist.id;
 
-            const playlistId = likedPlaylistRes.playlist.id;  // Obtener el ID de la playlist
-
-            // Luego agregar la canción a esa playlist
+            // Agregar la canción a esa playlist
             const songId = currentSong.id;
-            const responseLike = await fetch(`http://localhost:5001/api/song_like/${songId}/like`, {
+            const likeResponse = await apiFetch(`/song_like/${songId}/like`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
+                body: {
                     user_id: userId,
-                    playlist_id: playlistId,  // Pasar el ID de la playlist correcta
-                }),
+                    playlist_id: playlistId,
+                },
             });
 
-            if (!responseLike.ok) {
-                throw new Error(`Error al agregar el like: ${responseLike.status}`);
-            }
-
-            const likeResponse = await responseLike.json();
             console.log("Respuesta del servidor:", likeResponse);
             setIsLiked(likeResponse.liked);
 
-            // Actualizar estilo favorito después de dar like a la canción
+            // Actualizar estilo favorito
             updateUserFavoriteStyle();
         } catch (error) {
             console.error("Error al agregar/eliminar el like", error);
         }
     };
-
+    // Función para depurar y verificar la estructura de datos de la canción actual
+    const debugSongData = () => {
+        console.group("Información de depuración de canción actual");
+        console.log("ID de la canción:", currentSong?.id);
+        console.log("Título de la canción:", currentSong?.title || currentSong?.name);
+        console.log("Estado de artistas cargados:", songArtists);
+        console.log("Detalles del artista principal:", artistDetails);
+        console.groupEnd();
+    };
+    useEffect(() => {
+        if (currentSong) {
+            debugSongData();
+        }
+    }, [currentSong]);
     return (
         <div className={styles.playerContainer}>
             {/* Portada de la canción */}
@@ -562,11 +633,7 @@ function Player() {
                     {noSongSelected ? "Ninguna canción seleccionada" : currentSong.name}
                 </h3>
                 <p className={styles.artist}>
-                    {noSongSelected
-                        ? "Selecciona una canción de la lista"
-                        : currentSong?.artists && Array.isArray(currentSong.artists) && currentSong.artists.length > 0
-                            ? currentSong.artists.map(a => a.name).join(", ")
-                            : "Artista desconocido"}
+                    {getArtistName()}
                 </p>
             </div>
 
