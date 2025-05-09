@@ -13,6 +13,7 @@
 .box {
     flex: 1;
     width: 100%;
+
     /* Cambiamos el fondo por un degradado negro más elegante */
     background: linear-gradient(to bottom, #1a1a1a, #121212);
     color: white;

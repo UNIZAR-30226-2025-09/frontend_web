@@ -38,7 +38,7 @@ const Library = () => {
                 const storedUser = JSON.parse(localStorage.getItem("user"));
                 if (storedUser) {
                     // Si necesitas más datos del usuario, puedes hacer una petición adicional
-                    const userDetails = await apiFetch(`/users/${storedUser.id}`, {
+                    const userDetails = await apiFetch(`/user/${storedUser.id}`, {
                         method: "GET",
                     });
                     setUser({...storedUser, ...userDetails});
@@ -337,7 +337,6 @@ const Library = () => {
                         {collaborativePlaylists.length > 0 ? collaborativePlaylists.map(playlist => (
                             <div key={playlist.id} className="library-page-playlist-wrapper">
                                 <div className="library-page-playlist-card library-page-collaborative" onClick={() => handlePlaylistClick(playlist.id)}>
-                                    <div className="library-page-collaborative-badge">Colaborador</div>
                                     <img
                                         src={getImageUrl(playlist.front_page) || "/default-playlist.jpg"}
                                         alt={playlist.name}

@@ -34,7 +34,8 @@ function Friends() {
     const [visibleRequests, setVisibleRequests] = useState(1); // Muestra solo 3 inicialmente
     const [visibleFriends, setVisibleFriends] = useState(2); // Muestra solo 3 inicialmente
     const [visibleSearchResults, setVisibleSearchResults] = useState(3); // Mostrar inicialmente 3 resultados
-    
+    // Añadir state para processing
+    const [processing, setProcessing] = useState(false);
     const [showAllRequestsModal, setShowAllRequestsModal] = useState(false);
     const [requestsSearchTerm, setRequestsSearchTerm] = useState('');
     const [showAllReceivedRequestsModal, setShowAllReceivedRequestsModal] = useState(false);
@@ -294,6 +295,68 @@ function Friends() {
         // Quitar clase del contenedor principal para restaurar su scroll
         document.querySelector('.friends-content').classList.remove('chat-active');
         fetchConversations(); // Actualizar lista de conversaciones
+    };
+    // Función para aceptar la invitación
+    const acceptCollaboration = async (playlistId) => {
+        if (processing) return; // Evita múltiples solicitudes
+        setProcessing(true);
+
+        try {
+            const response = await apiFetch('/collaborators/accept', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: { playlistId },
+            });
+
+            if (response && response.message) {
+                alert('¡Invitación aceptada con éxito! Ahora eres colaborador de la playlist.');
+
+                // Actualizar chatMessages eliminando el mensaje correspondiente
+                setChatMessages((prevMessages) =>
+                    prevMessages.filter((msg) => msg.shared_content?.playlist_id !== playlistId)
+                );
+            } else {
+                alert('No se pudo aceptar la invitación. Intenta de nuevo.');
+            }
+        } catch (error) {
+            console.error('Error al aceptar la invitación:', error);
+            alert('Error al aceptar la invitación. Intenta de nuevo.');
+        } finally {
+            setProcessing(false);
+        }
+    };
+
+    const rejectCollaboration = async (playlistId) => {
+        if (processing) return; // Evita múltiples solicitudes
+        setProcessing(true);
+
+        try {
+            const response = await apiFetch('/collaborators/reject', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: { playlistId },
+            });
+
+            if (response && response.message) {
+                alert('Invitación rechazada con éxito.');
+
+                // Actualizar chatMessages eliminando el mensaje correspondiente
+                setChatMessages((prevMessages) =>
+                    prevMessages.filter((msg) => msg.shared_content?.playlist_id !== playlistId)
+                );
+            } else {
+                alert('No se pudo rechazar la invitación. Intenta de nuevo.');
+            }
+        } catch (error) {
+            console.error('Error al rechazar la invitación:', error);
+            alert('Error al rechazar la invitación. Intenta de nuevo.');
+        } finally {
+            setProcessing(false);
+        }
     };
     
     // Enviar un nuevo mensaje con manejo de emojis
@@ -1085,6 +1148,26 @@ function Friends() {
                                                                             Playlist • ¡Haz clic para ver!
                                                                         </div>
                                                                     </div>
+                                                                </div>
+                                                            </>
+                                                        ): msg.shared_content && msg.shared_content.type === 'collaboration_request' ? (
+                                                            <>
+                                                                <p>{msg.txt_message}</p>
+                                                                <div className="collaborations-request-buttons">
+                                                                    <button
+                                                                        onClick={() => acceptCollaboration(msg.shared_content.playlist_id)}
+                                                                        className="accepts-button"
+                                                                        disabled={processing} // Deshabilita el botón mientras se procesa la solicitud
+                                                                    >
+                                                                        Aceptar
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => rejectCollaboration(msg.shared_content.playlist_id)}
+                                                                        className="rejects-button"
+                                                                        disabled={processing} // Deshabilita el botón mientras se procesa la solicitud
+                                                                    >
+                                                                        Rechazar
+                                                                    </button>
                                                                 </div>
                                                             </>
                                                         ) : msg.shared_content && msg.shared_content.type === 'song' ? (
