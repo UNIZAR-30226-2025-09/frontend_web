@@ -38,7 +38,7 @@ const Library = () => {
                 const storedUser = JSON.parse(localStorage.getItem("user"));
                 if (storedUser) {
                     // Si necesitas más datos del usuario, puedes hacer una petición adicional
-                    const userDetails = await apiFetch(`/users/${storedUser.id}`, {
+                    const userDetails = await apiFetch(`/user/${storedUser.id}`, {
                         method: "GET",
                     });
                     setUser({...storedUser, ...userDetails});
