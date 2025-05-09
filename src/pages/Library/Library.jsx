@@ -4,7 +4,7 @@ import { apiFetch } from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 import "./Library.css";
 import PlaylistModal from "../../components/PlaylistModal/PlaylistModal";
-import { FaPlus, FaChevronLeft, FaChevronRight } from "react-icons/fa";  
+import { FaPlus, FaChevronLeft, FaChevronRight, FaMusic, FaUserFriends, FaHeart, FaCompactDisc } from "react-icons/fa";
 
 const Library = () => {
     const navigate = useNavigate();
@@ -75,7 +75,7 @@ const Library = () => {
         }
     }, [user_Id]);
 
-    // NUEVO: Fetch de las playlists colaborativas
+    // Fetch de las playlists colaborativas
     useEffect(() => {
         const fetchCollaborativePlaylists = async () => {
             try {
@@ -215,16 +215,68 @@ const Library = () => {
         });
     };
 
+    // Mensajes personalizados para secciones vacías
+    const getEmptyMessage = (section) => {
+        switch(section) {
+            case 'likedSongs':
+                return (
+                    <div className="library-page-empty-message">
+                        <FaHeart style={{ fontSize: '24px', color: '#4285f4', marginBottom: '10px' }} />
+                        <p>Aún no has marcado ninguna canción como favorita</p>
+                        <p style={{ fontSize: '14px', marginTop: '10px', opacity: 0.7 }}>
+                            Explora canciones y haz clic en el corazón para añadirlas a tus favoritos
+                        </p>
+                    </div>
+                );
+                
+            case 'userPlaylists':
+                return (
+                    <div className="library-page-empty-message">
+                        <FaCompactDisc style={{ fontSize: '24px', color: '#4285f4', marginBottom: '10px' }} />
+                        <p>No tienes playlists creadas</p>
+                        <p style={{ fontSize: '14px', marginTop: '10px', opacity: 0.7 }}>
+                            Crea tu primera playlist con el botón "Crear Playlist"
+                        </p>
+                    </div>
+                );
+                
+            case 'collaborativePlaylists':
+                return (
+                    <div className="library-page-empty-message">
+                        <FaUserFriends style={{ fontSize: '24px', color: '#4285f4', marginBottom: '10px' }} />
+                        <p>No colaboras en ninguna playlist</p>
+                        <p style={{ fontSize: '14px', marginTop: '10px', opacity: 0.7 }}>
+                            Los amigos que te inviten a colaborar aparecerán aquí
+                        </p>
+                    </div>
+                );
+                
+            case 'likedPlaylists':
+                return (
+                    <div className="library-page-empty-message">
+                        <FaMusic style={{ fontSize: '24px', color: '#4285f4', marginBottom: '10px' }} />
+                        <p>No has dado "me gusta" a ninguna playlist</p>
+                        <p style={{ fontSize: '14px', marginTop: '10px', opacity: 0.7 }}>
+                            Explora playlists y marca las que te gusten para acceder rápidamente
+                        </p>
+                    </div>
+                );
+                
+            default:
+                return <div className="library-page-empty-message">No hay contenido disponible</div>;
+        }
+    };
+
     return (
         <div className="library-page-content">
             {/* Título principal con nombre de usuario */}
             <h1 className="library-page-title">
-                Tu Colección Musical, <span className="library-page-user-name-highlight">{user?.name || user?.nickname || 'Usuario'}!</span>
+                Tu Colección Musical, <span className="library-page-user-name-highlight">{user?.name || user?.nickname || 'Usuario'}</span>
             </h1>
 
             {/* Sección: Canciones que te han gustado */}
             <div className="library-page-section-header">
-                <h2>Canciones que te han gustado</h2>
+                <h2><FaHeart style={{ marginRight: '10px', fontSize: '18px' }} /> Canciones que te han gustado</h2>
             </div>
             <div className="library-page-scroll-section">
                 {overflowStates.likedSongs && (
@@ -253,7 +305,7 @@ const Library = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="library-page-empty-message">No tienes una playlist 'Me Gusta'.</div>
+                            getEmptyMessage('likedSongs')
                         )}
                     </div>
                 </div>
@@ -270,7 +322,7 @@ const Library = () => {
 
             {/* Sección: Tus Playlists */}
             <div className="library-page-section-header">
-                <h2>Tus Playlists</h2>
+                <h2><FaCompactDisc style={{ marginRight: '10px', fontSize: '18px' }} /> Tus Playlists</h2>
                 {/* Botón para crear nueva playlist */}
                 <div className="library-page-create-playlist">
                     <button className="library-page-create-playlist-button" onClick={openPlaylistModal}>
@@ -304,7 +356,9 @@ const Library = () => {
                                     <p className="library-page-playlist-title">{playlist.name}</p>
                                 </div>
                             </div>
-                        )) : <div className="library-page-empty-message">No tienes playlists creadas.</div>}
+                        )) : (
+                            getEmptyMessage('userPlaylists')
+                        )}
                     </div>
                 </div>
                 
@@ -320,7 +374,7 @@ const Library = () => {
 
             {/* SECCIÓN: Playlists Colaborativas */}
             <div className="library-page-section-header">
-                <h2>Playlists Colaborativas</h2>
+                <h2><FaUserFriends style={{ marginRight: '10px', fontSize: '18px' }} /> Playlists Colaborativas</h2>
             </div>
             <div className="library-page-scroll-section">
                 {overflowStates.collaborativePlaylists && (
@@ -347,7 +401,9 @@ const Library = () => {
                                     <p className="library-page-playlist-title">{playlist.name}</p>
                                 </div>
                             </div>
-                        )) : <div className="library-page-empty-message">No estás colaborando en ninguna playlist.</div>}
+                        )) : (
+                            getEmptyMessage('collaborativePlaylists')
+                        )}
                     </div>
                 </div>
                 
@@ -363,7 +419,7 @@ const Library = () => {
 
             {/* Sección: Playlists que te han gustado */}
             <div className="library-page-section-header">
-                <h2>Playlists que te han gustado</h2>
+                <h2><FaMusic style={{ marginRight: '10px', fontSize: '18px' }} /> Playlists que te han gustado</h2>
             </div>
             <div className="library-page-scroll-section">
                 {overflowStates.likedPlaylists && (
@@ -390,7 +446,9 @@ const Library = () => {
                                     <p className="library-page-playlist-title">{playlist.name}</p>
                                 </div>
                             </div>
-                        )) : <div className="library-page-empty-message">No has dado like a ninguna playlist.</div>}
+                        )) : (
+                            getEmptyMessage('likedPlaylists')
+                        )}
                     </div>
                 </div>
                 

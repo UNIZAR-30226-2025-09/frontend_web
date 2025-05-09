@@ -1,4 +1,4 @@
-/* 🔹 Contenedor principal con gradiente moderno */
+/* 🔹 Contenedor principal con fondo negro/gris difuminado */
 .library-page-content {
     width: 100%;
     padding: 30px 40px;
@@ -7,7 +7,7 @@
     color: white;
     border-radius: 20px;
     overflow: hidden;
-    background: linear-gradient(135deg, #1e3c72 0%, #1e3c72 1%, #2a5298 100%);
+    background: linear-gradient(135deg, #121212 0%, #1a1a1a 50%, #212121 100%);
     position: relative;
 }
 
@@ -17,35 +17,33 @@
     font-weight: 800;
     margin-bottom: 40px;
     color: white;
-    background: linear-gradient(to right, #fff, #0399b6, #fff);
-    background-size: 200% auto;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: library-page-shine 5s linear infinite;
-    text-shadow: 0px 2px 10px rgba(3, 153, 182, 0.3);
+    text-shadow: 0px 2px 10px rgba(66, 133, 244, 0.3);
     text-align: left;
 }
 
-/* Asegurar que el contenedor se alinea bien cuando solo tiene un mensaje vacío */
-.library-page-playlists:has(.library-page-empty-message) {
-    justify-content: flex-start;
-    min-width: auto;
-    width: auto;
-}
-
 .library-page-user-name-highlight {
-    color: #0399b6;
-    background: none;
-    -webkit-text-fill-color: #0399b6;
-    animation: none;
-    text-shadow: 0px 2px 10px rgba(3, 153, 182, 0.5);
+    background: linear-gradient(to right, #4285f4, #34a853);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
 }
 
-@keyframes library-page-shine {
-    to {
-        background-position: 200% center;
-    }
+.library-page-user-name-highlight::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, #4285f4, #34a853);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s ease;
+}
+
+.library-page-title:hover .library-page-user-name-highlight::after {
+    transform: scaleX(1);
 }
 
 /* 🔹 Sección de playlists con separador elegante */
@@ -66,7 +64,7 @@
     left: 0;
     width: 80px;
     height: 3px;
-    background: linear-gradient(to right, #0399b6, transparent);
+    background: linear-gradient(to right, #4285f4, transparent);
     border-radius: 3px;
 }
 
@@ -91,13 +89,13 @@
     transform: translateY(-50%);
     width: 6px;
     height: 22px;
-    background: #0399b6;
+    background: #4285f4;
     border-radius: 3px;
     transition: height 0.3s ease;
 }
 
 .library-page-section-header h2:hover {
-    color: #0399b6;
+    color: #4285f4;
     transform: translateX(5px);
 }
 
@@ -105,7 +103,7 @@
     height: 30px;
 }
 
-/* 🔹 Botón de crear playlist mejorado */
+/* 🔹 Botón de crear playlist mejorado con animaciones sofisticadas */
 .library-page-create-playlist {
     margin-left: auto;
 }
@@ -114,7 +112,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #0399b6, #035c6d);
+    background: linear-gradient(135deg, #4285f4, #34a853);
     color: white;
     border: none;
     border-radius: 30px;
@@ -124,50 +122,51 @@
     letter-spacing: 0.5px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 5px 15px rgba(3, 153, 182, 0.4);
+    box-shadow: 0 5px 15px rgba(66, 133, 244, 0.3);
     position: relative;
     overflow: hidden;
+    z-index: 1;
+}
+
+.library-page-create-playlist-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #34a853, #4285f4);
+    transition: left 0.5s ease;
+    z-index: -1;
+    border-radius: 30px;
+}
+
+.library-page-create-playlist-button:hover::before {
+    left: 0;
 }
 
 .library-page-create-playlist-button:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 8px 20px rgba(3, 153, 182, 0.6);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(66, 133, 244, 0.5);
 }
 
 .library-page-create-playlist-button:active {
     transform: translateY(0) scale(0.98);
 }
 
-.library-page-create-playlist-button::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transform: translateX(-100%);
-}
-
-.library-page-create-playlist-button:hover::after {
-    animation: library-page-shine-effect 1.5s infinite;
-}
-
-@keyframes library-page-shine-effect {
-    100% {
-        transform: translateX(100%);
-    }
-}
-
 .library-page-create-playlist-icon {
-    width: 24px;
-    height: 24px;
+    width: 16px;
+    height: 16px;
     margin-right: 10px;
     fill: white;
-    transition: transform 0.3s ease;
+    transition: transform 0.5s ease;
 }
 
-/* 🔹 Scroll horizontal con efecto de sombreado en los bordes y controles de carrusel */
+.library-page-create-playlist-button:hover .library-page-create-playlist-icon {
+    transform: rotate(90deg) scale(1.2);
+}
+
+/* 🔹 Scroll horizontal sin efectos de difuminado en los bordes */
 .library-page-scroll-section {
     position: relative;
     margin-bottom: 40px;
@@ -180,7 +179,6 @@
     padding: 15px 0;
     margin: 0 40px;
     scroll-behavior: smooth;
-    mask-image: linear-gradient(to right, transparent 0%, white 5%, white 95%, transparent 100%);
     scrollbar-width: none;
 }
 
@@ -198,18 +196,18 @@
     min-width: max-content;
 }
 
-/* 🔹 Contenedor de cada playlist con efecto de vidrio */
+/* 🔹 Contenedor de cada playlist con efecto de elevación */
 .library-page-playlist-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .library-page-playlist-wrapper:hover {
-    transform: translateY(-8px);
+    transform: translateY(-10px);
 }
 
 /* 🔹 Tarjetas de playlists con efecto de profundidad */
@@ -217,8 +215,7 @@
     width: 220px;
     height: 220px;
     background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
+    border-radius: 12px;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
     overflow: hidden;
@@ -233,18 +230,46 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(3, 153, 182, 0.2), transparent);
+    background: linear-gradient(to bottom, rgba(66, 133, 244, 0.2), transparent);
     opacity: 0;
     transition: opacity 0.3s ease;
+    z-index: 1;
 }
 
 .library-page-playlist-card:hover {
     transform: scale(1.05);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 15px 30px rgba(66, 133, 244, 0.2);
 }
 
 .library-page-playlist-card:hover::before {
     opacity: 1;
+}
+
+/* Estilo especial para playlist colaborativas */
+.library-page-collaborative {
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+}
+
+.library-page-collaborative::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #4285f4, #34a853, #4285f4);
+    z-index: -1;
+    border-radius: 14px;
+    animation: border-rotate 3s linear infinite;
+    background-size: 300% 300%;
+}
+
+@keyframes border-rotate {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 /* 🔹 Imagen de la Playlist con efecto de brillo */
@@ -252,15 +277,17 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 16px;
+    border-radius: 12px;
     transition: transform 0.6s ease;
+    position: relative;
+    z-index: 0;
 }
 
 .library-page-playlist-card:hover .library-page-playlist-image {
     transform: scale(1.1);
 }
 
-/* 🔹 Título de la Playlist con fondo de protección */
+/* 🔹 Título de la Playlist con estilo mejorado */
 .library-page-playlist-title {
     font-size: 16px;
     font-weight: 600;
@@ -269,21 +296,21 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
+    max-width: 220px;
     transition: all 0.3s ease;
-    padding: 5px 10px;
+    padding: 8px 10px;
     border-radius: 8px;
-    background: rgba(3, 153, 182, 0.1);
+    background: rgba(66, 133, 244, 0.1);
 }
 
 .library-page-playlist-wrapper:hover .library-page-playlist-title {
-    color: #0399b6;
-    background: rgba(3, 153, 182, 0.2);
+    color: #4285f4;
     transform: scale(1.05);
-    box-shadow: 0 3px 10px rgba(3, 153, 182, 0.3);
+    background: rgba(66, 133, 244, 0.2);
+    box-shadow: 0 3px 10px rgba(66, 133, 244, 0.2);
 }
 
-/* 🔹 Mensajes cuando no hay contenido */
+/* 🔹 Mensajes cuando no hay contenido - Rediseñados */
 .library-page-empty-message {
     font-size: 16px;
     color: rgba(255, 255, 255, 0.7);
@@ -291,10 +318,43 @@
     padding: 30px;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px dashed rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    border: 1px dashed rgba(66, 133, 244, 0.3);
     margin: 10px 0;
-    max-width: 300px;
+    min-width: 300px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.library-page-empty-message:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(66, 133, 244, 0.5);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(66, 133, 244, 0.15);
+}
+
+.library-page-empty-message::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(66, 133, 244, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.library-page-empty-message:hover::before {
+    opacity: 1;
+    animation: ripple 1.5s ease-out;
+}
+
+@keyframes ripple {
+    from { transform: scale(0.8); opacity: 0.5; }
+    to { transform: scale(1.5); opacity: 0; }
 }
 
 /* Añadir animaciones generales para mejorar experiencia */
@@ -331,9 +391,9 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    background: rgba(3, 153, 182, 0.8);
+    width: 44px;
+    height: 44px;
+    background: rgba(66, 133, 244, 0.8);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -342,14 +402,14 @@
     cursor: pointer;
     z-index: 10;
     color: white;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
     transition: all 0.3s ease;
     opacity: 0.8;
 }
 
 .library-page-carousel-control:hover {
-    background: #0399b6;
-    box-shadow: 0 0 20px rgba(3, 153, 182, 0.6);
+    background: #4285f4;
+    box-shadow: 0 6px 20px rgba(66, 133, 244, 0.5);
     transform: translateY(-50%) scale(1.1);
     opacity: 1;
 }
@@ -367,5 +427,5 @@
 }
 
 .library-page-carousel-control-icon {
-    font-size: 18px;
+    font-size: 20px;
 }
