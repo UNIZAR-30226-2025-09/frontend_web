@@ -35,9 +35,47 @@
 }
 
 /* Imagen del artista */
+/* Imagen del artista mejorada con bordes redondeados y efectos */
+.image1 {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 275px;
+    height: 275px;
+}
+
 .image1:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(3, 153, 182, 0.2);
+}
+
+.image1 img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Añadir un sutil brillo al hacer hover sobre la imagen */
+.image1::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(3, 153, 182, 0.1) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 12px;
+}
+
+.image1:hover::after {
     opacity: 1;
-    transform: scale(1);
 }
 
 /* Información del artista (nombre, biografía, etc.) */
@@ -344,23 +382,67 @@
 }
 
 /* Modificado para los álbumes */
+/* Estilo mejorado para la lista de álbumes */
+.albums-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 30px;
+    padding: 20px 0;
+    width: 100%;
+}
+
 .album-item {
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 15px;
     cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    padding: 20px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.album-item:hover {
+    transform: translateY(-8px);
+    background: rgba(3, 153, 182, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border-color: rgba(3, 153, 182, 0.2);
 }
 
 .album-cover {
-    width: 60px;
-    height: 60px;
+    width: 160px;
+    height: 160px;
     object-fit: cover;
-    border-radius: 5px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.album-item:hover .album-cover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(3, 153, 182, 0.25);
 }
 
 .album-title {
     color: #fff;
-    font-size: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    width: 100%;
+    padding: 8px 0;
+    transition: color 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+}
+
+.album-item:hover .album-title {
+    color: #0399b6;
 }
 
 /* Mejora de botones para cambiar entre canciones, álbumes y sencillos */
