@@ -162,7 +162,7 @@ const PlaylistContent = () => {
                     method: "GET",
                 });
 
-                const collaborativePlaylists = await apiFetch(`/playlists-for-user/${user_Id}`, {
+                const collaborativePlaylists = await apiFetch(`/collaborators/playlists-for-user/${user_Id}`, {
                     method: "GET",
                 });
 
