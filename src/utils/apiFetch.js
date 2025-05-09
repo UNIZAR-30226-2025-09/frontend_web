@@ -1,7 +1,10 @@
 // NUBE
-//const BASE_URL = "http://164.90.160.181/request/api";
+//export const BASE_URL = "http://164.90.160.181/request/api";
+//export const MEDIA_URL = "http://164.90.160.181"; // URL para archivos multimedia
+
 // LOCAL
-const BASE_URL = "http://localhost/request/api";
+export const BASE_URL = "http://localhost/request/api";
+export const MEDIA_URL = "http://localhost:5001"; // URL para archivos multimedia
 
 // PRE:
 // Función reutilizable para hacer peticiones HTTP al backend.
@@ -27,5 +30,6 @@ export const apiFetch = async (endpoint, options = {}) => {
     // Devolvemos la respuesta parseada como JSON
     return response.json();
 };
+
 
 

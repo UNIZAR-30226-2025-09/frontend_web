@@ -7,7 +7,7 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";  // Iconos de cora
 import { IconContext } from "react-icons";
 import { getImageUrl } from "#utils/getImageUrl";
 import styles from "./PlayerStyles.module.css";
-import {apiFetch} from "#utils/apiFetch";
+import {apiFetch, MEDIA_URL} from "#utils/apiFetch";
 import SynchronizedLyrics from "../SynchronizedLyrics/SynchronizedLyrics";
 import { parseLRC } from "../../utils/parseLRC";
 function Player() {
@@ -37,7 +37,7 @@ function Player() {
     const songUrl = currentSong?.url_mp3
         ? currentSong.url_mp3.startsWith("http")
             ? currentSong.url_mp3
-            : `http://localhost:5001/${currentSong.url_mp3.replace(/^\/?/, "")}`
+            : `${MEDIA_URL}/${currentSong.url_mp3.replace(/^\/?/, "")}`
         : null;
 
 
@@ -350,7 +350,7 @@ function Player() {
 
                     console.log("Fetching lyrics:", encodedFilename);
 
-                    const response = await fetch(`http://localhost:5001/lyrics/${encodedFilename}`);
+                    const response = await fetch(`${MEDIA_URL}/lyrics/${encodedFilename}`);
                     if (response.ok) {
                         const lrcText = await response.text();
                         const parsedLyrics = parseLRC(lrcText);
@@ -387,27 +387,26 @@ function Player() {
 
     useEffect(() => {
         if (!currentSong || !userId) return;
-
+    
         console.log("useEffect - Verificando favoritos para la canción:", currentSong);
         console.log("useEffect - userId:", userId);
-        console.log("useEffect - Artista:",currentSong.artists);
+    
         const checkIfLiked = async () => {
             try {
-                const url = `/song_like/${currentSong.id}/like?userId=${userId}`;
-                console.log("useEffect - Llamando a URL:", url);
-
-                const data = await apiFetch(url, {
-                    method: 'GET',
+                // Usar apiFetch en lugar de fetch directo
+                const data = await apiFetch(`/song_like/${currentSong.id}/like?userId=${userId}`, {
+                    method: 'GET'
                 });
-
+                
                 console.log("useEffect - Respuesta del endpoint checkIfLiked:", data);
-
                 setIsLiked(data.isLiked);
+    
+
             } catch (error) {
                 console.error("useEffect - Error al verificar los favoritos:", error);
             }
         };
-
+    
         checkIfLiked();
     }, [currentSong, userId]);
 
@@ -619,13 +618,21 @@ function Player() {
     return (
         <div className={styles.playerContainer}>
             {/* Portada de la canción */}
-            <img
-                className={styles.musicCover}
-                src={noSongSelected
-                    ? "https://via.placeholder.com/300x300.png?text=Sin+Canci%C3%B3n"
-                    : getImageUrl(currentSong.photo_video)}
-                alt={noSongSelected ? "Sin canción seleccionada" : "Portada de la canción"}
-            />
+            {noSongSelected ? (
+                <div className={styles.noSongPlaceholder}>
+                    <div className={styles.emojiIcon}>🎵</div>
+                    <div className={styles.placeholderText}>
+                        Sin canción seleccionada
+                    </div>
+                </div>
+            ) : (
+                <img
+                    className={styles.musicCover}
+                    src={getImageUrl(currentSong.photo_video)}
+                    alt="Portada de la canción"
+                    onError={(e) => (e.target.src = "/default-song.jpg")}
+                />
+            )}
 
             {/* Información de la canción */}
             <div className={styles.info}>
@@ -653,7 +660,7 @@ function Player() {
 
                     {/* Botón de Play/Pause con estilo circular */}
                     <button
-                        className={styles.playerControlPlay}
+                        className={`${styles.playerControlPlay} ${isPlaying ? styles.playing : ''}`}
                         onClick={playingButton}
                         disabled={noSongSelected}
                     >

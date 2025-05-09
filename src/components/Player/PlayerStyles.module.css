@@ -7,6 +7,7 @@
     --colorPrimaryLight2: #aaa;
     --colorPrimaryDark: #2e2c2c;
     --borderRadius: 8px;
+    --accentColor: #21a1f1;
 }
 /* Contenedor principal del reproductor */
 .playerContainer {
@@ -28,6 +29,49 @@
     margin-bottom: 1.5rem;
     display: block;
 }
+
+/* Placeholder para cuando no hay canción seleccionada */
+.noSongPlaceholder {
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: var(--borderRadius);
+    background: linear-gradient(145deg, #222, #2e2e2e);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    color: #555;
+}
+
+.noSongPlaceholder .emojiIcon {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+    animation: float 3s ease-in-out infinite;
+}
+
+.noSongPlaceholder .placeholderText {
+    font-size: 1rem;
+    color: #999;
+    text-align: center;
+    padding: 0 10px;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
 /* Contenedor de la información de la canción */
 .info {
     text-align: center;
@@ -45,6 +89,7 @@
     font-size: 1.2rem;
     color: var(--colorPrimaryLight2);
 }
+
 /* Contenedor principal de controles */
 .controls {
     display: flex;
@@ -78,16 +123,6 @@
     color: #21a1f1;
 }
 
-/*
-.playerControlPlay {
-    background-color: #000;
-    border: 2px solid #21a1f1;
-    border-radius: 50%;
-    padding: 10px;
-    cursor: pointer;
-}
-*/
-
 /* Contenedor del botón de like (debajo de .controls) */
 .likeButtonContainer {
     /* Puedes agregar margen superior o usar el gap del padre */
@@ -109,7 +144,7 @@
 .playerControlPlay {
     background-color: #000;     /* Círculo negro */
     position: relative;
-    width: 6rem;                /* Ajusta el tamaño según prefieras */
+    width: 6rem;                /* Mantener tamaño */
     height: 6rem;
     border-radius: 50%;
     display: flex;
@@ -117,23 +152,27 @@
     align-items: center;
     cursor: pointer;
     transition: transform 0.2s;
+    border: 3px solid #21a1f1;  /* Borde azul simple */
+    box-shadow: 0 0 10px rgba(33, 161, 241, 0.5); /* Sutil brillo azul */
 }
 
 .playerControlPlay:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
-.playerControlPlay::before {
-    content: "";
-    position: absolute;
-    background: #21a1f1;  /* Color del aro */
-    width: 110%;                /* Un poco más grande que el círculo negro */
-    height: 110%;
-    border-radius: 50%;
-    z-index: -1;                /* Lo coloca detrás del botón */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+/* Aplicar la animación de rotación directamente al botón cuando está reproduciéndose */
+.playerControlPlay.playing {
+    animation: rotate 8s linear infinite;
+}
+
+/* Animación de rotación simple */
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Tiempos */
@@ -142,51 +181,54 @@
     display: flex;
     justify-content: space-between;
     color: var(--colorPrimaryLight2);
-    font-size: 1.2rem;
+    font-size: 0.9rem; /* Reducido para ser más elegante */
     margin-bottom: 0.5rem;
 }
 
-/* Barra de progreso */
+/* Barra de progreso mejorada */
 .playerProgress {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 0.6rem;
+    height: 5px; /* Más delgada, elegante */
     border-radius: 10px;
-    background: #ccc;
+    background: rgba(204, 204, 204, 0.2); /* Más sutil */
     outline: none;
-    transition: background 0.2s;
+    transition: all 0.3s;
 }
 
 .playerProgress:hover {
-    background: #bbb;
+    height: 7px; /* Se agranda sutilmente al pasar el ratón */
+    background: rgba(204, 204, 204, 0.3);
 }
 
 .playerProgress::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: #21a1f1;
     cursor: pointer;
+    box-shadow: 0 0 5px rgba(33, 161, 241, 0.5);
+    transition: transform 0.2s;
 }
 
 .playerProgress::-moz-range-thumb {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: #21a1f1;
     cursor: pointer;
+    box-shadow: 0 0 5px rgba(33, 161, 241, 0.5);
+    transition: transform 0.2s;
 }
 
-/* Animación de rotación */
-@keyframes rotate {
-    from {
-        transform: rotate(0);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.playerProgress::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.playerProgress::-moz-range-thumb:hover {
+    transform: scale(1.2);
 }
 
 /* Mini Reproductor */
@@ -238,4 +280,42 @@
 
 .miniPlayerIcon:hover {
     transform: scale(1.1);
+}
+
+/* Contenedor para los elementos de la letra */
+.lyricsToggle {
+    background: rgba(33, 161, 241, 0.1);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.lyricsToggle:hover:not(:disabled) {
+    background: rgba(33, 161, 241, 0.2);
+}
+
+.lyricsToggle:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.lyricsContainer {
+    width: 100%;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--borderRadius);
+    margin-bottom: 1rem;
+    border: 1px solid rgba(33, 161, 241, 0.2);
+}
+
+.timelineContainer {
+    width: 100%;
+    margin-bottom: 1rem;
 }

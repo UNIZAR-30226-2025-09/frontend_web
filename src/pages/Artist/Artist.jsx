@@ -5,7 +5,6 @@ import { PlayerProvider } from "../../components/Player/PlayerContext.jsx";
 import { apiFetch } from "#utils/apiFetch";
 import { getImageUrl } from "#utils/getImageUrl";
 import OptionsPopup from "../../components/PopUpSelection/OptionsPopup.jsx";
-import axios from "axios";
 import CreatePlaylistModal from "../../components/PlaylistModal/PlaylistModal.jsx";
 import "./Artist.css"; // Estilos para el artista
 
@@ -153,16 +152,22 @@ const ArtistContent = () => {
             redirectToSong(song.id);
         } else if (option.label === "Agregar a favoritos" || option.label === "Eliminar de favoritos") {
             try {
-                const likedPlaylistRes = await axios.post('http://localhost:5001/api/playlists/songliked', {
-                    user_id: user_Id
+                const likedPlaylistRes = await apiFetch('/playlists/songliked', {
+                    method: 'POST',
+                    body: {
+                        user_id: user_Id
+                    }
                 });
-                console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.data.playlist);
+                console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.playlist);
                 
-                const playlistId = likedPlaylistRes.data.playlist.id;
+                const playlistId = likedPlaylistRes.playlist.id;
                 
-                const response = await axios.post(`http://localhost:5001/api/song_like/${song.id}/likeUnlike`, {
-                    user_id: user_Id,
-                    playlist_id: playlistId
+                const response = await apiFetch(`/song_like/${song.id}/likeUnlike`, {
+                    method: 'POST',
+                    body: {
+                        user_id: user_Id,
+                        playlist_id: playlistId
+                    }
                 });
                 
                 // Actualizar estilo favorito después de dar like a la canción
@@ -228,13 +233,19 @@ const ArtistContent = () => {
 
     console.log("Canciones disponibles:", songs);  // Asegúrate de que aquí están las canciones correctas
 
-    const handlePlaySong = (song, index, songs) => {
+    const handlePlaySong = (song, index, songsList) => {
         console.log(`Reproduciendo: ${song.name}`);
         console.log("Guardando canción en el estado:", song);
-        setCurrentSong( song );
-        setCurrentIndex( index );
-        setSongs(songs);
-    };
+        
+        // Asegúrate de que estamos reproduciendo esta canción correctamente
+        setCurrentSong(song);
+        setCurrentIndex(index);
+        setSongs(songsList);
+        setIsPlaying(true); // Importante: iniciar la reproducción automáticamente
+        
+        // Establecer la playlist activa como este artista
+        setPlaylistActive(artistId);
+    }
 
     const handlePlaySongs = () => {
         // Usamos la vista actual, pero si estamos en "álbumes", mantenemos la lista actual
@@ -345,7 +356,7 @@ const ArtistContent = () => {
 
                             <div className="popup-wrapper">
                             <OptionsPopup
-                                trigger={<FaEllipsisH className="icon" />}
+                                trigger={<FaEllipsisH className="artist-main-options-icon" />}
                                 options={[{
                                     label: "Compartir",
                                     submenu: [
@@ -413,14 +424,31 @@ const ArtistContent = () => {
                         <div className="song-cont">
                             <div className="song-list">
                                 {songs.map((song, index) => (
-                                    <div key={song.id || index} className="song-item">
+                                    <div 
+                                        key={song.id || index} 
+                                        className={`song-item ${currentSong?.id === song.id ? 'active' : ''} ${currentSong?.id === song.id && isPlaying ? 'playing' : ''}`}
+                                    >   
                                         <div className="song-action">
                                             <span className="song-index">{index + 1}</span>
+                                            <div className="playing-indicator">
+                                                <div className="bar-container">
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                </div>
+                                            </div>
                                             <button
-                                                className="play-icon"
-                                                onClick={() => handlePlaySong(song, index, songs)}
+                                                className="artist-play-button"
+                                                onClick={() => {
+                                                    if (currentSong?.id === song.id) {
+                                                        setIsPlaying(!isPlaying);
+                                                    } else {
+                                                        handlePlaySong(song, index, songs);
+                                                    }
+                                                }}
                                             >
-                                                <FaPlay />
+                                                {currentSong?.id === song.id && isPlaying ? <FaPause /> : <FaPlay />}
                                             </button>
                                         </div>
 
@@ -438,9 +466,9 @@ const ArtistContent = () => {
 
                                         <span className="song-duration">{formatDuration(song.duration)}</span>
 
-                                        <div className="song-options">
+                                        <div className="artist-song-options-wrapper">
                                             <OptionsPopup
-                                                trigger={<FaEllipsisH className="song-options-icon" />}
+                                                trigger={<FaEllipsisH className="artist-song-options-icon" />}
                                                 options={[
                                                     {
                                                         label: "Agregar a playlist",
@@ -510,14 +538,31 @@ const ArtistContent = () => {
                         <div className="song-cont">
                             <div className="song-list">
                                 {singles.map((song, index) => (
-                                    <div key={song.id || index} className="song-item">
+                                    <div 
+                                        key={song.id || index} 
+                                        className={`song-item ${currentSong?.id === song.id ? 'active' : ''} ${currentSong?.id === song.id && isPlaying ? 'playing' : ''}`}
+                                    >
                                         <div className="song-action">
                                             <span className="song-index">{index + 1}</span>
+                                            <div className="playing-indicator">
+                                                <div className="bar-container">
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                    <div className="bar"></div>
+                                                </div>
+                                            </div>
                                             <button
-                                                className="play-icon"
-                                                onClick={() => handlePlaySong(song, index, singles)} // Asegúrate de pasar "singles"
+                                                className="artist-play-button"
+                                                onClick={() => {
+                                                    if (currentSong?.id === song.id) {
+                                                        setIsPlaying(!isPlaying);
+                                                    } else {
+                                                        handlePlaySong(song, index, songs);
+                                                    }
+                                                }}
                                             >
-                                                <FaPlay/>
+                                                {currentSong?.id === song.id && isPlaying ? <FaPause /> : <FaPlay />}
                                             </button>
                                         </div>
 
