@@ -1,5 +1,5 @@
 .every-artist-page {
-    padding: 0 40px 120px;
+    padding: 0 0 120px;
     max-width: 1800px;
     margin: 0 auto;
     background: linear-gradient(to bottom, #111111, #181818);
@@ -10,9 +10,10 @@
     position: sticky;
     top: 0;
     z-index: 100;
+    width: 100%;
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.9) 0%, rgba(18, 18, 18, 0.95) 100%);
     backdrop-filter: blur(20px);
-    padding: 50px 0 40px;
+    padding: 50px 40px 40px;
     margin-bottom: 50px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
@@ -21,16 +22,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 20px;
+    width: 100%;
+    position: relative;
+    gap: 20px;
 }
 
 /* Título estilizado */
 .every-artist-header h1 {
+    flex: 1;
     margin: 0;
     color: #ffffff;
-    font-size: 56px;
+    font-size: 60px;
     font-weight: 800;
     letter-spacing: -1.5px;
     text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -38,22 +40,22 @@
     padding-bottom: 10px;
 }
 
+
 .every-artist-header h1::after {
     content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 80px;
+    display: block;
+    width: 15%;
     height: 4px;
-    background-color: #21a1f1;
-    box-shadow: 0 0 10px rgba(33, 161, 241, 0.7);
+    background-color: #0399b6;
+    position: absolute;
+    bottom: -10px;
+    left: 0;
     border-radius: 2px;
 }
 
 /* Buscador super estilizado */
 .search-container {
-    position: relative;
-    width: 380px;
+    width: 330px;
     transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
@@ -104,7 +106,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 40px;
-    padding: 20px 0;
+    padding: 20px 40px;
 }
 
 /* Tarjeta de artista ultra estilizada */
@@ -301,7 +303,7 @@
 }
 
 /* Responsive design con estilo */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
     .every-artist-header h1 {
         font-size: 42px;
     }
@@ -315,12 +317,13 @@
     }
     
     .artists-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 30px;
+        padding: 20px 30px;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 25px;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
     .every-artist-page {
         padding: 0 20px 100px;
     }
@@ -349,6 +352,7 @@
     }
     
     .artists-grid {
+        padding: 20px 20px;
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 25px;
     }
