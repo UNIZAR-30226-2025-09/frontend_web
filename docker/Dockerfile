@@ -16,5 +16,11 @@ COPY ../ ./
 # Expone el puerto de desarrollo de Vite
 EXPOSE 5173
 
-# Comando que ejecuta el servidor de desarrollo
-CMD ["npm", "run", "dev", "--", "--host"]
+# Comando que ejecuta el servidor de desarrollo en modo local
+#CMD ["npm", "run", "dev", "--", "--mode", "enlocal", "--host"]
+
+# Comando que ejecuta el servidor de desarrollo en modo cloud
+CMD ["npm", "run", "dev", "--", "--mode", "nube", "--host"]
+
+# Comando que ejecuta el servidor de desarrollo en modo test
+#CMD ["npm", "run", "dev", "--", "--mode", "test", "--host"]
