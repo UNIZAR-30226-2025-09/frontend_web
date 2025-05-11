@@ -20,11 +20,10 @@ jobs:
           username: ${{ secrets.SERVER_USER }}  # Usuario SSH
           key: ${{ secrets.SERVER_SSH_KEY }}  # Clave privada SSH
           script: |
-            cd /home/unizar/frontend_web/
-            rm -rf node_modules
-            rn -rf package-lock.json
-            git pull origin main
+            cd /home/unizar
+            rm -rf frontend_web
+            git clone https://github.com/UNIZAR-30226-2025-09/frontend_web.git
+            cd frontend_web
             npm install
-            cd /home/unizar/backend/docker
-            docker compose build --no-cache frontend
-            docker compose up --build -d frontend
+            cd ../backend/docker
+            bash hard_reset_sin_guion.sh

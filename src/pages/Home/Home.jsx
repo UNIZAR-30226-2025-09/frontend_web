@@ -207,7 +207,7 @@ const Home = () => {
 
     console.log("Recently Visited: ", recentlyVisited);
 
-    return (
+ return (
         <div className="home-content">
             {recentlyVisited.length > 0 && (
                 <>
@@ -301,55 +301,63 @@ const Home = () => {
 
             {/* Sección de recomendaciones */}
             <h1 onClick={() => setActive("recommendations")}>Tus recomendaciones</h1>
-            <div
-                className="scroll-container"
+{localStorage.getItem("token") ? (
+    recommendedPlaylists.length > 0 ? (
+        <div className="carousel-container">
+            <Carousel
+                responsive={responsive}
+                autoPlay={false}
+                swipeable={true}
+                draggable={true}
+                showDots={true}
+                infinite={true}
+                partialVisible={false}
+                customDot={<CustomDot />}
+                beforeChange={(previousSlide, nextSlide) => setCurrentSlide(nextSlide)}
+                containerClass="carousel-container"
+                itemClass="carousel-item"
+                dotListClass="custom-dot-list"
                 ref={recommendationsRef}
-                onMouseDown={(e) => handleMouseDown(e, recommendationsRef)}
-                onMouseMove={(e) => handleMouseMove(e, recommendationsRef)}
-                onMouseUp={() => handleMouseUp(recommendationsRef)}
-                onMouseLeave={() => handleMouseUp(recommendationsRef)}
             >
-                <div className="home-recommendations">
-                    {localStorage.getItem("token") ? (
-                        recommendedPlaylists.length > 0 ? (
-                            recommendedPlaylists.map((playlist) => {
-                                const playlistImage = getImageUrl(playlist.front_page, "/default-playlist.jpg");
-                                return (
-                                    <div key={playlist.id} className="playlist-wrapper" onClick={(e) => handleAccessWithoutLogin(e)}>
-                                        <div className="home-playlist-card" onClick={(e) => handlePlaylistClick(playlist.id, e)}>
-                                            <img
-                                                src={playlistImage}
-                                                alt={playlist.name}
-                                                className="playlist-image"
-                                                onError={(e) => e.target.src = "/default-playlist.jpg"}
-                                            />
-                                        </div>
-                                        <div onClick={(e) => handlePlaylistClick(playlist.id, e)}>
-                                            <p className="playlist-title">{playlist.name}</p>
-                                        </div>
-                                    </div>
-                                );
-                            })
-                        ) : (
-                            <p>Cargando recomendaciones...</p>
-                        )
-                    ) : (
-                        <div className="login-banner">
-                            <div className="login-banner-icon">
-                                <img src={logo} alt="Vibra Logo" />
+                {recommendedPlaylists.map((playlist) => {
+                    const playlistImage = getImageUrl(playlist.front_page, "/default-playlist.jpg");
+                    return (
+                        <div key={playlist.id} className="playlist-wrapper">
+                            <div className="home-playlist-card" onClick={(e) => handlePlaylistClick(playlist.id, e)}>
+                                <img
+                                    src={playlistImage}
+                                    alt={playlist.name}
+                                    className="playlist-image"
+                                    onError={(e) => e.target.src = "/default-playlist.jpg"}
+                                />
                             </div>
-                            <div className="login-banner-text">
-                                <h3>¡Personaliza tu experiencia musical!</h3>
-                                <p>Inicia sesión para ver recomendaciones</p>
-                            </div>
-                            <div className="login-banner-buttons">
-                                <button className="banner-login-button" onClick={() => navigate("/login")}>Iniciar sesión</button>
-                                <button className="register-button" onClick={() => navigate("/register")}>Registrarse</button>
+                            <div onClick={(e) => handlePlaylistClick(playlist.id, e)}>
+                                <p className="playlist-title">{playlist.name}</p>
                             </div>
                         </div>
-                    )}
-                </div>
-            </div>
+                    );
+                })}
+            </Carousel>
+        </div>
+    ) : (
+        <p>Cargando recomendaciones...</p>
+    )
+) : (
+    <div className="login-banner">
+        {/* Mantén el contenido existente del login banner sin cambios */}
+        <div className="login-banner-icon">
+            <img src={logo} alt="Vibra Logo" />
+        </div>
+        <div className="login-banner-text">
+            <h3>¡Personaliza tu experiencia musical!</h3>
+            <p>Inicia sesión para ver recomendaciones</p>
+        </div>
+        <div className="login-banner-buttons">
+            <button className="banner-login-button" onClick={() => navigate("/login")}>Iniciar sesión</button>
+            <button className="register-button" onClick={() => navigate("/register")}>Registrarse</button>
+        </div>
+    </div>
+)}
 
             {/* Nueva sección: Últimos Álbums */}
 <h1 onClick={() => setActive("albums")}>Últimos Álbums</h1>

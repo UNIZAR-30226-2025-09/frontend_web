@@ -155,11 +155,10 @@
 .carousel-container {
     position: relative !important;
     width: 100% !important;
-    margin: 20px 0 30px 0 !important; /* Reducido el margen inferior */
-    padding-bottom: 30px !important; /* Reducido de 60px a 30px */
+    margin: 20px 0 40px 0 !important; /* Aumentado para dar espacio a los puntos */
+    padding-bottom: 30px !important;
     overflow: visible !important;
-    /* Quitada la altura mínima que añadía espacio innecesario */
-    min-height: auto;
+  min-height: auto;
 }
 .playlist-wrapper {
     flex: 0 0 auto;
@@ -441,30 +440,35 @@
 }
 
 /* Estilos definitivos para los dots */
-.custom-dot button, 
+.custom-dot button,
+
+.react-multi-carousel-dot {
+    display: inline-block !important;
+    margin-right: 8px !important;
+    vertical-align: middle !important;
+}
+
 .react-multi-carousel-dot button {
-  width: 10px;
-  height: 10px;
-  background-color: #a7a7a7; /* Gris para no activos */
-  border-radius: 50%;
-  border: none;
-  margin: 0 5px;
-  padding: 0;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+    display: inline-block !important;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    opacity: 1 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: #a7a7a7 !important;
+    transition: background 0.3s ease !important;
 }
 
 .custom-dot.active button, 
 .react-multi-carousel-dot--active button {
-  background-color: #21a1f1 !important; /* Azul para activos */
-  transform: scale(1.2);
+    background: #21a1f1 !important;
 }
 
 .custom-dot button:hover, 
 .react-multi-carousel-dot button:hover {
-  background-color: #79e2ff; /* Azul clarito en hover */
-  transform: scale(1.2);
+    background-color: #79e2ff;
+    transform: scale(1.2);
 }
 
 /* Ajustar el contenedor de artistas */
@@ -817,3 +821,25 @@
   .album-scroll-button:hover {
     background-color: rgba(33, 161, 241, 0.9);
   }
+
+  .react-multi-carousel-list {
+    overflow: visible !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.react-multi-carousel-list::-webkit-scrollbar {
+    display: none !important;
+}
+
+.custom-dot-list-style {
+    display: flex !important;
+    justify-content: center !important;
+    position: absolute !important;
+    bottom: -20px !important;
+    left: 0 !important;
+    right: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    list-style: none !important;
+}
