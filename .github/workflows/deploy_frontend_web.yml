@@ -20,11 +20,17 @@ jobs:
           username: ${{ secrets.SERVER_USER }}  # Usuario SSH
           key: ${{ secrets.SERVER_SSH_KEY }}  # Clave privada SSH
           script: |
+            # Borrar completamente el repositorio
+            rm -rf /home/unizar/frontend_web/
+            
+            # Clonar desde cero el repositorio
+            git clone git@github.com:UNIZAR-30226-2025-09/frontend_web.git /home/unizar/frontend_web/
+            
+            # Instalar dependencias
             cd /home/unizar/frontend_web/
-            rm -rf node_modules
-            rn -rf package-lock.json
-            git pull origin main
             npm install
+            
+            # Reconstruir y reiniciar el contenedor
             cd /home/unizar/backend/docker
             docker compose build --no-cache frontend
             docker compose up --build -d frontend
