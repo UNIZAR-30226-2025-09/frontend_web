@@ -22,7 +22,7 @@ jobs:
           script: |
             cd /home/unizar
             rm -rf frontend_web
-            git clone git@github.com:UNIZAR-30226-2025-09/frontend_web.git
+            git clone https://github.com/UNIZAR-30226-2025-09/frontend_web.git
             cd frontend_web
             npm install
             cd ../backend/docker
