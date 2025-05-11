@@ -8,7 +8,7 @@ let BASE_URL, MEDIA_URL;
 if (mode === 'nube') {
     // Configuración para modo cloud
     BASE_URL = "http://164.90.160.181/request/api";
-    MEDIA_URL = "http://164.90.160.181"; // URL para archivos multimedia
+    MEDIA_URL = "http://164.90.160.181:5001"; // URL para archivos multimedia
 } else {
     // Configuración para modo local
     BASE_URL = "http://localhost/request/api";
