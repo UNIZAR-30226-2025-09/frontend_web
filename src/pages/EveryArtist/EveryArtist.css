@@ -21,7 +21,7 @@
 .every-artist-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start; /* Changed to align left */
     width: 100%;
     position: relative;
     gap: 20px;
@@ -38,25 +38,47 @@
     text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     position: relative;
     padding-bottom: 10px;
+    border-bottom: none !important;
+    background-image: none !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    position: relative;
+    left: -5px;
+    margin-right: 5px;
+    /* Keep all text on one line */
+    white-space: nowrap;
+    display: inline-block;
 }
 
-
 .every-artist-header h1::after {
-    content: '';
-    display: block;
-    width: 15%;
-    height: 4px;
-    background-color: #0399b6;
-    position: absolute;
-    bottom: -10px;
-    left: 0;
-    border-radius: 2px;
+    display: none !important;
+    content: none !important;
+}
+
+.every-artist-header h1::before {
+    display: none !important;
+    content: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.every-artist-header h1 * {
+    border-bottom: none !important;
+    text-decoration: none !important;
+    background: none !important;
+    box-shadow: none !important;
 }
 
 /* Buscador super estilizado */
 .search-container {
     width: 330px;
     transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    position: relative;
+    margin-left: 30px; /* Add space between title and search */
 }
 
 .search-container:focus-within {
@@ -70,6 +92,7 @@
     top: 50%;
     transform: translateY(-50%);
     transition: all 0.3s ease;
+    z-index: 2;
 }
 
 .search-container:focus-within .search-icon svg path {
