@@ -212,21 +212,6 @@ const Home = () => {
             {recentlyVisited.length > 0 && (
                 <>
                     <h1 onClick={() => setActive("recentlyVisited")}>Visitado Recientemente</h1>
-                    <div className="carousel-container">
-                        <Carousel
-                            responsive={responsive}
-                            autoPlay={false}
-                            swipeable={true}
-                            draggable={true}
-                            showDots={true}
-                            infinite={true}
-                            partialVisible={false}
-                            customDot={<CustomDot />}
-                            beforeChange={(previousSlide, nextSlide) => setCurrentSlide(nextSlide)}
-                            containerClass="carousel-container"
-                            itemClass="carousel-item"
-                            dotListClass="custom-dot-list"
-                        >
                             {recentlyVisited.map((playlist) => (
                                 <div key={playlist.id} className="playlist-wrapper">
                                     <div
