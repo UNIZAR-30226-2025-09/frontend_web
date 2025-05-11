@@ -212,6 +212,8 @@ const Home = () => {
             {recentlyVisited.length > 0 && (
                 <>
                     <h1 onClick={() => setActive("recentlyVisited")}>Visitado Recientemente</h1>
+                    <div className="scroll-container">
+                        <div className="home-recommendations recently-visited-grid">
                             {recentlyVisited.map((playlist) => (
                                 <div key={playlist.id} className="playlist-wrapper">
                                     <div
@@ -230,7 +232,7 @@ const Home = () => {
                                     </div>
                                 </div>
                             ))}
-                        </Carousel>
+                        </div>
                     </div>
                 </>
             )}
