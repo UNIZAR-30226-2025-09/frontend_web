@@ -549,6 +549,7 @@ function Player() {
                 setCurrentSong(nextSong);
                 setIsPlaying(true);
                 setSeconds(0);
+                console.log("Cambiando dailySKips antes: ", dailySkips);
                 setDailySkips(dailySkips-1);
                 console.log("Cambiando daily SKIPS boton handle next:", dailySkips);
             }

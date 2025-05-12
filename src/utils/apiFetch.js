@@ -22,14 +22,18 @@ export const apiFetch = async (endpoint, options = {}) => {
         body: body ? JSON.stringify(body) : undefined,
     });
 
+    // Si la respuesta no es exitosa, parseamos el JSON del error y lanzamos con status
     if (!response.ok) {
-        throw new Error(`Fetch error: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const error = new Error(errorData.error || "Error en la petición");
+        error.status = response.status;
+        throw error;
     }
 
-    // POST:
-    // Devolvemos la respuesta parseada como JSON
+    // Si todo va bien, devolvemos el JSON
     return response.json();
 };
+
 
 
 

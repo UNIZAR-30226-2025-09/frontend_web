@@ -61,7 +61,7 @@ export default defineConfig({
     }
   }
 })
-
+*/
 /*
 // Frontend local, Backend remoto
 export default defineConfig({

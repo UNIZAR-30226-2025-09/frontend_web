@@ -9,6 +9,7 @@ function Login() {
     const [error, setError] = useState("");
     const [formCompleted, setFormCompleted] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [showConnectedModal, setShowConnectedModal] = useState(false);
     const navigate = useNavigate();
 
     // Verificar si el formulario está completo
@@ -27,8 +28,8 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+        setShowConnectedModal(false); // reset modal por si acaso
 
-        // Validación de email y contraseña
         if (!email.includes("@")) {
             setError("El correo electrónico debe contener '@'");
             return;
@@ -46,19 +47,27 @@ function Login() {
                 },
             });
 
-            // Si llegamos aquí, la respuesta fue exitosa
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
-
             window.dispatchEvent(new Event("storage"));
-
-            // Redirigir al home sin alert
             navigate("/home");
 
-        } catch (error) {
-            console.error("Error en el inicio de sesión:", error);
-            setError("Correo electrónico o contraseña incorrectos");
+        } catch (err) {
+            console.error("Error en el inicio de sesión:", err);
+
+            // Verifica si el error tiene código 403 (usuario ya conectado)
+            if (err.status === 403) {
+                setShowConnectedModal(true);
+            } else if (err.status === 404) {
+                setError("Usuario no encontrado");
+            } else if (err.status === 401) {
+                setError("Contraseña incorrecta");
+            } else {
+                setError("Error desconocido al iniciar sesión");
+            }
         }
+
+
     };
 
     return (
@@ -139,7 +148,7 @@ function Login() {
                         </div>
                         
                         {error && (
-                            <div className="error-message" style={{justifyContent: "center"}}>
+                            <div className="error-message" data-testid="error-msg" style={{justifyContent: "center"}}>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
                                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
                                 </svg>
@@ -177,6 +186,17 @@ function Login() {
                     </p>
                 </div>
             </div>
+            {showConnectedModal && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h3>Sesión activa</h3>
+                        <p>Ya has iniciado sesión en otro dispositivo.</p>
+                        <button onClick={() => setShowConnectedModal(false)} className="submit-button">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

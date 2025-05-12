@@ -18,8 +18,8 @@ function CustomDot({ onClick, active }) {
 
 const Home = () => {
     const navigate = useNavigate();
-    const { recommendationsRef, albumsRef, artistsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp, handleAccessWithoutLogin } = useOutletContext(); // Obtener la función del Outlet
-    const [currentSlide, setCurrentSlide] = useState(0);
+    const { recommendationsRef, setActive, handleMouseDown, handleMouseMove, handleMouseUp, handleAccessWithoutLogin } = useOutletContext(); // Obtener la función del Outlet
+    const [setCurrentSlide] = useState(0);
     const [vibraPlaylists, setVibraPlaylists] = useState([]);
     const [randomArtists, setRandomArtists] = useState([]);
     const [popularArtists, setPopularArtists] = useState([]);
