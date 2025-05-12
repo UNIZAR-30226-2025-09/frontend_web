@@ -9,19 +9,23 @@
     --borderRadius: 8px;
     --accentColor: #21a1f1;
 }
-/* Contenedor principal del reproductor */
+
+/* Contenedor principal del reproductor - Modificado para ajustarse al de la letra */
 .playerContainer {
     width: 100%;
-    max-width: 280px; /* o el valor que uses para el reproductor */
+    max-width: 100%; /* Cambiado para usar el ancho completo disponible */
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: hidden;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding: 0 1rem; /* Añadido padding para mejorar espaciado */
 }
 
-/* Contenedor de la imagen de la canción */
+/* Contenedor de la imagen de la canción - Redimensionado */
 .musicCover {
-    max-width: 100%;
+    max-width: 280px; /* Tamaño máximo fijo para la imagen */
     width: 100%; /* adapta al contenedor */
     height: auto; /* mantiene proporción */
     object-fit: cover;
@@ -33,6 +37,7 @@
 /* Placeholder para cuando no hay canción seleccionada */
 .noSongPlaceholder {
     width: 100%;
+    max-width: 280px; /* Limitado para mantener proporción */
     aspect-ratio: 1/1;
     border-radius: var(--borderRadius);
     background: linear-gradient(145deg, #222, #2e2e2e);
@@ -77,6 +82,8 @@
     text-align: center;
     color: var(--colorWhite);
     margin-bottom: 1rem;
+    width: 100%;
+    max-width: 600px; /* Ajustado para mejor legibilidad */
 }
 
 .title {
@@ -93,27 +100,22 @@
 /* Contenedor principal de controles */
 .controls {
     display: flex;
-    flex-direction: column;  /* Para apilar controlButtons y el likeButtonContainer (si estuviera aquí) */
+    flex-direction: column;
     align-items: center;
     gap: 1rem;
     margin-bottom: 1rem;
     text-align: center;
+    width: 100%;
+    max-width: 600px; /* Ajustado para coincidir con el contenedor de letra */
 }
 
 /* Subcontenedor donde van Prev, Play y Next */
-.controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-}
-
 .controlButtons {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    max-width: 300px;  /* O ajusta según el tamaño deseado */
+    max-width: 300px;
 }
 
 .controlButton {
@@ -123,10 +125,8 @@
     color: #21a1f1;
 }
 
-/* Contenedor del botón de like (debajo de .controls) */
+/* Contenedor del botón de like */
 .likeButtonContainer {
-    /* Puedes agregar margen superior o usar el gap del padre */
-    /* margin-top: 1rem; */
     display: flex;
     justify-content: center;
 }
@@ -136,15 +136,14 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1.5rem; /* Ajusta según tu preferencia */
-    /* cualquier otro estilo que quieras */
+    font-size: 1.5rem;
 }
 
 /* Botón circular grande (Play/Pause) */
 .playerControlPlay {
-    background-color: #000;     /* Círculo negro */
+    background-color: #000;
     position: relative;
-    width: 6rem;                /* Mantener tamaño */
+    width: 6rem;
     height: 6rem;
     border-radius: 50%;
     display: flex;
@@ -152,8 +151,8 @@
     align-items: center;
     cursor: pointer;
     transition: transform 0.2s;
-    border: 3px solid #21a1f1;  /* Borde azul simple */
-    box-shadow: 0 0 10px rgba(33, 161, 241, 0.5); /* Sutil brillo azul */
+    border: 3px solid #21a1f1;
+    box-shadow: 0 0 10px rgba(33, 161, 241, 0.5);
 }
 
 .playerControlPlay:hover {
@@ -181,7 +180,7 @@
     display: flex;
     justify-content: space-between;
     color: var(--colorPrimaryLight2);
-    font-size: 0.9rem; /* Reducido para ser más elegante */
+    font-size: 0.9rem;
     margin-bottom: 0.5rem;
 }
 
@@ -190,15 +189,15 @@
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 5px; /* Más delgada, elegante */
+    height: 5px;
     border-radius: 10px;
-    background: rgba(204, 204, 204, 0.2); /* Más sutil */
+    background: rgba(204, 204, 204, 0.2);
     outline: none;
     transition: all 0.3s;
 }
 
 .playerProgress:hover {
-    height: 7px; /* Se agranda sutilmente al pasar el ratón */
+    height: 7px;
     background: rgba(204, 204, 204, 0.3);
 }
 
@@ -293,6 +292,9 @@
     font-size: 0.9rem;
     transition: all 0.3s;
     font-weight: 500;
+    margin-bottom: 1rem; /* Añadido margen inferior */
+    width: 100%;
+    max-width: 200px; /* Limitado el ancho para mejor apariencia */
 }
 
 .lyricsToggle:hover:not(:disabled) {
@@ -304,8 +306,76 @@
     cursor: not-allowed;
 }
 
-
 .timelineContainer {
     width: 100%;
     margin-bottom: 1rem;
+    max-width: 600px; /* Ajustado para coincidir con otros elementos */
+}
+.lyricsContainer {
+    max-height: 400px;
+    overflow-y: auto;
+    position: relative;
+    padding: 16px;
+    background-color: #121212;
+    color: #f0f0f0;
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.lyricsLine {
+    margin: 4px 0;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+}
+
+.activeLine {
+    opacity: 1;
+    font-weight: bold;
+    color: #1db954;
+}
+
+/* Mantener compatibilidad con los nombres de clase anteriores */
+.lyricsText {
+    white-space: pre-line;
+}
+
+.currentLine {
+    color: var(--accentColor);
+    font-weight: bold;
+}
+
+/* Ajuste responsive para diferentes tamaños de pantalla */
+@media (max-width: 768px) {
+    .playerContainer {
+        padding: 0 0.5rem;
+    }
+
+    .musicCover, .noSongPlaceholder {
+        max-width: 220px;
+    }
+
+    .playerControlPlay {
+        width: 5rem;
+        height: 5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .musicCover, .noSongPlaceholder {
+        max-width: 180px;
+    }
+
+    .title {
+        font-size: 1.2rem;
+    }
+
+    .artist {
+        font-size: 1rem;
+    }
+
+    .playerControlPlay {
+        width: 4rem;
+        height: 4rem;
+    }
 }
