@@ -46,7 +46,7 @@ export default defineConfig(({ mode }) => {
       },
     };
   }
-
+  
   if (mode === 'enlocal') {
     return {
       plugins: [react()],
@@ -60,3 +60,4 @@ export default defineConfig(({ mode }) => {
 
   return baseConfig;
 });
+

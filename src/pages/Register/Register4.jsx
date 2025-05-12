@@ -28,6 +28,7 @@ const Register4 = () => {
                     dob: userData.dob,
                     gender: userData.gender,
                     style_fav: userData.style_fav,
+                    daily_skips: 5,
                 },
             });
 

@@ -109,28 +109,30 @@ const MainLayout = () => {
         ref.current.style.cursor = "grab";
     };
 
-    const onLogout = () => {
-        // Eliminar los datos del usuario y token del localStorage
+    const onLogout = async () => {
+        try {
+            // Avisar al backend
+            await apiFetch("/user/logout", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+        } catch (err) {
+            console.error("Error cerrando sesión en el backend:", err);
+        }
+
+        // Limpiar estado local
         localStorage.removeItem("user");
         localStorage.removeItem("token");
-        // Stop music playback and reset player state
         setIsPlaying(false);
         setCurrentSong(null);
         setSongs([]);
         setCurrentIndex(0);
-
-        // Actualizar el estado de 'user' para reflejar que no hay un usuario logueado
         setUser(null);
-
-        // Resetea el estado del reproductor
-        setCurrentSong(null);
-        setCurrentIndex(0);
-        setSongs([]);
-        setIsPlaying(false);
-
-        // Redirigir a la página principal (o a cualquier ruta que prefieras)
-        navigate("/"); // Redirigir al login
+        navigate("/");
     };
+
 
     // Función para manejar el acceso sin login y mostrar el popup
     const handleAccessWithoutLogin = (e) => {
