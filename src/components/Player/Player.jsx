@@ -704,9 +704,9 @@ function Player() {
                             console.log("Lyrics array length:", lyrics.length);
                             setShowLyrics(!showLyrics);
                         }}
-                        disabled={lyrics.length === 0} // Disable if no lyrics found
+                        disabled={!lyrics || lyrics.length === 0} // Disable if no lyrics found
                     >
-                        {lyrics.length > 0 ?
+                        {lyrics && lyrics.length > 0 ?
                             (showLyrics ? "Ocultar letra" : "Mostrar letra") :
                             "No hay letra disponible"}
                     </button>
@@ -714,13 +714,12 @@ function Player() {
             )}
 
             {/* Letras sincronizadas */}
-            {showLyrics && lyrics.length > 0 && (
-                <div className={styles.lyricsContainer}>
-                    <SynchronizedLyrics
-                        lyrics={lyrics}
-                        currentTime={seconds}
-                    />
-                </div>
+            {showLyrics && lyrics && lyrics.length > 0 && (
+                <SynchronizedLyrics
+                    lyrics={lyrics}
+                    currentTime={seconds}
+                />
+
             )}
 
             {/* Barra de progreso siempre presente, pero deshabilitada si no hay canción */}

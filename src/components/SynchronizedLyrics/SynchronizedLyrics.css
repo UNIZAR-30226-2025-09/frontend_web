@@ -1,22 +1,24 @@
-.lyricsContainer {
-    max-height: 300px;
-    overflow-y: auto;
-    position: relative;
-    padding: 16px;
-    background-color: #121212;
-    color: #f0f0f0;
-    font-size: 16px;
-    line-height: 1.5;
-}
+    /*.lyricsContainer {
+        max-height: 300px;
+        overflow-y: auto;
+        position: relative;
+        padding: 16px;
+        background-color: #121212;
+        color: #f0f0f0;
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+    }
 
-.lyricsLine {
-    margin: 4px 0;
-    opacity: 0.6;
-    transition: opacity 0.3s;
-}
+    .lyricsLine {
+        margin: 4px 0;
+        opacity: 0.6;
+        transition: opacity 0.3s;
+    }
 
-.activeLine {
-    opacity: 1;
-    font-weight: bold;
-    color: #1db954;
-}
+    .activeLine {
+        opacity: 1;
+        font-weight: bold;
+        color: #1db954;
+    }
+*/

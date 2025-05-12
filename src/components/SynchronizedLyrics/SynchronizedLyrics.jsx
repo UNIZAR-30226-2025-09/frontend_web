@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import "./SynchronizedLyrics.css";
+import styles from "../Player/PlayerStyles.module.css"; // Asumiendo que utilizaremos los estilos del módulo
 
 const SynchronizedLyrics = ({ lyrics, currentTime }) => {
     const [activeLineIndex, setActiveLineIndex] = useState(0);
@@ -47,12 +47,12 @@ const SynchronizedLyrics = ({ lyrics, currentTime }) => {
     }, [activeLineIndex]);
 
     return (
-        <div className="lyricsContainer" ref={lyricsContainerRef}>
+        <div className={styles.lyricsContainer} ref={lyricsContainerRef}>
             {lyrics.map((line, index) => (
                 <div
                     key={`${line.time}-${index}`} // clave única incluso si hay texto repetido
                     ref={index === activeLineIndex ? activeLyricRef : null}
-                    className={`lyricsLine ${index === activeLineIndex ? 'activeLine' : ''}`}
+                    className={`${styles.lyricsLine} ${index === activeLineIndex ? styles.activeLine : ''}`}
                 >
                     {line.text}
                 </div>
