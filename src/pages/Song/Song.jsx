@@ -5,7 +5,6 @@ import { apiFetch } from "#utils/apiFetch"; // Suponiendo que esta función exis
 import { getImageUrl } from "#utils/getImageUrl"; // Suponiendo que esta función existe
 import "./Song.css";
 import {PlayerProvider} from "../../components/Player/PlayerContext.jsx";
-import axios from "axios";
 import OptionsPopup from "../../components/PopUpSelection/OptionsPopup.jsx";
 import CreatePlaylistModal from "../../components/PlaylistModal/PlaylistModal.jsx";
 
@@ -378,7 +377,9 @@ const SongContent = () => {
                         {songActive === song.id && isPlaying ? <FaPause/> : <FaPlay/>}
                     </button>
                         <OptionsPopup
-                            trigger={<FaEllipsisH className="song-options-icon"/>}
+                            trigger={<button aria-label="Opciones de canción">
+                                <FaEllipsisH className="song-options-icon"/>
+                            </button>}
                             options={[
                                 {
                                     label: "Agregar a playlist",
