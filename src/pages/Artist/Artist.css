@@ -1047,3 +1047,48 @@
 .song-item.active:hover .playing-indicator {
     display: none; /* Ocultar las barras cuando se muestra el botón */
 }
+
+
+/* Solución específica para el popup de opciones del artista */
+
+/* Ajustar el contenedor del menú de opciones */
+.artist-song-options-wrapper {
+    position: relative;
+    z-index: 100;
+}
+
+/* Posicionar el menú correctamente para las últimas filas */
+.song-item:nth-last-child(-n+3) .artist-song-options-wrapper .popup-content {
+    bottom: 100% !important;
+    top: auto !important;
+    margin-bottom: 10px;
+}
+
+/* Posicionar los submenús correctamente para las últimas filas */
+.song-item:nth-last-child(-n+3) .artist-song-options-wrapper .popup-submenu {
+    top: auto !important;
+    bottom: 0 !important;
+    left: auto !important; 
+    right: 100% !important;
+}
+
+/* Eliminar el scroll vertical en los menús de opciones */
+.artist-song-options-wrapper .popup-content,
+.artist-song-options-wrapper .popup-submenu {
+    max-height: none !important;
+    overflow-y: visible !important;
+    height: auto !important;
+}
+
+/* Asegurar que los submenús aparecen completos */
+.artist-song-options-wrapper .popup-submenu {
+    position: absolute !important;
+    z-index: 1001 !important; /* Asegurar que aparece por encima */
+}
+
+/* Ajuste para dispositivos con pantalla pequeña */
+@media (max-height: 768px) {
+    .layout {
+        padding-bottom: 120px;
+    }
+}
