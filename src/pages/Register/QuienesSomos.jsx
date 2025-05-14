@@ -88,58 +88,58 @@ const QuienesSomos = () => {
                     <div className="vb-about-team-grid">
                         <div className="vb-about-team-member">
                             <div className="vb-about-team-photo" style={{backgroundColor: "#4f74ff"}}>
-                                <span>C</span>
+                                <span>M</span>
                             </div>
-                            <h3>Carlos Fernández</h3>
+                            <h3>Marcos Galán</h3>
                             <p>Fundador & CEO</p>
                         </div>
                         <div className="vb-about-team-member">
                             <div className="vb-about-team-photo" style={{backgroundColor: "#79e2ff"}}>
-                                <span>M</span>
+                                <span>C</span>
                             </div>
-                            <h3>María García</h3>
-                            <p>Directora de Producto</p>
+                            <h3>Carlos Alejos</h3>
+                            <p>Director de Producto</p>
                         </div>
                         <div className="vb-about-team-member">
                             <div className="vb-about-team-photo" style={{backgroundColor: "#5ac2e0"}}>
-                                <span>J</span>
+                                <span>A</span>
                             </div>
-                            <h3>Javier López</h3>
+                            <h3>Abdelbassat Chiguer</h3>
                             <p>Director de Tecnología</p>
                         </div>
                         <div className="vb-about-team-member">
                             <div className="vb-about-team-photo" style={{backgroundColor: "#3d5dc4"}}>
-                                <span>L</span>
+                                <span>M</span>
                             </div>
-                            <h3>Lucía Torres</h3>
+                            <h3>Mario Caudevilla</h3>
                             <p>Directora de Contenidos</p>
                         </div>
                         <div className="vb-about-team-member">
                             <div className="vb-about-team-photo" style={{backgroundColor: "#6d78e6"}}>
-                                <span>A</span>
+                                <span>M</span>
                             </div>
-                            <h3>Ana Rodríguez</h3>
-                            <p>Directora de Experiencia</p>
+                            <h3>Mario Hernández</h3>
+                            <p>Director de Experiencia</p>
                         </div>
                         <div className="vb-about-team-member">
                             <div className="vb-about-team-photo" style={{backgroundColor: "#41b0d3"}}>
                                 <span>D</span>
                             </div>
-                            <h3>Daniel Martín</h3>
+                            <h3>Diego Valenzuela</h3>
                             <p>Director de Innovación</p>
                         </div>
                         <div className="vb-about-team-member">
                             <div className="vb-about-team-photo" style={{backgroundColor: "#5a7fff"}}>
-                                <span>P</span>
+                                <span>R</span>
                             </div>
-                            <h3>Paula Sánchez</h3>
+                            <h3>Rodrigo Dávila</h3>
                             <p>Directora de Marketing</p>
                         </div>
                         <div className="vb-about-team-member">
                             <div className="vb-about-team-photo" style={{backgroundColor: "#37d8e6"}}>
-                                <span>R</span>
+                                <span>D</span>
                             </div>
-                            <h3>Roberto Vega</h3>
+                            <h3>David Hudrea</h3>
                             <p>Director de Desarrollo</p>
                         </div>
                     </div>
