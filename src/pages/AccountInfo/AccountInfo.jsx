@@ -193,10 +193,33 @@ function AccountInfo() {
         navigate("/");
     };
 
-    const handleUpgradeToPremium = () => {
-        navigate("/checkout");
-    };
+    const handleUpgradeToPremium = async () => {
+        try {
+            // Llamada al backend para crear una intención de pago y obtener el clientSecret
+            const response = await apiFetch('/stripe/create-payment-intent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: {
+                    subscriptionType: 'premium'
+                }
+            });
 
+            const { clientSecret } = await response
+
+            if (clientSecret) {
+                // Navegar a checkout con el clientSecret como parámetro URL
+                navigate(`/checkout?clientSecret=${clientSecret}`);
+            } else {
+                throw new Error('No se pudo obtener el clientSecret');
+            }
+        } catch (error) {
+            console.error('Error al iniciar el proceso de pago:', error);
+            // Puedes mostrar una notificación o mensaje de error al usuario
+        }
+    };
     // Navegación a la página de inicio
     const navigateToHome = () => {
         navigate("/home");
