@@ -188,7 +188,7 @@ function Player() {
     useEffect(() => {
         obtenerDailySkips();
         console.log("Obteiendo daily skips del usuario", dailySkips);
-    }, [currentSong, userId]);
+    }, [userId]);
 
     const prevTime = useRef(0);
 
@@ -272,7 +272,7 @@ function Player() {
             volume: 1.0,
             format: ["mp3"],
             onload: () => {
-                console.log("✅ Canción cargada:", currentSong.name);
+                console.log("Canción cargada:", currentSong.name);
                 const sec = sound.duration();
                 setDuration(sec * 1000);
                 setTotalTime({
@@ -317,8 +317,6 @@ function Player() {
                         clearInterval(intervalRef.current)
                     }
                 },
-
-
             });
 
 
@@ -387,26 +385,26 @@ function Player() {
 
     useEffect(() => {
         if (!currentSong || !userId) return;
-    
+
         console.log("useEffect - Verificando favoritos para la canción:", currentSong);
         console.log("useEffect - userId:", userId);
-    
+
         const checkIfLiked = async () => {
             try {
                 // Usar apiFetch en lugar de fetch directo
                 const data = await apiFetch(`/song_like/${currentSong.id}/like?userId=${userId}`, {
                     method: 'GET'
                 });
-                
+
                 console.log("useEffect - Respuesta del endpoint checkIfLiked:", data);
                 setIsLiked(data.isLiked);
-    
+
 
             } catch (error) {
                 console.error("useEffect - Error al verificar los favoritos:", error);
             }
         };
-    
+
         checkIfLiked();
     }, [currentSong, userId]);
 
@@ -532,11 +530,6 @@ function Player() {
         }
     };
 
-    useEffect(() => {
-        updateDailySkips();
-        console.log("Actualizacion de los skips diarrios");
-    },[dailySkips]);
-
     // Ir a la canción siguiente
     const handleNext = () => {
         if (!songs.length) return;
@@ -551,6 +544,7 @@ function Player() {
                 setSeconds(0);
                 console.log("Cambiando dailySKips antes: ", dailySkips);
                 setDailySkips(dailySkips-1);
+                updateDailySkips();
                 console.log("Cambiando daily SKIPS boton handle next:", dailySkips);
             }
         }

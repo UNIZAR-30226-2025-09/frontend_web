@@ -22,7 +22,7 @@ export const getImageUrl = (path, fallback = "/default.jpg") => {
     // Si el path ya es una URL completa, la devolvemos tal cual
     if (path.startsWith("http")) return path;
 
-    console.log(`Obteniendo imagen en modo: ${mode}, usando ${BASE_URL}`);
+    //console.log(`Obteniendo imagen en modo: ${mode}, usando ${BASE_URL}`);
 
     // POST:
     // Devolvemos la URL completa uniendo BASE_URL + path limpio (sin / inicial)
