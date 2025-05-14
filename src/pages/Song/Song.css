@@ -2,10 +2,8 @@
 .song-layout {
     display: flex;
     width: 100%;
-    height: 100vh;  /* Ocupa toda la altura de la ventana */
     margin: 0;
     padding: 0;
-    overflow: hidden;
 }
 
 /* Contenedor de la caja que muestra la información de la canción */
@@ -17,8 +15,6 @@
     color: white;
     padding: 40px;
     border-radius: 12px;
-    height: 100vh;
-    overflow-y: auto;
     box-sizing: border-box;
 }
 

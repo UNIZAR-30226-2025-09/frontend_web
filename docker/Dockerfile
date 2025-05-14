@@ -23,4 +23,5 @@ EXPOSE 5173
 CMD ["npm", "run", "dev", "--", "--mode", "nube", "--host"]
 
 # Comando que ejecuta el servidor de desarrollo en modo test
+
 #CMD ["npm", "run", "dev", "--", "--mode", "test", "--host"]

@@ -33,11 +33,8 @@ function Login() {
         if (!email.includes("@")) {
             setError("El correo electrónico debe contener '@'");
             return;
-        } else if (password.length < 6) {
-            setError("La contraseña debe tener al menos 6 caracteres");
-            return;
-        }
-
+        } 
+        
         try {
             const data = await apiFetch("/user/login", {
                 method: "POST",
