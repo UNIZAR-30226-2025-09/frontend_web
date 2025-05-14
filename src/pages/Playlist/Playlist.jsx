@@ -162,7 +162,7 @@ const PlaylistContent = () => {
                     method: "GET",
                 });
 
-                const collaborativePlaylists = await apiFetch(`/playlists-for-user/${user_Id}`, {
+                const collaborativePlaylists = await apiFetch(`/collaborators/playlists-for-user/${user_Id}`, {
                     method: "GET",
                 });
 
@@ -176,6 +176,7 @@ const PlaylistContent = () => {
                 });
 
                 setUser(userData);
+
             } catch (error) {
                 console.error("Error al obtener las playlists del usuario:", error);
             }
@@ -286,27 +287,29 @@ const PlaylistContent = () => {
         console.log(`Reproduciendo: ${song.name}`);
         console.log("Guardando canción en el estado:", song);
 
-        if(isShuffling){setIsShuffling(prev => !prev);}
+        if(currentSong.type !== "anuncio"){
+            if(isShuffling){setIsShuffling(prev => !prev);}
 
-        if(!user.is_premium){
-            console.log("USUARIO es premium metiendo anuncios", user.is_premium);
-            result = addsSong(songs);
+            if(!user.is_premium){
+                console.log("USUARIO es premium metiendo anuncios", user.is_premium);
+                result = addsSong(songs);
 
-            setCurrentSong(song);
-            setCurrentIndex(0);
-            setSongs(result);
+                setCurrentSong(song);
+                setCurrentIndex(0);
+                setSongs(result);
+            }
+            else{
+                setCurrentSong(song);
+                setCurrentIndex(0);
+                setSongs(songs);
+            }
+            console.log("Cancion ultima desde handle play SONG: ", song.id);
+            updateLastPlaybackState(song.id);
+            setPlaylistActive(playlistId);
+            setSongActive(0);
+            console.log("Cambiando isplaying en playlist a traves de cancion");
+            setIsPlaying(true);
         }
-        else{
-            setCurrentSong(song);
-            setCurrentIndex(0);
-            setSongs(songs);
-        }
-        console.log("Cancion ultima desde handle play SONG: ", song.id);
-        updateLastPlaybackState(song.id);
-        setPlaylistActive(playlistId);
-        setSongActive(0);
-        console.log("Cambiando isplaying en playlist a traves de cancion");
-        setIsPlaying(true);
     };
 
     const updateLastPlaybackState = async (id) => {

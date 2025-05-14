@@ -1,5 +1,5 @@
 .every-artist-page {
-    padding: 0 40px 120px;
+    padding: 0 0 120px;
     max-width: 1800px;
     margin: 0 auto;
     background: linear-gradient(to bottom, #111111, #181818);
@@ -10,9 +10,10 @@
     position: sticky;
     top: 0;
     z-index: 100;
+    width: 100%;
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.9) 0%, rgba(18, 18, 18, 0.95) 100%);
     backdrop-filter: blur(20px);
-    padding: 50px 0 40px;
+    padding: 50px 40px 40px;
     margin-bottom: 50px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
@@ -20,41 +21,64 @@
 .every-artist-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 20px;
+    justify-content: flex-start; /* Changed to align left */
+    width: 100%;
+    position: relative;
+    gap: 20px;
 }
 
 /* Título estilizado */
 .every-artist-header h1 {
+    flex: 1;
     margin: 0;
     color: #ffffff;
-    font-size: 56px;
+    font-size: 60px;
     font-weight: 800;
     letter-spacing: -1.5px;
     text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     position: relative;
     padding-bottom: 10px;
+    border-bottom: none !important;
+    background-image: none !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    position: relative;
+    left: -5px;
+    margin-right: 5px;
+    /* Keep all text on one line */
+    white-space: nowrap;
+    display: inline-block;
 }
 
 .every-artist-header h1::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 80px;
-    height: 4px;
-    background-color: #21a1f1;
-    box-shadow: 0 0 10px rgba(33, 161, 241, 0.7);
-    border-radius: 2px;
+    display: none !important;
+    content: none !important;
+}
+
+.every-artist-header h1::before {
+    display: none !important;
+    content: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.every-artist-header h1 * {
+    border-bottom: none !important;
+    text-decoration: none !important;
+    background: none !important;
+    box-shadow: none !important;
 }
 
 /* Buscador super estilizado */
 .search-container {
-    position: relative;
-    width: 380px;
+    width: 330px;
     transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    position: relative;
+    margin-left: 30px; /* Add space between title and search */
 }
 
 .search-container:focus-within {
@@ -68,6 +92,7 @@
     top: 50%;
     transform: translateY(-50%);
     transition: all 0.3s ease;
+    z-index: 2;
 }
 
 .search-container:focus-within .search-icon svg path {
@@ -104,7 +129,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 40px;
-    padding: 20px 0;
+    padding: 20px 40px;
 }
 
 /* Tarjeta de artista ultra estilizada */
@@ -301,7 +326,7 @@
 }
 
 /* Responsive design con estilo */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
     .every-artist-header h1 {
         font-size: 42px;
     }
@@ -315,12 +340,13 @@
     }
     
     .artists-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 30px;
+        padding: 20px 30px;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 25px;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
     .every-artist-page {
         padding: 0 20px 100px;
     }
@@ -349,6 +375,7 @@
     }
     
     .artists-grid {
+        padding: 20px 20px;
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 25px;
     }
