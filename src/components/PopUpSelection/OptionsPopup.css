@@ -5,133 +5,101 @@
 
 .popup-trigger {
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .popup-menu {
     position: absolute;
-    background: #282828;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    min-width: 180px;
+    background-color: #2e2c2c;
+    border: 1px solid #2e2c2c;
+    min-width: 150px;
     z-index: 1000;
-    padding: 4px 0;
-    overflow: hidden;
-    max-height: calc(100vh - 20px); /* Limit height to prevent overflow */
-}
-
-.popup-menu.top-left {
-    bottom: calc(100% + 5px); /* Posicionar arriba del botón */
-    left: 0; /* Posicionar hacia la izquierda del botón */
-}
-
-.popup-menu.top-right {
-    bottom: calc(100% + 5px);
-    right: 0;
-}
-.popup-menu .top-rights {
-    bottom: calc(100% + 5px);
-    right: 0;
-}
-
-.popup-menu.bottom-left {
-    top: calc(100% + 5px);
-    left: 0;
-}
-
-.popup-menu.bottom-right {
-    top: calc(100% + 5px);
-    right:0;
-}
-
-    .popup-menu.mid-left {
-    top: 50%;
-    transform: translateY(-50%);
-    right: calc(100% + 5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    padding: 0;
 }
 
 .popup-menu ul {
     list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
 }
 
 .popup-option {
-    padding: 8px 16px;
-    cursor: pointer;
-    color: #fff;
-    font-size: 14px;
     position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    white-space: nowrap;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex; /* Permite alinear el contenido en línea */
+    justify-content: space-between; /* Asegura que el texto y la flecha estén separados */
+    align-items: center; /* Alinea verticalmente el contenido */
+    color: #fff; /* Color del texto */
+    font-size: 14px; /* Tamaño de fuente */
 }
 
 .popup-option:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.popup-option.active {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.popup-option-icon {
-    margin-right: 8px;
-    display: inline-flex;
-    align-items: center;
+    background-color: #555555;
 }
 
 .submenu-arrow {
-    font-size: 10px;
-    margin-left: 8px;
+    font-size: 12px; /* Ajusta el tamaño de la flecha */
+    color: #fff; /* Color de la flecha */
+    margin-left: 8px; /* Espaciado entre el texto y la flecha */
 }
 
+/* Popup anidado por defecto en la derecha */
 .nested-popup {
     position: absolute;
-    background: #282828;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    min-width: 180px;
-    z-index: 1001;
-    padding: 4px 0;
-    max-height: calc(100vh - 20px); /* Limit nested menu height */
-}
-
-.nested-popup.right {
-    left: 100%;
     top: 0;
-    margin-left: 1px;
+    left: 100%;
+    margin-left: 2px;
+    background-color: #2e2c2c;
+    border: 1px solid #2e2c2c;
+    min-width: 150px;
+    z-index: 1100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .nested-popup.left {
+    left: auto;
     right: 100%;
-    top: 0;
-    margin-right: 1px;
+    margin-left: 0;
+    margin-right: 2px;
 }
 
-/* Adjust nested popup position if it would go off screen */
-@media screen and (max-width: 600px) {
-    .nested-popup.right {
-        left: auto;
-        right: 100%;
-        margin-right: 1px;
-        margin-left: 0;
-    }
+.nested-popup ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .nested-option {
-    padding: 8px 16px;
+    padding: 8px 12px;
     cursor: pointer;
+    display: flex; /* Permite alinear el contenido en línea */
+    align-items: center; /* Alinea verticalmente el contenido */
     color: #fff;
     font-size: 14px;
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
 }
 
 .nested-option:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: #555555;
+}
+
+/* Posiciones para el popup principal */
+.popup-menu.bottom-right {
+    top: 100%;
+    right: 0;
+}
+
+.popup-menu.bottom-left {
+    top: 100%;
+    left: 0;
+}
+
+.popup-menu.top-right {
+    bottom: 100%;
+    right: 0;
+}
+
+.popup-menu.top-left {
+    bottom: 100%;
+    left: 0;
 }
