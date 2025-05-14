@@ -177,7 +177,7 @@ function Login() {
                     
                     <p className="info-text">
                         Si quieres saber más sobre nuestras suscripciones, visita{" "}
-                        <span className="info-link" onClick={() => navigate("/subs")}>
+                        <span className="info-link" onClick={() => navigate("/plans")}>
                             Vibra Suscripciones
                         </span>
                     </p>

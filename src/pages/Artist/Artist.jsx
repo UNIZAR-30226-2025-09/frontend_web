@@ -127,7 +127,7 @@ const ArtistContent = () => {
                 console.error("Token no proporcionado");
                 return;
             }
-    
+
             await apiFetch("/user/updateStyle", {
                 method: "POST",
                 headers: {
@@ -135,16 +135,16 @@ const ArtistContent = () => {
                     "Content-Type": "application/json",
                 },
             });
-    
+
             console.log("Estilo favorito actualizado correctamente");
         } catch (error) {
             console.error("Error en la actualización del estilo favorito:", error);
         }
     };
-    
+
     const handleSongOptionSelect = async (option, song) => {
         console.log("Opción seleccionada:", option);
-        
+
         if (option.label === "Crear playlist") {
             setSelectedSong(song);
             setShowCreateModal(true);
@@ -159,9 +159,9 @@ const ArtistContent = () => {
                     }
                 });
                 console.log("Playlist de Me Gusta obtenida/creada:", likedPlaylistRes.playlist);
-                
+
                 const playlistId = likedPlaylistRes.playlist.id;
-                
+
                 const response = await apiFetch(`/song_like/${song.id}/likeUnlike`, {
                     method: 'POST',
                     body: {
@@ -169,22 +169,22 @@ const ArtistContent = () => {
                         playlist_id: playlistId
                     }
                 });
-                
+
                 // Actualizar estilo favorito después de dar like a la canción
                 updateUserFavoriteStyle();
-                
+
                 console.log("Respuesta del servidor:", response.data);
                 if (view === "songs") {
                     // Actualizar el estado de canciones populares
-                    setSongs1(prevSongs => 
-                        prevSongs.map(s => 
+                    setSongs1(prevSongs =>
+                        prevSongs.map(s =>
                             s.id === song.id ? { ...s, liked: !s.liked } : s
                         )
                     );
                 } else if (view === "singles") {
                     // Actualizar el estado de singles
-                    setSingles(prevSingles => 
-                        prevSingles.map(s => 
+                    setSingles(prevSingles =>
+                        prevSingles.map(s =>
                             s.id === song.id ? { ...s, liked: !s.liked } : s
                         )
                     );
@@ -236,13 +236,13 @@ const ArtistContent = () => {
     const handlePlaySong = (song, index, songsList) => {
         console.log(`Reproduciendo: ${song.name}`);
         console.log("Guardando canción en el estado:", song);
-        
+
         // Asegúrate de que estamos reproduciendo esta canción correctamente
         setCurrentSong(song);
         setCurrentIndex(index);
         setSongs(songsList);
         setIsPlaying(true); // Importante: iniciar la reproducción automáticamente
-        
+
         // Establecer la playlist activa como este artista
         setPlaylistActive(artistId);
     }
@@ -339,16 +339,7 @@ const ArtistContent = () => {
                     </div>
                 </div>
 
-                {/* Si hay canciones, mostramos el reproductor y las listas */}
-                {songs.length > 0 && (
-                    <div className="playlist-actions">
-                        <div className="rep-cont">
-                            <button
-                                className="play-btn"
-                                onClick={() => handlePlaySongs()}
-                            >
-                                {isPlaying ? <FaPause /> : <FaPlay />}
-                            </button>
+
 
                             <button className="shuffle-btn" onClick={toggleShuffle}>
                                 <FaRandom className={`shuffle-icon ${isShuffling ? "active" : ""}`} />
@@ -419,6 +410,7 @@ const ArtistContent = () => {
                         </div>
                     </div>
                 )}
+
 
 
                 {/* Botones para cambiar entre canciones, álbumes y sencillos */}
@@ -465,10 +457,10 @@ const ArtistContent = () => {
                         <div className="song-cont">
                             <div className="song-list">
                                 {songs.map((song, index) => (
-                                    <div 
-                                        key={song.id || index} 
+                                    <div
+                                        key={song.id || index}
                                         className={`song-item ${currentSong?.id === song.id ? 'active' : ''} ${currentSong?.id === song.id && isPlaying ? 'playing' : ''}`}
-                                    >   
+                                    >
                                         <div className="song-action">
                                             <span className="song-index">{index + 1}</span>
                                             <div className="playing-indicator">
@@ -520,8 +512,8 @@ const ArtistContent = () => {
                                                     },
                                                     {label: "Ver detalles"},
                                                 ]}
-                                                position="bottom-right"
-                                                submenuPosition="left"
+                                                position={index >= songs.length - 2 ? "top-right" : "bottom-right"}
+                                                submenuPosition={index >= songs.length - 2 ? "right" : "left"}
                                                 onOptionSelect={(option) => handleSongOptionSelect(option, song)}
                                             />
 
@@ -579,8 +571,8 @@ const ArtistContent = () => {
                         <div className="song-cont">
                             <div className="song-list">
                                 {singles.map((song, index) => (
-                                    <div 
-                                        key={song.id || index} 
+                                    <div
+                                        key={song.id || index}
                                         className={`song-item ${currentSong?.id === song.id ? 'active' : ''} ${currentSong?.id === song.id && isPlaying ? 'playing' : ''}`}
                                     >
                                         <div className="song-action">
@@ -635,8 +627,8 @@ const ArtistContent = () => {
                                                     },
                                                     {label: "Ver detalles"},
                                                 ]}
-                                                position="bottom-right"
-                                                submenuPosition="left"
+                                                position={index >= songs.length - 2 ? "top-right" : "bottom-right"}
+                                                submenuPosition={index >= songs.length - 2 ? "right" : "left"}
                                                 onOptionSelect={(option) => handleSongOptionSelect(option, song)}
                                             />
 
@@ -677,8 +669,8 @@ const ArtistContent = () => {
                                 className="artist-edit-input"
                             />
                             {shareSearch && (
-                                <button 
-                                    className="artist-clear-search" 
+                                <button
+                                    className="artist-clear-search"
                                     onClick={() => setShareSearch('')}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
