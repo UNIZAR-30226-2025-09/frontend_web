@@ -79,22 +79,38 @@
 
 /* Contenedor de la información de la canción */
 .info {
-    text-align: center;
+    text-align: center; /* Esta propiedad ya existe */
     color: var(--colorWhite);
     margin-bottom: 1rem;
     width: 100%;
-    max-width: 600px; /* Ajustado para mejor legibilidad */
+    max-width: 600px; 
+    display: flex;  /* Añadir display flex */
+    flex-direction: column;  /* Organizar elementos verticalmente */
+    align-items: center;  /* Centrar horizontalmente todos los elementos hijos */
+    justify-content: center;  /* Centrar verticalmente */
 }
 
-.title {
+.songTitle {
     font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 0.5rem;
+    text-align: center !important;
+    display: block !important;
+    width: 100%;
+    white-space: normal;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.artist {
+/* Nombre del artista - nombre más específico y estilos reforzados */
+.songArtist {
     font-size: 1.2rem;
     color: var(--colorPrimaryLight2);
+    text-align: center !important;
+    display: block !important;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Contenedor principal de controles */
