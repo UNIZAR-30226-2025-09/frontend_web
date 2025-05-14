@@ -10,6 +10,7 @@ import styles from "./PlayerStyles.module.css";
 import {apiFetch, MEDIA_URL} from "#utils/apiFetch";
 import SynchronizedLyrics from "../SynchronizedLyrics/SynchronizedLyrics";
 import { parseLRC } from "../../utils/parseLRC";
+
 function Player() {
     const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs,
             isPlaying, setIsPlaying, setSongs, playlistActive, setPlaylistActive, setSongActive,
@@ -29,6 +30,10 @@ function Player() {
     const [songArtists, setSongArtists] = useState([]); // Estado para almacenar los artistas de la canción
     const user = JSON.parse(localStorage.getItem('user'));
     const userId = user ? user.id : null; // Evitar errores si el usuario no está logueado
+
+    const isDraggingRef = useRef(false);
+    const userSetTimeRef = useRef(null);
+    const updateIntervalId = useRef(null);
 
     // Para saber si hay o no canción seleccionada:
     const noSongSelected = !currentSong;
@@ -142,9 +147,6 @@ function Player() {
 
         console.log(dailySkips);
     };
-
-
-
 
 
     // Función para actualizar el estilo favorito del usuario
@@ -475,30 +477,89 @@ function Player() {
             return;
         }
 
+        // Limpia el intervalo anterior si existe
+        if (updateIntervalId.current) {
+            clearInterval(updateIntervalId.current);
+            updateIntervalId.current = null;
+        }
+
         // Revisa si la canción está reproduciéndose
         const isSoundPlaying = soundRef.current.playing();
-
-        console.log("¿Está sonando?: ", isSoundPlaying);
-
 
         // Si isPlaying es true y no está sonando, reproducir
         if (isPlaying && !isSoundPlaying) {
             console.log("Reproduciendo canción");
             soundRef.current.play();
+            
+            // Configura un nuevo intervalo para actualizar el tiempo
+            updateIntervalId.current = setInterval(() => {
+                // Solo actualiza si no se está arrastrando la barra
+                if (!isDraggingRef.current) {
+                    const sec = soundRef.current.seek();
+                    // Solo actualiza si ha cambiado
+                    if (Math.abs(sec - prevTime.current) > 0.1) {
+                        setSeconds(sec);
+                        setCurrTime({
+                            min: Math.floor(sec / 60),
+                            sec: Math.floor(sec % 60),
+                        });
+                        prevTime.current = sec;
+                    }
+                }
+            }, 500); // Reducir la frecuencia de actualización
         }
         // Si isPlaying es false y está sonando, pausar
         else if (!isPlaying && isSoundPlaying) {
             console.log("Pausando canción");
             soundRef.current.pause();
+            // Limpia el intervalo cuando se pausa
+            if (updateIntervalId.current) {
+                clearInterval(updateIntervalId.current);
+                updateIntervalId.current = null;
+            }
         }
+
+        // Limpia el intervalo cuando se desmonte el componente
+        return () => {
+            if (updateIntervalId.current) {
+                clearInterval(updateIntervalId.current);
+                updateIntervalId.current = null;
+            }
+        };
+
     }, [isPlaying, currentSong]);
 
     // Mover la barra de progreso
     const handleTimelineChange = (e) => {
         if (!soundRef.current) return;
+        
         const newPosition = parseFloat(e.target.value);
-        soundRef.current.seek(newPosition);
+        userSetTimeRef.current = newPosition;
+        
+        // Actualiza la interfaz inmediatamente para mejor respuesta
         setSeconds(newPosition);
+        setCurrTime({
+            min: Math.floor(newPosition / 60),
+            sec: Math.floor(newPosition % 60),
+        });
+        
+        // Actualiza la posición del audio
+        soundRef.current.seek(newPosition);
+        prevTime.current = newPosition;
+    };
+
+    // Añade estos controladores para el arrastre
+    const handleTimelineDragStart = () => {
+        isDraggingRef.current = true;
+    };
+
+    const handleTimelineDragEnd = () => {
+        isDraggingRef.current = false;
+        // Asegurarse de que la posición final se aplique
+        if (userSetTimeRef.current !== null && soundRef.current) {
+            soundRef.current.seek(userSetTimeRef.current);
+            userSetTimeRef.current = null;
+        }
     };
 
     // Ir a la canción anterior
@@ -631,10 +692,10 @@ function Player() {
 
             {/* Información de la canción */}
             <div className={styles.info}>
-                <h3 className={styles.title}>
+                <h3 className={styles.songTitle}>
                     {noSongSelected ? "Ninguna canción seleccionada" : currentSong.name}
                 </h3>
-                <p className={styles.artist}>
+                <p className={styles.songArtist}>
                     {getArtistName()}
                 </p>
             </div>
@@ -742,6 +803,10 @@ function Player() {
                     value={noSongSelected ? 0 : seconds}
                     className={styles.playerProgress}
                     onChange={handleTimelineChange}
+                    onMouseDown={handleTimelineDragStart}
+                    onMouseUp={handleTimelineDragEnd}
+                    onTouchStart={handleTimelineDragStart}
+                    onTouchEnd={handleTimelineDragEnd}
                     disabled={noSongSelected}
                 />
             </div>

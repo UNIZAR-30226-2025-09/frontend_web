@@ -341,6 +341,78 @@ const ArtistContent = () => {
 
 
 
+                            <button className="shuffle-btn" onClick={toggleShuffle}>
+                                <FaRandom className={`shuffle-icon ${isShuffling ? "active" : ""}`} />
+                            </button>
+
+                            <div className="popup-wrapper">
+                            <OptionsPopup
+                                trigger={<FaEllipsisH className="artist-main-options-icon" />}
+                                options={[{
+                                    label: "Compartir",
+                                    submenu: [
+                                        { label: "Copiar enlace" },
+                                        { label: "Compartir con amigos" },
+                                    ],
+                                }]}
+                                position="bottom-right"
+                                submenuPosition="right"
+                                onOptionSelect={(option) => {
+                                    // Si es una opción anidada, pasamos la etiqueta
+                                    if (option.item && option.item.label) {
+                                        handleArtistOptionSelect(option.item);
+                                    } else {
+                                        handleArtistOptionSelect(option);
+                                    }
+                                }}
+                            />
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {/* Si hay canciones, mostramos el reproductor y las listas */}
+                {songs.length > 0 && (
+                    <div className="playlist-actions">
+                        <div className="rep-cont">
+                            <button
+                                className="play-btn"
+                                onClick={() => handlePlaySongs()}
+                            >
+                                {isPlaying ? <FaPause /> : <FaPlay />}
+                            </button>
+
+                            <button className="shuffle-btn" onClick={toggleShuffle}>
+                                <FaRandom className={`shuffle-icon ${isShuffling ? "active" : ""}`} />
+                            </button>
+
+                            <div className="popup-wrapper">
+                            <OptionsPopup
+                                trigger={<FaEllipsisH className="artist-main-options-icon" />}
+                                options={[{
+                                    label: "Compartir",
+                                    submenu: [
+                                        { label: "Copiar enlace" },
+                                        { label: "Compartir con amigos" },
+                                    ],
+                                }]}
+                                position="bottom-right"
+                                submenuPosition="right"
+                                onOptionSelect={(option) => {
+                                    // Si es una opción anidada, pasamos la etiqueta
+                                    if (option.item && option.item.label) {
+                                        handleArtistOptionSelect(option.item);
+                                    } else {
+                                        handleArtistOptionSelect(option);
+                                    }
+                                }}
+                            />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+
+
                 {/* Botones para cambiar entre canciones, álbumes y sencillos */}
                 <div className="view-switcher">
                     <button
