@@ -481,7 +481,7 @@ const ArtistContent = () => {
                                                     {label: "Ver detalles"},
                                                 ]}
                                                 position={index >= songs.length - 1 ? "top-right" : "bottom-right"}
-                                                submenuPosition={index >= songs.length - 1 ? "right" : "left"}
+                                                submenuPosition={index >= songs.length - 1 ? "left" : "left"}
                                                 onOptionSelect={(option) => handleSongOptionSelect(option, song)}
                                             />
 
@@ -596,7 +596,7 @@ const ArtistContent = () => {
                                                     {label: "Ver detalles"},
                                                 ]}
                                                 position={index >= songs.length - 1 ? "top-right" : "bottom-right"}
-                                                submenuPosition={index >= songs.length - 1 ? "right" : "left"}
+                                                submenuPosition="left"
                                                 onOptionSelect={(option) => handleSongOptionSelect(option, song)}
                                             />
 
