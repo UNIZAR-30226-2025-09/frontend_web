@@ -1109,7 +1109,7 @@ const PlaylistContent = () => {
                                                     {label: "Ver detalles"},
                                                     {label: "Agregar a la cola"},
                                                 ].filter(option => option != null)}
-                                                position={index >= filteredSongs.length - 2 ? "top-right" : "bottom-right"}
+                                                position={index === 0 ? "bottom-right" : (index >= filteredSongs.length - 2 ? "top-right" : "bottom-right")}
                                                 submenuPosition="left"
                                                 onOptionSelect={(option, idx) => handleSongOptionSelect(option, idx, song)}
                                             />

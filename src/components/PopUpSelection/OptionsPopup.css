@@ -5,7 +5,26 @@
 
 .popup-trigger {
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 0;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+    /* Asegurarse de que no hay márgenes o bordes que distorsionen el círculo */
+    margin: 0;
+    border: none;
+    outline: none;
+    overflow: hidden; /* Asegurarse de que el contenido no sobresalga */
 }
+
+.popup-trigger:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo sutil al pasar el mouse */
+}
+
 
 .popup-menu {
     position: absolute;
@@ -102,4 +121,27 @@
 .popup-menu.top-left {
     bottom: 100%;
     left: 0;
+}
+
+/* Añadir una transición suave para el hover del submenú */
+.nested-popup {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 2px;
+    background-color: #2e2c2c;
+    border: 1px solid #2e2c2c;
+    min-width: 150px;
+    z-index: 1100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    opacity: 1;
+    transition: opacity 0.15s ease;
+}
+
+/* Ajustar el icono para que se centre correctamente */
+.playlist-song-options-icon,
+.playlist-main-options-icon {
+    width: 16px;
+    height: 16px;
+    display: block; /* Asegurar que el icono se comporta como bloque */
 }
