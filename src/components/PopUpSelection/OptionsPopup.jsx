@@ -13,6 +13,7 @@ const OptionsPopup = ({
     const [openSubmenuIndex, setOpenSubmenuIndex] = useState(null);
     const popupRef = useRef(null);
     const triggerRef = useRef(null);
+    const timeoutRef = useRef(null); // Referencia para el timeout
 
     const handleDocumentClick = (e) => {
         // Si se hace clic fuera del popup y del trigger, se cierra el popup
@@ -31,6 +32,10 @@ const OptionsPopup = ({
         document.addEventListener("mousedown", handleDocumentClick);
         return () => {
             document.removeEventListener("mousedown", handleDocumentClick);
+            // Limpiar timeout si existe
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
         };
     }, []);
 
@@ -39,9 +44,37 @@ const OptionsPopup = ({
         setOpenSubmenuIndex(null);
     };
 
+    const handleOptionMouseEnter = (index, hasSubmenu) => {
+        // Cancelar cualquier timeout existente
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+        
+        if (hasSubmenu) {
+            setOpenSubmenuIndex(index);
+        }
+    };
+
+    const handleOptionMouseLeave = () => {
+        // No cerramos el submenu inmediatamente para dar tiempo a mover el ratón al submenu
+    };
+    
+    // Nuevo manejador para cerrar el menú cuando el ratón sale del área
+    const handleMenuMouseLeave = () => {
+        // Usamos un pequeño timeout para evitar que el menú se cierre 
+        // si el usuario solo está moviendo el ratón entre opciones
+        timeoutRef.current = setTimeout(() => {
+            setShowPopup(false);
+            setOpenSubmenuIndex(null);
+        }, 300); // 300ms de retardo
+    };
+
     const handleOptionClick = (option, index) => {
-        // Si la opción tiene submenu, no cerramos el popup aún
+        // Si la opción tiene submenu, ya no necesitamos toggle aquí porque se 
+        // manejará con el mouse enter (hover)
         if (!option.submenu) {
+            // Si no tiene submenu, ejecutar la función y cerrar todo
             if (onOptionSelect) {
                 onOptionSelect(option, index);
             }
@@ -50,33 +83,38 @@ const OptionsPopup = ({
         }
     };
 
-    const handleOptionMouseEnter = (index) => {
-        if (options[index].submenu) {
-            setOpenSubmenuIndex(index);
-        }
-    };
-
-    const handleOptionMouseLeave = (index) => {
-        if (options[index].submenu) {
-            setOpenSubmenuIndex(null);
+    // Cancelar el timeout si el usuario vuelve a entrar al menú
+    const handleMenuMouseEnter = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
         }
     };
 
     return (
         <div className="popup-container">
-            <div ref={triggerRef} onClick={handleTriggerClick} className="popup-trigger">
+            <div 
+                ref={triggerRef} 
+                onClick={handleTriggerClick} 
+                className="popup-trigger"
+            >
                 {trigger}
             </div>
             {showPopup && (
-                <div ref={popupRef} className={`popup-menu ${position}`}>
+                <div 
+                    ref={popupRef} 
+                    className={`popup-menu ${position}`}
+                    onMouseLeave={handleMenuMouseLeave}
+                    onMouseEnter={handleMenuMouseEnter}
+                >
                     <ul>
                         {options.map((option, index) => (
                             <li
                                 key={index}
                                 className="popup-option"
                                 onClick={() => handleOptionClick(option, index)}
-                                onMouseEnter={() => handleOptionMouseEnter(index)}
-                                onMouseLeave={() => handleOptionMouseLeave(index)}
+                                onMouseEnter={() => handleOptionMouseEnter(index, option.submenu)}
+                                onMouseLeave={handleOptionMouseLeave}
                             >
                                 <span className="option-label">
                                     {option.label}
@@ -89,7 +127,8 @@ const OptionsPopup = ({
                                                 <li
                                                     key={subIndex}
                                                     className="nested-option"
-                                                    onClick={() => {
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); // Evita que el clic se propague
                                                         if (onOptionSelect) {
                                                             onOptionSelect(subOption, subIndex);
                                                         }
