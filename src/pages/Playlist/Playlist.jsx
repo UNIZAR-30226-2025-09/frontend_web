@@ -283,22 +283,24 @@ const PlaylistContent = () => {
     }
 
     const handlePlaySong = (song, index, songs) => {
-        let result = ([]);
+        let result = [];
         console.log(`Reproduciendo: ${song.name}`);
         console.log("Guardando canción en el estado:", song);
 
-        if(currentSong.type !== "anuncio"){
-            if(isShuffling){setIsShuffling(prev => !prev);}
+        // Comprueba si currentSong existe antes de acceder a sus propiedades
+        if (!currentSong || currentSong.type !== "anuncio") {
+            if (isShuffling) {
+                setIsShuffling(prev => !prev);
+            }
 
-            if(!user.is_premium){
+            if (!user.is_premium) {
                 console.log("USUARIO es premium metiendo anuncios", user.is_premium);
                 result = addsSong(songs);
 
                 setCurrentSong(song);
                 setCurrentIndex(0);
                 setSongs(result);
-            }
-            else{
+            } else {
                 setCurrentSong(song);
                 setCurrentIndex(0);
                 setSongs(songs);
@@ -924,7 +926,11 @@ const PlaylistContent = () => {
                         <div className="rep-cont">
                             <button
                                 className="play-btn"
-                                onClick={() => currentSong?.type !== "anuncio" && handlePlaySongs(playlist.songs, isPlaying)}
+                                onClick={() => {
+                                    if (!currentSong || currentSong.type !== "anuncio") {
+                                        handlePlaySongs(playlist.songs, isPlaying);
+                                    }
+                                }}
                             >
                                 {playlistActive === playlistId && isPlaying && currentSong?.type !== "anuncio" ? (
                                     <FaPause/>

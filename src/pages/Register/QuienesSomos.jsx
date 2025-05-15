@@ -112,7 +112,7 @@ const QuienesSomos = () => {
                                 <span>M</span>
                             </div>
                             <h3>Mario Caudevilla</h3>
-                            <p>Directora de Contenidos</p>
+                            <p>Director de Contenidos</p>
                         </div>
                         <div className="vb-about-team-member">
                             <div className="vb-about-team-photo" style={{backgroundColor: "#6d78e6"}}>
@@ -133,7 +133,7 @@ const QuienesSomos = () => {
                                 <span>R</span>
                             </div>
                             <h3>Rodrigo Dávila</h3>
-                            <p>Directora de Marketing</p>
+                            <p>Director de Marketing</p>
                         </div>
                         <div className="vb-about-team-member">
                             <div className="vb-about-team-photo" style={{backgroundColor: "#37d8e6"}}>

@@ -312,11 +312,19 @@ function Player() {
                     });  // Intervalo de actualización de tiempo
                 },
 
+                // Modifica la función onend dentro del useEffect que crea el objeto Howl
                 onend: () => {
-                    console.log("🔚 onend: pasando a la siguiente canción");
-                    handleNext(); // Llamamos a la función
+                    console.log("🔚 onend: canción finalizada");
+                    // Comprobar si la canción actual es un anuncio
+                    if (currentSong && currentSong.type === "anuncio") {
+                        console.log("Anuncio finalizado, reproduciendo siguiente canción");
+                        handleNext(true); // Pasar true para indicar que viene de un anuncio
+                    } else {
+                        console.log("Canción normal finalizada, pasando a la siguiente");
+                        handleNext(); 
+                    }
                     if (intervalRef.current) {
-                        clearInterval(intervalRef.current)
+                        clearInterval(intervalRef.current);
                     }
                 },
             });
@@ -592,28 +600,36 @@ function Player() {
     };
 
     // Ir a la canción siguiente
-    const handleNext = () => {
+    const handleNext = (fromAd = false) => {
         if (!songs.length) return;
         const nextIndex = (currentIndex + 1) % songs.length;
         const nextSong = songs[nextIndex];
 
-        if(!premium){
-            if(dailySkips !== 0){
-                setCurrentIndex(nextIndex);
-                setCurrentSong(nextSong);
-                setIsPlaying(true);
-                setSeconds(0);
-                console.log("Cambiando dailySKips antes: ", dailySkips);
-                setDailySkips(dailySkips-1);
-                updateDailySkips();
-                console.log("Cambiando daily SKIPS boton handle next:", dailySkips);
-            }
-        }
-        else{
+        // Si viene de un anuncio o el usuario es premium, no verificar los skips
+        if (fromAd || premium) {
             setCurrentIndex(nextIndex);
             setCurrentSong(nextSong);
             setIsPlaying(true);
             setSeconds(0);
+            
+            // Pass the new song ID directly
+            updateLastPlaybackState(true, nextSong.id);
+            console.log("Reproduciendo desde anuncio finalizado o usuario premium");
+            return;
+        }
+
+        // Lógica normal para usuarios no premium
+        if (dailySkips !== 0) {
+            setCurrentIndex(nextIndex);
+            setCurrentSong(nextSong);
+            setIsPlaying(true);
+            setSeconds(0);
+            console.log("Cambiando dailySKips antes: ", dailySkips);
+            setDailySkips(dailySkips - 1);
+            updateDailySkips();
+            console.log("Cambiando daily SKIPS boton handle next:", dailySkips);
+        } else {
+            console.log("No quedan skips disponibles");
         }
 
         // Pass the new song ID directly
