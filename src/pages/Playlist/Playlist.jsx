@@ -381,7 +381,7 @@ const PlaylistContent = () => {
         const isCurrentPlaylist = playlistActive === playlistId;
         
         // Si estamos en la misma playlist, solo alternamos play/pause sin cambiar la canción
-        if (isCurrentPlaylist) {
+        if (isCurrentPlaylist && isPlaying) {
             console.log("Alternando reproducción en la playlist actual");
             setIsPlaying(!isPlaying);
             return;
