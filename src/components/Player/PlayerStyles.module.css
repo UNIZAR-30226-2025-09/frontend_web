@@ -395,3 +395,42 @@
         height: 4rem;
     }
 }
+
+
+/* ... existing code ... */
+
+/* Control Buttons container - Ajustado para incluir el botón de loop */
+.controlButtons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 350px; /* Aumentado para acomodar el nuevo botón */
+}
+
+/* ... existing code ... */
+
+/* Estilo específico para el botón de loop activo */
+.controlButton.active {
+    color: var(--accentColor);
+    transform: scale(1.1);
+}
+
+/* Animación de pulso para el botón de loop activo */
+@keyframes pulse {
+    0% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.8;
+    }
+}
+
+.controlButton.active svg {
+    animation: pulse 2s infinite ease-in-out;
+}
+
+/* ... existing code ... */

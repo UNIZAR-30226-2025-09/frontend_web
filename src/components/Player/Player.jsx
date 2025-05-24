@@ -10,6 +10,8 @@ import styles from "./PlayerStyles.module.css";
 import {apiFetch, MEDIA_URL} from "#utils/apiFetch";
 import SynchronizedLyrics from "../SynchronizedLyrics/SynchronizedLyrics";
 import { parseLRC } from "../../utils/parseLRC";
+import { TiArrowLoop } from "react-icons/ti"; // Importar icono de loop
+
 
 function Player() {
     const { currentSong, setCurrentSong, currentIndex, setCurrentIndex, songs,
@@ -30,6 +32,8 @@ function Player() {
     const [songArtists, setSongArtists] = useState([]); // Estado para almacenar los artistas de la canción
     const user = JSON.parse(localStorage.getItem('user'));
     const userId = user ? user.id : null; // Evitar errores si el usuario no está logueado
+    const [isLooping, setIsLooping] = useState(false); // Estado para controlar si la canción está en bucle
+
 
     const isDraggingRef = useRef(false);
     const userSetTimeRef = useRef(null);
@@ -38,6 +42,9 @@ function Player() {
     // Para saber si hay o no canción seleccionada:
     const noSongSelected = !currentSong;
 
+    const lastPositionRef = useRef(0);
+    const lastSrcRef = useRef(null);
+
     // Obtenemos la URL de la canción
     const songUrl = currentSong?.url_mp3
         ? currentSong.url_mp3.startsWith("http")
@@ -45,6 +52,10 @@ function Player() {
             : `${MEDIA_URL}/${currentSong.url_mp3.replace(/^\/?/, "")}`
         : null;
 
+    // Reemplazar la función toggleLoop con esta versión optimizada
+    const toggleLoop = () => {
+        setIsLooping((prev) => !prev);
+    };
 
     // Utilizamos la API específica para obtener los artistas de una canción
     const fetchArtistsForSong = async (songId) => {
@@ -81,7 +92,106 @@ function Player() {
         }
     };
 
-// Efecto para cargar los artistas cuando cambia la canción
+    // Cambia este useEffect:
+useEffect(() => {
+    if (!currentSong || !songUrl) {
+        getLastPlaybackState();
+        return;
+    }
+
+    // Guarda la posición y el src ANTES de destruir el Howl anterior
+    if (soundRef.current) {
+        lastSrcRef.current = soundRef.current._src;
+        lastPositionRef.current = soundRef.current.seek() || 0;
+        soundRef.current.stop();
+        soundRef.current.unload();
+    } else {
+        lastSrcRef.current = null;
+        lastPositionRef.current = 0;
+    }
+    if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+    }
+
+    const sound = new Howl({
+        src: [songUrl],
+        html5: true,
+        volume: 1.0,
+        format: ["mp3"],
+        loop: isLooping,
+        onload: () => {
+            const sec = sound.duration();
+            setDuration(sec * 1000);
+            setTotalTime({
+                min: Math.floor(sec / 60),
+                sec: Math.floor(sec % 60),
+            });
+
+            if (loadingFromSavedState) {
+                const startTime = currTime.min * 60 + currTime.sec;
+                sound.seek(startTime);
+                setLoadingFromSavedState(false);
+            } else if (
+                lastSrcRef.current === songUrl && lastPositionRef.current > 0
+            ) {
+                sound.seek(lastPositionRef.current);
+            } else {
+                sound.seek(0);
+                setCurrTime({ min: 0, sec: 0 });
+                setSeconds(0);
+            }
+        },
+        onplay: () => {
+            intervalRef.current = setInterval(() => {
+                const sec = sound.seek();
+                if (sec !== prevTime.current) {
+                    setSeconds(sec);
+                    setCurrTime({
+                        min: Math.floor(sec / 60),
+                        sec: Math.floor(sec % 60),
+                    });
+                    prevTime.current = sec;
+                }
+            }, 300);
+        },
+        onend: () => {
+            if (sound.loop()) return;
+            if (currentSong && currentSong.type === "anuncio") {
+                handleNext(true);
+            } else {
+                handleNext();
+            }
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        },
+    });
+
+    soundRef.current = sound;
+
+    if (isPlaying) {
+        sound.play();
+    }
+
+    return () => {
+        if (soundRef.current) {
+            soundRef.current.stop();
+            soundRef.current.unload();
+        }
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+        }
+    };
+}, [currentSong, songUrl]); // <-- SOLO depende de la canción
+
+// Nuevo useEffect SOLO para el loop:
+useEffect(() => {
+    if (soundRef.current) {
+        soundRef.current.loop(isLooping);
+    }
+}, [isLooping]);
+
+    // Efecto para cargar los artistas cuando cambia la canción
     useEffect(() => {
         if (!currentSong || !currentSong.id) {
             console.log("No valid song selected to fetch artists");
@@ -94,7 +204,7 @@ function Player() {
         fetchArtistsForSong(currentSong.id);
     }, [currentSong]);
 
-// Función para obtener el nombre de los artistas
+    // Función para obtener el nombre de los artistas
     const getArtistName = () => {
         if (noSongSelected) {
             return "Selecciona una canción de la lista";
@@ -240,8 +350,8 @@ function Player() {
         }
     };
 
-
     // Crea o recarga el Howl cuando la songUrl cambia
+    /*
     useEffect(() => {
         // Verifica que currentSong y songUrl estén disponibles
         if (!currentSong || !songUrl) {
@@ -343,6 +453,8 @@ function Player() {
         };
     }, [currentSong, songUrl]);  // Solo se ejecuta cuando currentSong o songUrl cambian
 
+    */
+
     useEffect(() => {
         const fetchLyrics = async () => {  // Define an async function inside useEffect
             if (currentSong) {  // Add a check if currentSong exists
@@ -425,14 +537,39 @@ function Player() {
             console.log("No hay instancia de Howl. Verifica si se seleccionó una canción.");
             return;
         }
-        console.log("Cambiando isplaying en el player");
-        if(isPlaying) {
-            // Si la canción se va a pausar, actualizar el tiempo
-            const state = false;
-            updateLastPlaybackState(state);
+        
+        // Estado actual
+        const currentlyPlaying = soundRef.current.playing();
+        
+        if (currentlyPlaying) {
+            // Si se está reproduciendo, pausar
+            soundRef.current.pause();
+            // Actualizar tiempo si se va a pausar
+            updateLastPlaybackState(false);
+        } else {
+            // Si está pausado, reproducir
+            soundRef.current.play();
         }
-        setIsPlaying(!isPlaying);
+        
+        // Actualizar estado en React
+        setIsPlaying(!currentlyPlaying);
     };
+
+    useEffect(() => {
+        if (!soundRef.current) return;
+        
+        // Estado actual de la instancia Howl
+        const currentlyPlaying = soundRef.current.playing();
+        
+        // Sincronizar estados
+        if (isPlaying && !currentlyPlaying) {
+            console.log("Sincronización: reproduciendo canción");
+            soundRef.current.play();
+        } else if (!isPlaying && currentlyPlaying) {
+            console.log("Sincronización: pausando canción");
+            soundRef.current.pause();
+        }
+    }, [isPlaying]);
 
     const updateLastPlaybackState = async (value, songId = null) => {
         if (!userId) return;
@@ -480,61 +617,33 @@ function Player() {
     };
 
     useEffect(() => {
-        // Asegúrate de que soundRef.current esté inicializado
         if (!soundRef.current) {
             return;
         }
 
-        // Limpia el intervalo anterior si existe
+        // Limpiar intervalos existentes para evitar duplicados
         if (updateIntervalId.current) {
             clearInterval(updateIntervalId.current);
             updateIntervalId.current = null;
         }
 
-        // Revisa si la canción está reproduciéndose
         const isSoundPlaying = soundRef.current.playing();
 
-        // Si isPlaying es true y no está sonando, reproducir
+        // Sincronizar el estado de reproducción con la acción correspondiente
         if (isPlaying && !isSoundPlaying) {
             console.log("Reproduciendo canción");
             soundRef.current.play();
-            
-            // Configura un nuevo intervalo para actualizar el tiempo
-            updateIntervalId.current = setInterval(() => {
-                // Solo actualiza si no se está arrastrando la barra
-                if (!isDraggingRef.current) {
-                    const sec = soundRef.current.seek();
-                    // Solo actualiza si ha cambiado
-                    if (Math.abs(sec - prevTime.current) > 0.1) {
-                        setSeconds(sec);
-                        setCurrTime({
-                            min: Math.floor(sec / 60),
-                            sec: Math.floor(sec % 60),
-                        });
-                        prevTime.current = sec;
-                    }
-                }
-            }, 500); // Reducir la frecuencia de actualización
-        }
-        // Si isPlaying es false y está sonando, pausar
-        else if (!isPlaying && isSoundPlaying) {
+        } else if (!isPlaying && isSoundPlaying) {
             console.log("Pausando canción");
             soundRef.current.pause();
-            // Limpia el intervalo cuando se pausa
-            if (updateIntervalId.current) {
-                clearInterval(updateIntervalId.current);
-                updateIntervalId.current = null;
-            }
         }
 
-        // Limpia el intervalo cuando se desmonte el componente
         return () => {
             if (updateIntervalId.current) {
                 clearInterval(updateIntervalId.current);
                 updateIntervalId.current = null;
             }
         };
-
     }, [isPlaying, currentSong]);
 
     // Mover la barra de progreso
@@ -542,18 +651,18 @@ function Player() {
         if (!soundRef.current) return;
         
         const newPosition = parseFloat(e.target.value);
-        userSetTimeRef.current = newPosition;
         
-        // Actualiza la interfaz inmediatamente para mejor respuesta
+        // Actualizar la UI inmediatamente
         setSeconds(newPosition);
         setCurrTime({
             min: Math.floor(newPosition / 60),
             sec: Math.floor(newPosition % 60),
         });
         
-        // Actualiza la posición del audio
-        soundRef.current.seek(newPosition);
-        prevTime.current = newPosition;
+        // Aplicar la nueva posición al reproductor
+        if (!isNaN(newPosition)) {
+            soundRef.current.seek(newPosition);
+        }
     };
 
     // Añade estos controladores para el arrastre
@@ -563,16 +672,26 @@ function Player() {
 
     const handleTimelineDragEnd = () => {
         isDraggingRef.current = false;
-        // Asegurarse de que la posición final se aplique
-        if (userSetTimeRef.current !== null && soundRef.current) {
-            soundRef.current.seek(userSetTimeRef.current);
-            userSetTimeRef.current = null;
+        
+        // Asegurar que la posición final se aplique correctamente
+        if (soundRef.current && !isNaN(seconds)) {
+            soundRef.current.seek(seconds);
         }
     };
 
     // Ir a la canción anterior
     const handlePrevious = () => {
         if (!songs.length) return;
+        if (isLooping) {
+            // Si está en bucle, reinicia la canción actual
+            if (soundRef.current) {
+                soundRef.current.seek(0);
+                soundRef.current.play();
+            }
+            setSeconds(0);
+            setCurrTime({ min: 0, sec: 0 });
+            return;
+        }
         const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
         const prevSong = songs[prevIndex];
 
@@ -581,10 +700,9 @@ function Player() {
         setIsPlaying(true);
         setSeconds(0);
 
-        // Pass the new song ID directly
         updateLastPlaybackState(true, prevSong.id);
         console.log("Reproduciendo desde flecha anterior");
-    };
+    }; 
 
     // FUncion para actualizar los dailyskips
     const updateDailySkips = async () => {
@@ -602,29 +720,34 @@ function Player() {
     // Ir a la canción siguiente
     const handleNext = (fromAd = false) => {
         if (!songs.length) return;
+        if (isLooping && !fromAd) {
+            // Si está en bucle, reinicia la canción actual
+            if (soundRef.current) {
+                soundRef.current.seek(0);
+                soundRef.current.play();
+            }
+            setSeconds(0);
+            setCurrTime({ min: 0, sec: 0 });
+            return;
+        }
         const nextIndex = (currentIndex + 1) % songs.length;
         const nextSong = songs[nextIndex];
 
-        // Si viene de un anuncio o el usuario es premium, no verificar los skips
         if (fromAd || premium) {
             setCurrentIndex(nextIndex);
             setCurrentSong(nextSong);
             setIsPlaying(true);
             setSeconds(0);
-            
-            // Pass the new song ID directly
             updateLastPlaybackState(true, nextSong.id);
             console.log("Reproduciendo desde anuncio finalizado o usuario premium");
             return;
         }
 
-        // Lógica normal para usuarios no premium
         if (dailySkips !== 0) {
             setCurrentIndex(nextIndex);
             setCurrentSong(nextSong);
             setIsPlaying(true);
             setSeconds(0);
-            console.log("Cambiando dailySKips antes: ", dailySkips);
             setDailySkips(dailySkips - 1);
             updateDailySkips();
             console.log("Cambiando daily SKIPS boton handle next:", dailySkips);
@@ -632,11 +755,9 @@ function Player() {
             console.log("No quedan skips disponibles");
         }
 
-        // Pass the new song ID directly
         updateLastPlaybackState(true, nextSong.id);
         console.log("Reproduciendo desde flecha siguiente");
     };
-
 
     const toggleLike = async () => {
         try {
@@ -763,6 +884,16 @@ function Player() {
                         disabled={noSongSelected}
                     >
                         {isLiked ? <AiFillHeart color="#E74C3C" /> : <AiOutlineHeart color="#E74C3C" />}
+                    </button>
+                    <button
+                        className={styles.controlButton}
+                        onClick={toggleLoop}
+                        disabled={noSongSelected}
+                        style={{ color: isLooping ? "#21a1f1" : "#555" }}
+                    >
+                        <IconContext.Provider value={{size: "2.5em", color: isLooping ? "#21a1f1" : "#555"}}>
+                            <TiArrowLoop />
+                        </IconContext.Provider>
                     </button>
                 </div>
             )}
