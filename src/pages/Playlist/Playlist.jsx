@@ -481,6 +481,30 @@ const PlaylistContent = () => {
         }
     };
 
+    const copyToClipboard = async (text) => {
+        try {
+            // Intentar usar la API moderna del clipboard (solo HTTPS/localhost)
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } else {
+                // Fallback para HTTP u otros contextos
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                return true;
+            }
+        } catch (error) {
+            console.error('Error al copiar al portapapeles:', error);
+            return false;
+        }
+    };
+
 
     const handleOptionSelect = async (option, index) => {
         console.log("Opción seleccionada:", option, index);
@@ -539,8 +563,12 @@ const PlaylistContent = () => {
 
         } else if (option.label === "Copiar enlace") {
             const url = `${window.location.origin}/playlist/${playlistId}`;
-            await navigator.clipboard.writeText(url);
-            alert("¡Enlace copiado al portapapeles!");
+            const success = await copyToClipboard(url);
+
+            if (success) {
+                alert("¡Enlace copiado al portapapeles!");
+            }
+
         } else if (option.label === "Compartir con amigos") {
             // Carga la lista de amigos solo si aún no la tienes
             if (friendsList.length === 0) {
